@@ -6,11 +6,9 @@
 
 后续如果需要修改libraries中的内容会在本文件中提示，不进行上传，需要手动修改！
 
-# 开发环境
 
-操作系统：[Linux Ubuntu v20.04](https://ubuntu.com/download/desktop)  
 
-开发软件：[verilator](https://verilator.org/guide/latest/)、[gtkwave](http://gtkwave.sourceforge.net/)、[mill](https://github.com/com-lihaoyi/mil)
+# 开发流程
 
 使用下面的命令一键安装搭建开发环境。
 
