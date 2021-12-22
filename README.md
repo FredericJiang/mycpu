@@ -1,9 +1,10 @@
 # oscpu-framework
 
-这是一个基于`verilator`的`RISC-V`CPU开发仿真框架。  
+该项目基于一生一芯框架进行搭建，采用chisel进行risc-V CPU的设计。
 
-开发前请在`myinfo.txt`文件中填写报名`一生一芯`时的学号和自己的姓名。
+在新的开发环境下开发，首先需要遵循下面的流程进行libraries中开发工具的搭建，可以完成bin文件下所有的测试样例。
 
+后续如果需要修改libraries中的内容会在本文件中提示，不进行上传，需要手动修改！
 
 # 开发环境
 
@@ -19,6 +20,9 @@ wget https://gitee.com/oscpu/oscpu-env-setup/raw/master/oscpu-env-setup.sh && ch
 # 选择使用chisel语言开发
 wget https://gitee.com/oscpu/oscpu-env-setup/raw/master/oscpu-env-setup.sh && chmod +x oscpu-env-setup.sh && ./oscpu-env-setup.sh -g -c && rm oscpu-env-setup.sh
 ```
+
+
+
 
 
 # 例程
