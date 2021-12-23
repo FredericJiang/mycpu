@@ -7,6 +7,8 @@
 后续如果需要修改libraries中的内容会在本文件中提示，不进行上传，需要手动修改！
 
 1111
+libraries/difftest/config/verilator.mk
+WITH_DRAMSIM3 ?= 1 取消注释
 
 
 # 开发流程
