@@ -5,7 +5,30 @@ import difftest._
 import Constant._
 import PipelineReg._
 
+/*
+Signal from core
+imem{
+  val inst_read   = Input(UInt(RW_DATA_WIDTH.W))
+  val inst_valid  = Output(Bool())
+  val inst_ready  = Input(Bool())
+  val inst_req    = Output(Bool())
+  val inst_addr   = Output(UInt(AxiAddrWidth.W))   
+  val inst_size   = Output(UInt(2.W))
+}
 
+dmem{
+  val data_read   = Input(UInt(AxiDataWidth.W))
+  val data_write  = Output(UInt(AxiDataWidth.W)) 
+  val data_valid  = Output(Bool())
+  val data_ready  = Input(Bool())
+  val data_req    = Output(Bool())
+  val data_addr   = Output(UInt(AxiAddrWidth.W)) 
+  val data_size   = Output(UInt(2.W)) 
+  val data_strb   = Output(UInt(8.W)) 
+
+}
+
+*/
 
 class Core extends Module {
   val io = IO(new Bundle {
