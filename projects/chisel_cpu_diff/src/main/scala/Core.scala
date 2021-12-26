@@ -7,33 +7,26 @@ import PipelineReg._
 
 /*
 Signal from core
-imem{
-  val inst_read   = Input(UInt(RW_DATA_WIDTH.W))
-  val inst_valid  = Output(Bool())
-  val inst_ready  = Input(Bool())
-  val inst_req    = Output(Bool())
-  val inst_addr   = Output(UInt(AxiAddrWidth.W))   
-  val inst_size   = Output(UInt(2.W))
+
+class AXI_Data extends Bundle{
+
+val data_read   = Input(UInt(AXI_Data_Width.W))
+
+val data_req_r  = Output(Bool())
+val data_req_w  = Output(Bool())
+val data_addr   = Output(UInt(AXI_Addr_Width.W))
+val data_write  = Output(UInt(AXI_Data_Width.W)) 
+val data_strb   = Output(UInt(8.W)) 
 }
 
-dmem{
-  val data_read   = Input(UInt(AxiDataWidth.W))
-  val data_write  = Output(UInt(AxiDataWidth.W)) 
-  val data_valid  = Output(Bool())
-  val data_ready  = Input(Bool())
-  val data_req    = Output(Bool())
-  val data_addr   = Output(UInt(AxiAddrWidth.W)) 
-  val data_size   = Output(UInt(2.W)) 
-  val data_strb   = Output(UInt(8.W)) 
 
-}
 
 */
 
 class Core extends Module {
   val io = IO(new Bundle {
-    val imem = new RomIO
-    val dmem = new RamIO
+    val imem = new AXI_Inst
+    val dmem = new AXI_Data
   })
 
 val stall = Wire(Bool())
@@ -43,24 +36,15 @@ val stall = Wire(Bool())
 //********************************************************
 //Instruction Fetch Stage
 
-val if_inst = io.imem.rdata
+val if_inst = WireInit(0.U(32.W))
 
-if_reg_pc_valid := true.B
-when(!stall && !kill_stage && if_reg_pc_valid){
+when(!stall && !kill_stage){if_reg_pc  := if_reg_pc + 4.U }  //后续可以把inst_req信号放在里面，当stall时可以不通过总线取指
+.elsewhen(stall)           {if_reg_pc := if_reg_pc}
+.elsewhen(kill_stage)      {if_reg_pc  := exe_pc_nxt}
 
-if_reg_pc  := if_reg_pc + 4.U
-
-}.elsewhen(stall){
-
-if_reg_pc := if_reg_pc
-
-}.elsewhen(kill_stage){
-
- if_reg_pc  := exe_pc_nxt
-}
-
-io.imem.en   := true.B
-io.imem.addr := if_reg_pc
+io.imem.inst_req   := true.B
+io.imem.inst_addr  := if_reg_pc
+when(io.imem.inst_ready){if_inst := io.imem.inst_read}
 
 // Instruction Fetch >>>>>>>> Instruction Decode
 //*******************************************************************
@@ -172,7 +156,7 @@ exe_reg_rs1_addr  := id_reg_inst(19, 15)
 exe_reg_rs2_addr  := id_reg_inst(24, 20)
 exe_reg_rd_addr   := id_reg_inst(11,  7)
 
-exe_reg_rd_wen     := (decode.io.wb_type === WB_REG)
+exe_reg_rd_wen    := (decode.io.wb_type === WB_REG)
 exe_reg_dmem_wen  := (decode.io.wb_type =/= WB_REG) && (decode.io.wb_type =/= WB_X)
 exe_reg_dmem_en   := (decode.io.mem_rtype =/= MEM_X) || ((decode.io.wb_type =/= WB_REG) && (decode.io.wb_type =/= WB_X))
 
@@ -190,16 +174,6 @@ exe_reg_rd_wen    := false.B
 exe_reg_dmem_wen  := false.B
 exe_reg_dmem_en   := false.B
 
-/*
-exe_reg_imm       := 0.U
-exe_reg_rs2_data  := 0.U
-exe_reg_rs1_data  := 0.U
-exe_reg_op1_data  := 0.U
-exe_reg_op2_data  := 0.U
-exe_reg_rs1_addr  := 0.U
-exe_reg_rs2_addr  := 0.U
-exe_reg_rd_addr   := 0.U
-*/
 }
 
 //*******************************************************************
@@ -221,9 +195,11 @@ exe_alu_out     := alu.io.alu_out
 
 val clint_en  = Wire(Bool())
 
-when(exe_reg_dmem_en && (exe_alu_out === CLINT_MTIME || exe_alu_out === CLINT_MTIMECMP))
-{clint_en := true.B}.otherwise
-{clint_en := false.B}
+when(exe_reg_dmem_en && 
+(exe_alu_out === CLINT_MTIME || 
+exe_alu_out === CLINT_MTIMECMP))
+           {clint_en := true.B}
+.otherwise {clint_en := false.B}
 
 
 
@@ -322,37 +298,36 @@ mem_reg_csr_rd_data := csr.io.out
 
 //*******************************************************************
 //MEMORY Stage
+val lsu = Module(new LSU)
+val mem_dmem_addr  = Wire(UInt(64.W))
 
-val mem_dmem_addr = Wire(UInt(64.W))
 
 // read & write memory address is from ALU
-when(mem_reg_dmem_en)
-{mem_dmem_addr := mem_reg_alu_out}    
-.otherwise{mem_dmem_addr := 0.U}
+when(mem_reg_dmem_en){mem_dmem_addr := mem_reg_alu_out}    
+.otherwise           {mem_dmem_addr := 0.U}
 
-// Operation with Memory
-io.dmem.en    := mem_reg_dmem_en
-io.dmem.wen   := mem_reg_dmem_wen
-io.dmem.addr  := mem_dmem_addr
+// Core to AXI for DATA_MEM
 
-val mem_dmem_rdata = io.dmem.rdata
+io.dmem.data_req_r  := mem_reg_dmem_en && !mem_reg_dmem_wen
+io.dmem.data_req_w  := mem_reg_dmem_wen
+io.dmem.data_addr   := mem_dmem_addr
+io.dmem.data_strb   := lsu.io.dmem_wmask
+io.dmem.data_write  := lsu.io.dmem_wdata
 
-val lsu = Module(new LSU)
-lsu.io.dmem_addr  := mem_dmem_addr
+when(io.dmem.data_ready){lsu.io.dmem_rdata  := io.dmem.data_read}
+.otherwise              {lsu.io.dmem_rdata  := 0.U}
 
 lsu.io.mem_rtype  := mem_reg_mem_rtype
-lsu.io.dmem_rdata := mem_dmem_rdata
-
 lsu.io.wb_type    := mem_reg_wb_type
+lsu.io.dmem_addr  := mem_dmem_addr
+
 
 when((mem_reg_rs2_addr === wb_reg_rd_addr) 
-&& mem_reg_dmem_wen && wb_reg_rd_wen ){
-lsu.io.rs2_data  := wb_rd_data
-}.otherwise{lsu.io.rs2_data   := mem_reg_rs2_data } //write memory data is from rs2
+&&(mem_reg_dmem_wen && wb_reg_rd_wen)){ lsu.io.rs2_data  := wb_rd_data       }
+.otherwise                            { lsu.io.rs2_data  := mem_reg_rs2_data } //write memory data is from rs2
 
+// LD instruction Data Path
 mem_rd_data   := lsu.io.mem_rdata
-io.dmem.wmask := lsu.io.dmem_wmask
-io.dmem.wdata := lsu.io.dmem_wdata
 
 // Memmory >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Write Back
 //*******************************************************************

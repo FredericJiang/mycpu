@@ -86,6 +86,7 @@ object Constant{
   val CLINT_MTIME    = "h000000000200bff8".U(64.W)
   
   val AXI_Addr_Width = 32
+  val AXI_Inst_Width = 32
   val AXI_Data_Width = 64
   val AXI_Id_Width   = 4
   val AXI_User_Width = 1

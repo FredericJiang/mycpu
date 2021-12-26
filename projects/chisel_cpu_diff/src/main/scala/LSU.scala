@@ -7,33 +7,29 @@ import scala.annotation.switch
 class LSU extends Module{
 val io = IO( new Bundle{ 
 
-val mem_rtype      = Input(UInt(3.W))
-val wb_type        = Input(UInt(3.W))
+val mem_rtype    = Input(UInt(3.W))
+val wb_type      = Input(UInt(3.W))
 val dmem_addr    = Input(UInt(64.W))
 val dmem_rdata   = Input(UInt(64.W))
 val rs2_data     = Input(UInt(64.W))
 
-
 val mem_rdata    = Output(UInt(64.W))
-val dmem_wmask = Output(UInt(64.W))
-val dmem_wdata = Output(UInt(64.W))
+val dmem_wmask   = Output(UInt(64.W))
+val dmem_wdata   = Output(UInt(64.W))
 
 })
 
 val dmem_addr  = io.dmem_addr
 val dmem_rdata = io.dmem_rdata
 val rs2_data   = io.rs2_data
-val mem_rdata    = Wire(UInt(64.W))
-val dmem_wmask = Wire(UInt(64.W))
-val dmem_wdata = Wire(UInt(64.W))
+val mem_rdata  = WireInit(0.U(64.W))
+val dmem_wmask = WireInit(0.U(64.W))
+val dmem_wdata = WireInit(0.U(64.W))
 
 
-io.mem_rdata    := mem_rdata
+io.mem_rdata  := mem_rdata
 io.dmem_wmask := dmem_wmask
 io.dmem_wdata := dmem_wdata
-dmem_wdata  := 0.U
-dmem_wmask  := 0.U
-mem_rdata     := 0.U
 
 
 
