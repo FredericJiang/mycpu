@@ -166,7 +166,7 @@ switch(write_state){
 // Read address channel signals
   out.ar.bits.id      := 0.U 
   out.ar.bits.addr    := imem.inst_addr
-  out.ar.bits.len     := 1.U
+  out.ar.bits.len     := 0.U
   out.ar.bits.size    := "b11".U  
   out.ar.bits.burst   := "b01".U  
   out.ar.bits.lock    := 0.U  
