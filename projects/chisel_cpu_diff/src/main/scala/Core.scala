@@ -27,6 +27,7 @@ when(!stall && !kill_stage){if_reg_pc  := if_reg_pc + 4.U }  //后续可以把in
 
 when(!stall && !kill_stage){ io.imem.inst_req   := true.B  }
 .otherwise                 { io.imem.inst_req   := false.B }
+
 io.imem.inst_addr  := if_reg_pc
 when(io.imem.inst_ready){if_inst := io.imem.inst_read}
 

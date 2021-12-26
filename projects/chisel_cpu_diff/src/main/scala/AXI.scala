@@ -166,11 +166,11 @@ switch(write_state){
 // Read address channel signals
   out.ar.bits.id      := 0.U 
   out.ar.bits.addr    := imem.inst_addr
-  out.ar.bits.len     := 0.U
-  out.ar.bits.size    := "b11".U  
+  out.ar.bits.len     := "b000".U //every burst transfer 1 data
+  out.ar.bits.size    := "b011".U //every clock transfer 8 bytes
   out.ar.bits.burst   := "b01".U  
   out.ar.bits.lock    := 0.U  
-  out.ar.bits.cache   := "b0010".U  
+  out.ar.bits.cache   := "b0000".U  
   out.ar.bits.prot    := "b000".U
   out.ar.bits.qos     := 0.U
   out.ar.bits.user    := 0.U
@@ -182,14 +182,14 @@ switch(write_state){
 // write address channel signals
   out.aw.bits.id      := 0.U  
   out.aw.bits.addr    := dmem.data_addr
-  out.aw.bits.len     := 0.U  
-  out.aw.bits.size    := "b11".U
+  out.aw.bits.len     := "b000".U  
+  out.aw.bits.size    := "b011".U
   out.aw.bits.burst   := "b01".U
   out.aw.bits.lock    := 0.U
-  out.aw.bits.cache   := "b0010".U  
+  out.aw.bits.cache   := "b0000".U  
   out.aw.bits.prot    := "b000".U
-  out.aw.bits.qos     := 0.U
   out.aw.bits.user    := 0.U
+  out.aw.bits.qos     := 0.U
 
   out.aw.valid   := (write_state === w_data_addr)
 // write data channel signals
@@ -215,8 +215,6 @@ switch(write_state){
   dmem.data_ready := (read_state === r_data_done) || (write_state === w_data_done )
   dmem.data_read  := out.r.bits.data
 // Core part for data write
-
-
 
 
 
