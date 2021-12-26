@@ -2290,7 +2290,7 @@ module Core(
       id_reg_inst <= 64'h0; // @[Core.scala 58:14]
     end
     if (reset) begin // @[PipelineReg.scala 14:33]
-      if_reg_pc <= 32'h80000000; // @[PipelineReg.scala 14:33]
+      if_reg_pc <= 32'h7ffffffc; // @[PipelineReg.scala 14:33]
     end else if (~stall & ~kill_stage) begin // @[Core.scala 41:28]
       if_reg_pc <= _if_reg_pc_T_1; // @[Core.scala 41:40]
     end else if (!(stall)) begin // @[Core.scala 42:28]
