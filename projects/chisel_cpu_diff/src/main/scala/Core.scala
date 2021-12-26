@@ -5,23 +5,6 @@ import difftest._
 import Constant._
 import PipelineReg._
 
-/*
-Signal from core
-
-class AXI_Data extends Bundle{
-
-val data_read   = Input(UInt(AXI_Data_Width.W))
-
-val data_req_r  = Output(Bool())
-val data_req_w  = Output(Bool())
-val data_addr   = Output(UInt(AXI_Addr_Width.W))
-val data_write  = Output(UInt(AXI_Data_Width.W)) 
-val data_strb   = Output(UInt(8.W)) 
-}
-
-
-
-*/
 
 class Core extends Module {
   val io = IO(new Bundle {
@@ -42,7 +25,8 @@ when(!stall && !kill_stage){if_reg_pc  := if_reg_pc + 4.U }  //后续可以把in
 .elsewhen(stall)           {if_reg_pc := if_reg_pc}
 .elsewhen(kill_stage)      {if_reg_pc  := exe_pc_nxt}
 
-io.imem.inst_req   := true.B
+when(!stall && !kill_stage){ io.imem.inst_req   := true.B  }
+.otherwise                 { io.imem.inst_req   := false.B }
 io.imem.inst_addr  := if_reg_pc
 when(io.imem.inst_ready){if_inst := io.imem.inst_read}
 
