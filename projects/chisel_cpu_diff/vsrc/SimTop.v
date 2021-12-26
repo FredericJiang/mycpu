@@ -2483,7 +2483,7 @@ module Core(
       mem_reg_rd_addr <= exe_reg_rd_addr; // @[Core.scala 263:21]
     end
     if (reset) begin // @[PipelineReg.scala 79:32]
-      wb_reg_pc <= 32'h7ffffffc; // @[PipelineReg.scala 79:32]
+      wb_reg_pc <= 32'h8000000; // @[PipelineReg.scala 79:32]
     end else begin
       wb_reg_pc <= mem_reg_pc; // @[Core.scala 321:20]
     end
