@@ -3170,7 +3170,7 @@ module SimTop(
   assign io_memAXI_0_ar_bits_id = 4'h0; // @[SimTop.scala 26:18]
   assign io_memAXI_0_ar_bits_user = 1'h0; // @[SimTop.scala 26:18]
   assign io_memAXI_0_ar_bits_addr = core2axi_io_axi2ram_ar_bits_addr; // @[SimTop.scala 26:18]
-  assign io_memAXI_0_ar_bits_len = 8'h0; // @[SimTop.scala 26:18]
+  assign io_memAXI_0_ar_bits_len = 8'h1; // @[SimTop.scala 26:18]
   assign io_memAXI_0_ar_bits_size = 3'h3; // @[SimTop.scala 26:18]
   assign io_memAXI_0_ar_bits_burst = 2'h1; // @[SimTop.scala 26:18]
   assign io_memAXI_0_ar_bits_lock = 2'h0; // @[SimTop.scala 26:18]
