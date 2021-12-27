@@ -2272,7 +2272,7 @@ module Core(
     if (reset) begin // @[Core.scala 17:29]
       reg_kill_flag <= 1'h0; // @[Core.scala 17:29]
     end else if (kill_stage) begin // @[Core.scala 245:17]
-      reg_kill_flag <= reg_exe_pc_nxt != 32'h0; // @[Core.scala 245:68]
+      reg_kill_flag <= nxt_pc_io_pc_jmp; // @[Core.scala 245:68]
     end else if (!(_T & ~kill_stage & io_imem_inst_ready)) begin // @[Core.scala 28:46]
       if (reg_kill_flag) begin // @[Core.scala 29:46]
         reg_kill_flag <= 1'h0; // @[Core.scala 29:92]
