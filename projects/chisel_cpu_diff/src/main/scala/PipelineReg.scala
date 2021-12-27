@@ -119,4 +119,12 @@ val exe_alu_out = Wire(UInt(64.W))
 val mem_rd_data = Wire(UInt(64.W))
 val wb_rd_data = Wire(UInt(64.W))
 
+
+val stall = WireInit(false.B)
+val reg_kill_flag  = RegInit(false.B)
+val reg_exe_pc_nxt = RegInit(0.U(32.W))
+val if_inst        = WireInit(0.U(32.W))
+val if_stage_done  = WireInit(false.B) // AXI read_state = r_inst_done 
+
+
 }
