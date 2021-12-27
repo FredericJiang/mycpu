@@ -2307,12 +2307,12 @@ module Core(
       end
     end
     if (reset) begin // @[PipelineReg.scala 20:28]
-      id_reg_pc <= 32'h7ffffffc; // @[PipelineReg.scala 20:28]
+      id_reg_pc <= 32'h0; // @[PipelineReg.scala 20:28]
     end else begin
       id_reg_pc <= _GEN_11[31:0];
     end
     if (reset) begin // @[PipelineReg.scala 25:32]
-      exe_reg_pc <= 32'h7ffffffc; // @[PipelineReg.scala 25:32]
+      exe_reg_pc <= 32'h0; // @[PipelineReg.scala 25:32]
     end else begin
       exe_reg_pc <= _GEN_25[31:0];
     end
@@ -2425,7 +2425,7 @@ module Core(
     mem_reg_dmem_wen <= ~csr_io_intrpt & (exe_reg_dmem_wen & ~clint_en); // @[Core.scala 240:21 Core.scala 243:21 Core.scala 249:21]
     mem_reg_rd_wen <= ~csr_io_intrpt & exe_reg_rd_wen; // @[Core.scala 240:21 Core.scala 242:21 Core.scala 248:21]
     if (reset) begin // @[PipelineReg.scala 55:32]
-      mem_reg_pc <= 32'h7ffffffc; // @[PipelineReg.scala 55:32]
+      mem_reg_pc <= 32'h0; // @[PipelineReg.scala 55:32]
     end else begin
       mem_reg_pc <= exe_reg_pc; // @[Core.scala 255:21]
     end
@@ -2487,7 +2487,7 @@ module Core(
       mem_reg_rd_addr <= exe_reg_rd_addr; // @[Core.scala 269:21]
     end
     if (reset) begin // @[PipelineReg.scala 79:32]
-      wb_reg_pc <= 32'h8000000; // @[PipelineReg.scala 79:32]
+      wb_reg_pc <= 32'h0; // @[PipelineReg.scala 79:32]
     end else begin
       wb_reg_pc <= mem_reg_pc; // @[Core.scala 327:20]
     end
