@@ -1739,16 +1739,14 @@ module Core(
   reg [31:0] _RAND_68;
   reg [31:0] _RAND_69;
   reg [31:0] _RAND_70;
-  reg [31:0] _RAND_71;
+  reg [63:0] _RAND_71;
   reg [31:0] _RAND_72;
   reg [63:0] _RAND_73;
-  reg [31:0] _RAND_74;
+  reg [63:0] _RAND_74;
   reg [63:0] _RAND_75;
   reg [63:0] _RAND_76;
   reg [63:0] _RAND_77;
-  reg [63:0] _RAND_78;
-  reg [63:0] _RAND_79;
-  reg [31:0] _RAND_80;
+  reg [31:0] _RAND_78;
 `endif // RANDOMIZE_REG_INIT
   wire [31:0] decode_io_inst; // @[Core.scala 67:20]
   wire [4:0] decode_io_alu_type; // @[Core.scala 67:20]
@@ -1958,11 +1956,9 @@ module Core(
   wire  kill_stage = nxt_pc_io_pc_jmp; // @[PipelineReg.scala 116:23 Core.scala 237:13]
   wire  _T_1 = ~kill_stage; // @[Core.scala 26:16]
   wire  _T_2 = ~stall & ~kill_stage; // @[Core.scala 26:13]
-  reg  exe_stage_done_REG_1; // @[Core.scala 37:26]
-  wire [31:0] _if_reg_pc_T_1 = if_reg_pc + 32'h4; // @[Core.scala 26:72]
+  wire [31:0] _if_reg_pc_T_1 = if_reg_pc + 32'h4; // @[Core.scala 26:76]
   wire [31:0] exe_pc_nxt = nxt_pc_io_pc_nxt; // @[PipelineReg.scala 117:23 Core.scala 236:13]
   wire [31:0] if_inst = io_imem_inst_ready ? io_imem_inst_read : 32'h0; // @[Core.scala 34:25 Core.scala 34:34]
-  reg  exe_stage_done_REG; // @[Core.scala 37:34]
   wire [63:0] _GEN_7 = _T & kill_stage ? 64'hffffffffffffffff : {{32'd0}, id_reg_pc}; // @[Core.scala 45:33 Core.scala 46:14]
   wire [63:0] _GEN_9 = _T_2 ? {{32'd0}, if_reg_pc} : _GEN_7; // @[Core.scala 41:29 Core.scala 42:14]
   wire [63:0] _GEN_11 = io_imem_inst_ready ? _GEN_9 : 64'h0; // @[Core.scala 40:20 Core.scala 55:14]
@@ -2303,11 +2299,11 @@ module Core(
     end
     if (reset) begin // @[PipelineReg.scala 14:33]
       if_reg_pc <= 32'h80000000; // @[PipelineReg.scala 14:33]
-    end else if (~stall & ~kill_stage & exe_stage_done_REG_1) begin // @[Core.scala 26:47]
-      if_reg_pc <= _if_reg_pc_T_1; // @[Core.scala 26:59]
-    end else if (!(stall & exe_stage_done_REG_1)) begin // @[Core.scala 27:47]
-      if (kill_stage & exe_stage_done_REG_1) begin // @[Core.scala 28:47]
-        if_reg_pc <= exe_pc_nxt; // @[Core.scala 28:59]
+    end else if (~stall & ~kill_stage & io_imem_inst_ready) begin // @[Core.scala 26:51]
+      if_reg_pc <= _if_reg_pc_T_1; // @[Core.scala 26:63]
+    end else if (!(stall & io_imem_inst_ready)) begin // @[Core.scala 27:51]
+      if (kill_stage & io_imem_inst_ready) begin // @[Core.scala 28:51]
+        if_reg_pc <= exe_pc_nxt; // @[Core.scala 28:63]
       end
     end
     if (reset) begin // @[PipelineReg.scala 20:28]
@@ -2607,8 +2603,6 @@ module Core(
     end else begin
       wb_reg_intrpt_no <= mem_reg_intrpt_no; // @[Core.scala 355:20]
     end
-    exe_stage_done_REG_1 <= exe_stage_done_REG; // @[Core.scala 37:26]
-    exe_stage_done_REG <= io_imem_inst_ready; // @[Core.scala 37:34]
     if (reset) begin // @[Core.scala 418:23]
       dt_valid <= 1'h0; // @[Core.scala 418:23]
     end else begin
@@ -2837,31 +2831,27 @@ initial begin
   _RAND_67 = {2{`RANDOM}};
   wb_reg_intrpt_no = _RAND_67[63:0];
   _RAND_68 = {1{`RANDOM}};
-  exe_stage_done_REG_1 = _RAND_68[0:0];
+  dt_valid = _RAND_68[0:0];
   _RAND_69 = {1{`RANDOM}};
-  exe_stage_done_REG = _RAND_69[0:0];
+  skip = _RAND_69[0:0];
   _RAND_70 = {1{`RANDOM}};
-  dt_valid = _RAND_70[0:0];
-  _RAND_71 = {1{`RANDOM}};
-  skip = _RAND_71[0:0];
+  dt_ic_io_pc_REG = _RAND_70[31:0];
+  _RAND_71 = {2{`RANDOM}};
+  dt_ic_io_instr_REG = _RAND_71[63:0];
   _RAND_72 = {1{`RANDOM}};
-  dt_ic_io_pc_REG = _RAND_72[31:0];
+  dt_ic_io_wen_REG = _RAND_72[0:0];
   _RAND_73 = {2{`RANDOM}};
-  dt_ic_io_instr_REG = _RAND_73[63:0];
-  _RAND_74 = {1{`RANDOM}};
-  dt_ic_io_wen_REG = _RAND_74[0:0];
+  dt_ic_io_wdata_REG = _RAND_73[63:0];
+  _RAND_74 = {2{`RANDOM}};
+  dt_ic_io_wdest_REG = _RAND_74[63:0];
   _RAND_75 = {2{`RANDOM}};
-  dt_ic_io_wdata_REG = _RAND_75[63:0];
+  cycle_cnt = _RAND_75[63:0];
   _RAND_76 = {2{`RANDOM}};
-  dt_ic_io_wdest_REG = _RAND_76[63:0];
+  instr_cnt = _RAND_76[63:0];
   _RAND_77 = {2{`RANDOM}};
-  cycle_cnt = _RAND_77[63:0];
-  _RAND_78 = {2{`RANDOM}};
-  instr_cnt = _RAND_78[63:0];
-  _RAND_79 = {2{`RANDOM}};
-  dt_ae_io_intrNO_REG = _RAND_79[63:0];
-  _RAND_80 = {1{`RANDOM}};
-  dt_ae_io_exceptionPC_REG = _RAND_80[31:0];
+  dt_ae_io_intrNO_REG = _RAND_77[63:0];
+  _RAND_78 = {1{`RANDOM}};
+  dt_ae_io_exceptionPC_REG = _RAND_78[31:0];
 `endif // RANDOMIZE_REG_INIT
   `endif // RANDOMIZE
 end // initial
