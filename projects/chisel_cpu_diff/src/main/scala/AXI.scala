@@ -165,16 +165,16 @@ switch(write_state){
                   Mux(read_state === r_data_addr, dmem.data_addr, 0.U))  
 */
 // Read address channel signals
-  out.ar.bits.id      := 0.U 
-  out.ar.bits.addr    := imem.inst_addr
-  out.ar.bits.len     := "b000".U //every burst transfer 1 data
-  out.ar.bits.size    := "b011".U //every clock transfer 8 bytes
-  out.ar.bits.burst   := "b01".U  
-  out.ar.bits.lock    := 0.U  
-  out.ar.bits.cache   := "b0000".U  
-  out.ar.bits.prot    := "b000".U
-  out.ar.bits.qos     := 0.U
-  out.ar.bits.user    := 0.U
+  out.ar.bits.id     := 0.U 
+  out.ar.bits.addr   := imem.inst_addr
+  out.ar.bits.len    := "b000".U //every burst transfer 1 data
+  out.ar.bits.size   := "b011".U //every clock transfer 8 bytes
+  out.ar.bits.burst  := "b01".U  
+  out.ar.bits.lock   := 0.U  
+  out.ar.bits.cache  := "b0000".U  
+  out.ar.bits.prot   := "b000".U
+  out.ar.bits.qos    := 0.U
+  out.ar.bits.user   := 0.U
 
   out.ar.valid   := (read_state === r_inst_addr || read_state === r_data_addr)
 // Read data channel signals
@@ -208,10 +208,12 @@ switch(write_state){
 
 // Core part for inst read
   imem.inst_ready := (read_state === r_inst_done)
-  
-  when(out.ar.bits.addr % 8.U === 0.U){ imem.inst_read  := out.r.bits.data(31,0)}
-.otherwise{imem.inst_read  := out.r.bits.data(61,32)}
-  //need to aligned the fetched data
+
+
+//need to aligned the fetched data  
+  when(out.ar.bits.addr % 8.U === 0.U){ imem.inst_read  := out.r.bits.data(31,0) }
+.otherwise                            { imem.inst_read  := out.r.bits.data(61,32)}
+
 
 
 // Core part for data read

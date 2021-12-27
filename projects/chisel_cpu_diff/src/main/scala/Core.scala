@@ -27,7 +27,7 @@ when(!stall && !kill_stage && io.imem.inst_ready) {if_reg_pc  := if_reg_pc + 4.U
 .elsewhen(kill_stage && io.imem.inst_ready)       {if_reg_pc  := exe_pc_nxt}
 
 when(!stall && !kill_stage){ io.imem.inst_req   := true.B  }
-.otherwise                                       { io.imem.inst_req   := false.B }
+.otherwise                 { io.imem.inst_req   := false.B }
 
 io.imem.inst_addr  := if_reg_pc
 when(io.imem.inst_ready){if_inst := io.imem.inst_read}
@@ -35,7 +35,7 @@ when(io.imem.inst_ready){if_inst := io.imem.inst_read}
 if_stage_done := io.imem.inst_ready
 // Instruction Fetch >>>>>>>> Instruction Decode
 //*******************************************************************
-
+when(if_stage_done){
 when(!stall && !kill_stage ){
 id_reg_pc    := if_reg_pc
 id_reg_inst  := if_inst
@@ -49,7 +49,7 @@ id_reg_inst  := BUBBLE
 id_reg_pc    := id_reg_pc
 id_reg_inst  := id_reg_inst 
 
-}
+}}
 
 //*******************************************************************
 //Decode Instruction Stage
