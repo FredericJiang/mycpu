@@ -19,7 +19,7 @@ val stall = Wire(Bool())
 //********************************************************
 //Instruction Fetch Stage
 
-val if_inst = WireInit(0.U(32.W))
+val if_inst       = WireInit(0.U(32.W))
 val if_stage_done = WireInit(false.B)
 
 when(!stall && !kill_stage && io.imem.inst_done) {if_reg_pc  := if_reg_pc + 4.U }  //后续可以把inst_req信号放在里面，当stall时可以不通过总线取指
