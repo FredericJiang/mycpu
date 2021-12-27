@@ -29,7 +29,7 @@ when(!stall && !reg_kill_flag && if_stage_done) { if_reg_pc  := if_reg_pc + 4.U 
 io.imem.inst_addr  := if_reg_pc
 
 when(io.imem.inst_ready && reg_kill_flag )     {if_inst := 0.U}
-.otherwise                                    {if_inst := io.imem.inst_read}
+.otherwise                                     {if_inst := io.imem.inst_read}
 
 if_stage_done := io.imem.inst_ready //AXI read_state = r_inst_done
 
@@ -37,11 +37,11 @@ if_stage_done := io.imem.inst_ready //AXI read_state = r_inst_done
 // Instruction Fetch >>>>>>>> Instruction Decode
 //*******************************************************************
 when(if_stage_done){
-when(!stall && !kill_stage ){
+when(!stall && !reg_kill_flag ){
 id_reg_pc    := if_reg_pc
 id_reg_inst  := if_inst
 
-}.elsewhen(!stall && kill_stage){
+}.elsewhen(!stall && reg_kill_flag){
 id_reg_pc    := "hffffffffffffffff".U
 id_reg_inst  := BUBBLE
 
