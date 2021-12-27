@@ -2294,7 +2294,7 @@ module Core(
       id_reg_inst <= 64'h0; // @[Core.scala 43:14]
     end
     if (reset) begin // @[PipelineReg.scala 14:33]
-      if_reg_pc <= 32'h7ffffffc; // @[PipelineReg.scala 14:33]
+      if_reg_pc <= 32'h80000000; // @[PipelineReg.scala 14:33]
     end else if (~stall & ~kill_stage & io_imem_inst_done) begin // @[Core.scala 24:50]
       if_reg_pc <= _if_reg_pc_T_1; // @[Core.scala 24:62]
     end else if (!(stall & io_imem_inst_done)) begin // @[Core.scala 25:50]

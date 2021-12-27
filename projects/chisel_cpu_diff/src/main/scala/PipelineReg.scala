@@ -11,7 +11,7 @@ import Constant._
 // Instruction Fetch State 
 
 object PipelineReg{
-  val if_reg_pc        = RegInit("h7ffffffc".U(32.W))
+  val if_reg_pc        = RegInit("h80000000".U(32.W))
   val if_reg_pc_valid  = RegInit(false.B)
   val if_reg_inst      = RegInit(0.U(64.W))
 
