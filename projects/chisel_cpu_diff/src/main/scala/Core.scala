@@ -26,7 +26,7 @@ when(!stall && !reg_kill_flag )       { io.imem.inst_req   := true.B  }
 .otherwise                            { io.imem.inst_req   := false.B }
 
 when(!stall && !kill_stage && if_stage_done) { if_reg_pc  := if_reg_pc + 4.U }  //后续可以把inst_req信号放在里面，当stall时可以不通过总线取指
-.elsewhen(reg_kill_flag)                     { if_reg_pc  := reg_exe_pc_nxt; reg_kill_flag :=0.U}
+.elsewhen(reg_kill_flag)                     { if_reg_pc  := reg_exe_pc_nxt}
 .elsewhen(stall )                            { if_reg_pc  := if_reg_pc }
 
 
@@ -242,7 +242,7 @@ kill_stage  := nxt_pc.io.pc_jmp  //current instruction jmp_flag
 
 
 
-when(kill_stage){ reg_exe_pc_nxt:= nxt_pc.io.pc_nxt; reg_kill_flag := nxt_pc.io.pc_jmp}
+when(kill_stage){ reg_exe_pc_nxt:= nxt_pc.io.pc_nxt; reg_kill_flag := nxt_pc.io.pc_jmp }
 
 //Execute  >>>>>>>>>>>>>>>>>>>>> Memory
 //*******************************************************************
