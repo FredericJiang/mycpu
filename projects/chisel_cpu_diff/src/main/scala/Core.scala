@@ -26,8 +26,8 @@ when(!stall && !reg_kill_flag && if_stage_done)       { io.imem.inst_req   := tr
 
 
 when(reg_kill_flag)                          { if_reg_pc  := reg_exe_pc_nxt}
-.otherwise                                   { if_reg_pc  := if_reg_pc + 4.U }
-//.elsewhen(stall)                             { if_reg_pc  := if_reg_pc }
+.elsewhen(stall)                             { if_reg_pc  := if_reg_pc }
+.elsewhen(if_stage_done)                  { if_reg_pc  := if_reg_pc + 4.U }
 
 io.imem.inst_addr  := if_reg_pc
 
