@@ -17,17 +17,14 @@ class Core extends Module {
 //Instruction Fetch Stage
 
 
-when(!stall && !reg_kill_flag && if_stage_done)       { io.imem.inst_req   := true.B  }
+when(!stall && !reg_kill_flag )       { io.imem.inst_req   := true.B  }
 .otherwise                            { io.imem.inst_req   := false.B }
 
-// when(!stall && !kill_stage && if_stage_done) { if_reg_pc  := if_reg_pc + 4.U }  //后续可以把inst_req信号放在里面，当stall时可以不通过总线取指
-// .elsewhen(reg_kill_flag)                     { if_reg_pc  := reg_exe_pc_nxt}
-// .elsewhen(stall)                             { if_reg_pc  := if_reg_pc }
+when(!stall && !reg_kill_flag && if_stage_done) { if_reg_pc  := if_reg_pc + 4.U }  //后续可以把inst_req信号放在里面，当stall时可以不通过总线取指
+.elsewhen(reg_kill_flag)                        { if_reg_pc  := reg_exe_pc_nxt}
+.elsewhen(stall)                                { if_reg_pc  := if_reg_pc }
 
 
-when(reg_kill_flag)                          { if_reg_pc  := reg_exe_pc_nxt}
-.elsewhen(stall)                             { if_reg_pc  := if_reg_pc }
-.elsewhen(if_stage_done)                  { if_reg_pc  := if_reg_pc + 4.U }
 
 io.imem.inst_addr  := if_reg_pc
 
