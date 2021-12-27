@@ -206,10 +206,12 @@ switch(write_state){
 
 
 
-
 // Core part for inst read
   imem.inst_ready := (read_state === r_inst_done)
-  imem.inst_read  := out.r.bits.data
+  
+  when(out.ar.bits.addr % 8.U === 0.U){ imem.inst_read  := out.r.bits.data(31,0)}
+.otherwise{imem.inst_read  := out.r.bits.data(61,32)}
+  //need to aligned the fetched data
 
 
 // Core part for data read
