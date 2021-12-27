@@ -26,13 +26,13 @@ when(!stall && !reg_kill_flag )       { io.imem.inst_req   := true.B  }
 .otherwise                            { io.imem.inst_req   := false.B }
 
 when(!stall && !kill_stage && if_stage_done) { if_reg_pc  := if_reg_pc + 4.U }  //后续可以把inst_req信号放在里面，当stall时可以不通过总线取指
-.elsewhen(reg_kill_flag)                     { if_reg_pc  := reg_exe_pc_nxt }
+.elsewhen(reg_kill_flag)                     { if_reg_pc  := reg_exe_pc_nxt; reg_kill_flag :=false.B}
 .elsewhen(stall )                            { if_reg_pc  := if_reg_pc }
 
 
 io.imem.inst_addr  := if_reg_pc
 
-when(io.imem.inst_ready && reg_kill_flag)     {if_inst := 0.U; reg_kill_flag :=false.B}
+when(io.imem.inst_ready && reg_kill_flag)     {if_inst := 0.U}
 .otherwise                                    {if_inst := io.imem.inst_read}
 
 if_stage_done := io.imem.inst_ready //AXI read_state = r_inst_done
