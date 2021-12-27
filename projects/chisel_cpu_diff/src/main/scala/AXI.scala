@@ -176,7 +176,7 @@ switch(write_state){
   out.ar.bits.qos    := 0.U
   out.ar.bits.user   := 0.U
 
-  out.ar.valid   := (read_state === r_inst_addr || read_state === r_data_addr)
+  out.ar.valid   := (read_state === r_inst_addr ) || read_state === r_data_addr
 // Read data channel signals
   out.r.ready    := true.B
 
