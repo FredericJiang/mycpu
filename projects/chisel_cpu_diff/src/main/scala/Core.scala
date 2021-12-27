@@ -28,14 +28,15 @@ when(!stall && !kill_stage && if_stage_done) {if_reg_pc  := if_reg_pc + 4.U }  /
 .elsewhen(kill_stage && if_stage_done)       {if_reg_pc  := exe_pc_nxt}
 
 
-when(!stall && !kill_stage){ io.imem.inst_req   := true.B  }
-.otherwise                 { io.imem.inst_req   := false.B }
+when(exe_stage_done){ io.imem.inst_req   := true.B  }
+.otherwise          { io.imem.inst_req   := false.B }
 
 io.imem.inst_addr  := if_reg_pc
 when(io.imem.inst_ready){if_inst := io.imem.inst_read}
 
-if_stage_done := io.imem.inst_ready
+if_stage_done := io.imem.inst_ready //AXI read_state = r_inst_done
 exe_stage_done := RegNext(RegNext(if_stage_done))
+
 // Instruction Fetch >>>>>>>> Instruction Decode
 //*******************************************************************
 when(if_stage_done){
