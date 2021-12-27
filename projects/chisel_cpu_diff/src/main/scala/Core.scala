@@ -242,7 +242,7 @@ kill_stage  := nxt_pc.io.pc_jmp  //current instruction jmp_flag
 
 
 
-when(kill_stage){reg_kill_flag := kill_stage; reg_exe_pc_nxt:= nxt_pc.io.pc_nxt}
+when(kill_stage){ reg_exe_pc_nxt:= nxt_pc.io.pc_nxt; reg_kill_flag := (reg_exe_pc_nxt =/= 0.U)}
 
 //Execute  >>>>>>>>>>>>>>>>>>>>> Memory
 //*******************************************************************
