@@ -2280,7 +2280,7 @@ module Core(
     if (reset) begin // @[Core.scala 18:29]
       reg_exe_pc_nxt <= 32'h0; // @[Core.scala 18:29]
     end else if (kill_stage) begin // @[Core.scala 245:17]
-      reg_exe_pc_nxt <= nxt_pc_io_pc_nxt; // @[Core.scala 245:57]
+      reg_exe_pc_nxt <= nxt_pc_io_pc_nxt; // @[Core.scala 245:54]
     end
     if (reset) begin // @[PipelineReg.scala 30:32]
       exe_reg_mem_rtype <= 3'h0; // @[PipelineReg.scala 30:32]
