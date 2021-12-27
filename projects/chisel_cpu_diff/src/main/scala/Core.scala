@@ -22,13 +22,13 @@ val reg_exe_pc_nxt = RegInit(0.U(32.W))
 val if_inst        = WireInit(0.U(32.W))
 val if_stage_done  = WireInit(false.B) // AXI read_state = r_inst_done 
 
+when(!stall )       { io.imem.inst_req   := true.B  }
+.otherwise          { io.imem.inst_req   := false.B }
 
 when(!stall && !kill_stage && if_stage_done) {if_reg_pc  := if_reg_pc + 4.U }  //后续可以把inst_req信号放在里面，当stall时可以不通过总线取指
 .elsewhen(reg_kill_flag)                     {if_reg_pc  := reg_exe_pc_nxt}
 .elsewhen(stall )                            {if_reg_pc  := if_reg_pc}
 
-when(!stall )       { io.imem.inst_req   := true.B  }
-.otherwise          { io.imem.inst_req   := false.B }
 
 io.imem.inst_addr  := if_reg_pc
 
