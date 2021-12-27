@@ -22,17 +22,17 @@ val stall = Wire(Bool())
 val if_inst       = WireInit(0.U(32.W))
 val if_stage_done = WireInit(false.B)
 
-when(!stall && !kill_stage && io.imem.inst_done) {if_reg_pc  := if_reg_pc + 4.U }  //后续可以把inst_req信号放在里面，当stall时可以不通过总线取指
-.elsewhen(stall && io.imem.inst_done)            {if_reg_pc := if_reg_pc}
-.elsewhen(kill_stage && io.imem.inst_done)       {if_reg_pc  := exe_pc_nxt}
+when(!stall && !kill_stage && io.imem.inst_ready) {if_reg_pc  := if_reg_pc + 4.U }  //后续可以把inst_req信号放在里面，当stall时可以不通过总线取指
+.elsewhen(stall && io.imem.inst_ready)            {if_reg_pc := if_reg_pc}
+.elsewhen(kill_stage && io.imem.inst_ready)       {if_reg_pc  := exe_pc_nxt}
 
-when(!stall && !kill_stage){ io.imem.inst_req   := true.B  }
-.otherwise                 { io.imem.inst_req   := false.B }
+when(!stall && !kill_stage && io.imem.inst_ready){ io.imem.inst_req   := true.B  }
+.otherwise                                       { io.imem.inst_req   := false.B }
 
 io.imem.inst_addr  := if_reg_pc
 when(io.imem.inst_ready){if_inst := io.imem.inst_read}
 
-if_stage_done := io.imem.inst_done
+if_stage_done := io.imem.inst_ready
 // Instruction Fetch >>>>>>>> Instruction Decode
 //*******************************************************************
 when(if_stage_done){

@@ -53,7 +53,6 @@ class AXI_Inst extends Bundle{
 val inst_read   = Input(UInt(AXI_Inst_Width.W))
 val inst_ready  = Input(Bool())
 
-val inst_done   = Input(Bool())
 val inst_req    = Output(Bool())
 val inst_addr   = Output(UInt(AXI_Addr_Width.W))
 }
@@ -211,7 +210,7 @@ switch(write_state){
 // Core part for inst read
   imem.inst_ready := (read_state === r_inst_done)
   imem.inst_read  := out.r.bits.data
-  imem.inst_done  := out.r.bits.last // last inst is done, can do pc:= nxt_pc
+
 
 // Core part for data read
   dmem.data_ready := (read_state === r_data_done) || (write_state === w_data_done )
