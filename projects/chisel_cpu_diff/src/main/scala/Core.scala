@@ -26,7 +26,7 @@ when(!stall && !kill_stage && io.imem.inst_ready) {if_reg_pc  := if_reg_pc + 4.U
 .elsewhen(stall && io.imem.inst_ready)            {if_reg_pc := if_reg_pc}
 .elsewhen(kill_stage && io.imem.inst_ready)       {if_reg_pc  := exe_pc_nxt}
 
-when(!stall && !kill_stage && io.imem.inst_ready){ io.imem.inst_req   := true.B  }
+when(!stall && !kill_stage){ io.imem.inst_req   := true.B  }
 .otherwise                                       { io.imem.inst_req   := false.B }
 
 io.imem.inst_addr  := if_reg_pc
