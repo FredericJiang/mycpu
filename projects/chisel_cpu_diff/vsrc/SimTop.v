@@ -1957,9 +1957,9 @@ module Core(
   reg [63:0] wb_reg_intrpt_no; // @[PipelineReg.scala 114:32]
   wire  kill_stage = nxt_pc_io_pc_jmp; // @[PipelineReg.scala 116:23 Core.scala 239:13]
   wire  _T_2 = ~stall & ~kill_stage; // @[Core.scala 26:13]
-  wire [31:0] _if_reg_pc_T_1 = if_reg_pc + 32'h4; // @[Core.scala 26:71]
-  wire [31:0] exe_pc_nxt = nxt_pc_io_pc_nxt; // @[PipelineReg.scala 117:23 Core.scala 238:13]
   reg  exe_stage_done_REG_1; // @[Core.scala 38:26]
+  wire [31:0] _if_reg_pc_T_1 = if_reg_pc + 32'h4; // @[Core.scala 26:72]
+  wire [31:0] exe_pc_nxt = nxt_pc_io_pc_nxt; // @[PipelineReg.scala 117:23 Core.scala 238:13]
   wire [31:0] if_inst = io_imem_inst_ready ? io_imem_inst_read : 32'h0; // @[Core.scala 35:25 Core.scala 35:34]
   reg  exe_stage_done_REG; // @[Core.scala 38:34]
   wire [63:0] _GEN_7 = _T & kill_stage ? 64'hffffffffffffffff : {{32'd0}, id_reg_pc}; // @[Core.scala 47:33 Core.scala 48:14]
@@ -2302,11 +2302,11 @@ module Core(
     end
     if (reset) begin // @[PipelineReg.scala 14:33]
       if_reg_pc <= 32'h80000000; // @[PipelineReg.scala 14:33]
-    end else if (~stall & ~kill_stage & io_imem_inst_ready) begin // @[Core.scala 26:46]
-      if_reg_pc <= _if_reg_pc_T_1; // @[Core.scala 26:58]
-    end else if (!(stall & io_imem_inst_ready)) begin // @[Core.scala 27:46]
-      if (kill_stage & io_imem_inst_ready) begin // @[Core.scala 28:46]
-        if_reg_pc <= exe_pc_nxt; // @[Core.scala 28:58]
+    end else if (~stall & ~kill_stage & exe_stage_done_REG_1) begin // @[Core.scala 26:47]
+      if_reg_pc <= _if_reg_pc_T_1; // @[Core.scala 26:59]
+    end else if (!(stall & exe_stage_done_REG_1)) begin // @[Core.scala 27:47]
+      if (kill_stage & exe_stage_done_REG_1) begin // @[Core.scala 28:47]
+        if_reg_pc <= exe_pc_nxt; // @[Core.scala 28:59]
       end
     end
     if (reset) begin // @[PipelineReg.scala 20:28]
