@@ -1873,7 +1873,7 @@ module Core(
   wire [63:0] dt_cs_sscratch; // @[Core.scala 494:21]
   wire [63:0] dt_cs_mideleg; // @[Core.scala 494:21]
   wire [63:0] dt_cs_medeleg; // @[Core.scala 494:21]
-  reg  reg_kill_flag; // @[Core.scala 17:28]
+  reg [9:0] reg_kill_flag; // @[Core.scala 17:29]
   reg [31:0] reg_exe_pc_nxt; // @[Core.scala 18:29]
   reg [2:0] exe_reg_mem_rtype; // @[PipelineReg.scala 30:32]
   reg [4:0] exe_reg_alu_type; // @[PipelineReg.scala 28:32]
@@ -1960,9 +1960,8 @@ module Core(
   wire  kill_stage = nxt_pc_io_pc_jmp; // @[PipelineReg.scala 116:23 Core.scala 241:13]
   wire  _T_5 = _T & ~kill_stage; // @[Core.scala 28:13]
   wire [31:0] _if_reg_pc_T_1 = if_reg_pc + 32'h4; // @[Core.scala 28:72]
-  wire  _GEN_3 = reg_kill_flag ? 1'h0 : reg_kill_flag; // @[Core.scala 29:54 Core.scala 29:100 Core.scala 17:28]
-  wire  _GEN_5 = _T & ~kill_stage & io_imem_inst_ready ? reg_kill_flag : _GEN_3; // @[Core.scala 28:46 Core.scala 17:28]
-  wire [31:0] if_inst = io_imem_inst_ready & reg_kill_flag ? 32'h0 : io_imem_inst_read; // @[Core.scala 35:56 Core.scala 35:65 Core.scala 36:56]
+  wire  _T_7 = reg_kill_flag == 10'h1; // @[Core.scala 29:25]
+  wire [31:0] if_inst = io_imem_inst_ready & _T_7 ? 32'h0 : io_imem_inst_read; // @[Core.scala 35:56 Core.scala 35:65 Core.scala 36:56]
   wire [63:0] _GEN_9 = _T & kill_stage ? 64'hffffffffffffffff : {{32'd0}, id_reg_pc}; // @[Core.scala 48:33 Core.scala 49:14]
   wire [63:0] _GEN_11 = _T_5 ? {{32'd0}, if_reg_pc} : _GEN_9; // @[Core.scala 44:29 Core.scala 45:14]
   wire [63:0] _GEN_13 = io_imem_inst_ready ? _GEN_11 : 64'h0; // @[Core.scala 43:20 Core.scala 58:14]
@@ -2006,7 +2005,6 @@ module Core(
   wire  _T_36 = exe_alu_out == 64'h2004000; // @[Core.scala 197:13]
   wire  _T_37 = exe_alu_out == 64'h200bff8 | _T_36; // @[Core.scala 196:30]
   wire  clint_en = exe_reg_dmem_en & _T_37; // @[Core.scala 195:22]
-  wire  _GEN_49 = kill_stage | _GEN_5; // @[Core.scala 245:17 Core.scala 245:32]
   wire  _mem_reg_dmem_wen_T = ~clint_en; // @[Core.scala 254:44]
   wire [63:0] mem_dmem_addr = mem_reg_dmem_en ? mem_reg_alu_out : 64'h0; // @[Core.scala 308:22 Core.scala 308:37 Core.scala 309:37]
   wire  _T_43 = mem_reg_rs2_addr == wb_reg_rd_addr; // @[Core.scala 327:24]
@@ -2174,7 +2172,7 @@ module Core(
     .mideleg(dt_cs_mideleg),
     .medeleg(dt_cs_medeleg)
   );
-  assign io_imem_inst_req = ~stall & ~reg_kill_flag; // @[Core.scala 25:13]
+  assign io_imem_inst_req = ~stall & reg_kill_flag == 10'h0; // @[Core.scala 25:13]
   assign io_imem_inst_addr = if_reg_pc; // @[Core.scala 33:20]
   assign io_dmem_data_req_r = mem_reg_dmem_en & ~mem_reg_dmem_wen; // @[Core.scala 313:40]
   assign io_dmem_data_req_w = mem_reg_dmem_wen; // @[Core.scala 314:21]
@@ -2272,10 +2270,14 @@ module Core(
   assign dt_cs_mideleg = 64'h0; // @[Core.scala 513:29]
   assign dt_cs_medeleg = 64'h0; // @[Core.scala 514:29]
   always @(posedge clock) begin
-    if (reset) begin // @[Core.scala 17:28]
-      reg_kill_flag <= 1'h0; // @[Core.scala 17:28]
-    end else begin
-      reg_kill_flag <= _GEN_49;
+    if (reset) begin // @[Core.scala 17:29]
+      reg_kill_flag <= 10'h0; // @[Core.scala 17:29]
+    end else if (kill_stage) begin // @[Core.scala 245:17]
+      reg_kill_flag <= 10'h1; // @[Core.scala 245:32]
+    end else if (!(_T & ~kill_stage & io_imem_inst_ready)) begin // @[Core.scala 28:46]
+      if (reg_kill_flag == 10'h1) begin // @[Core.scala 29:54]
+        reg_kill_flag <= 10'h0; // @[Core.scala 29:100]
+      end
     end
     if (reset) begin // @[Core.scala 18:29]
       reg_exe_pc_nxt <= 32'h0; // @[Core.scala 18:29]
@@ -2316,7 +2318,7 @@ module Core(
       if_reg_pc <= 32'h80000000; // @[PipelineReg.scala 14:33]
     end else if (_T & ~kill_stage & io_imem_inst_ready) begin // @[Core.scala 28:46]
       if_reg_pc <= _if_reg_pc_T_1; // @[Core.scala 28:59]
-    end else if (reg_kill_flag) begin // @[Core.scala 29:54]
+    end else if (reg_kill_flag == 10'h1) begin // @[Core.scala 29:54]
       if_reg_pc <= reg_exe_pc_nxt; // @[Core.scala 29:67]
     end
     if (reset) begin // @[PipelineReg.scala 20:28]
@@ -2708,7 +2710,7 @@ initial begin
     `endif
 `ifdef RANDOMIZE_REG_INIT
   _RAND_0 = {1{`RANDOM}};
-  reg_kill_flag = _RAND_0[0:0];
+  reg_kill_flag = _RAND_0[9:0];
   _RAND_1 = {1{`RANDOM}};
   reg_exe_pc_nxt = _RAND_1[31:0];
   _RAND_2 = {1{`RANDOM}};

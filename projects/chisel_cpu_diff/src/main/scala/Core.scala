@@ -14,7 +14,7 @@ class Core extends Module {
 
 val stall = Wire(Bool())
   stall    := false.B
-val reg_kill_flag = RegInit(0.U(1.W))
+val reg_kill_flag  = RegInit(0.U(10.W))
 val reg_exe_pc_nxt = RegInit(0.U(32.W))
 //********************************************************
 //Instruction Fetch Stage
