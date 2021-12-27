@@ -49,7 +49,11 @@ id_reg_inst  := BUBBLE
 id_reg_pc    := id_reg_pc
 id_reg_inst  := id_reg_inst 
 
-}}
+}}.otherwise{
+id_reg_pc    := 0.U
+id_reg_inst  := BUBBLE
+
+}
 
 //*******************************************************************
 //Decode Instruction Stage
