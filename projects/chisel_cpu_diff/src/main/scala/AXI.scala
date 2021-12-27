@@ -167,7 +167,7 @@ switch(write_state){
 */
 // Read address channel signals
   out.ar.bits.id      := 0.U 
-  out.ar.bits.addr    := r_inst_addr
+  out.ar.bits.addr    := imem.inst_addr
   out.ar.bits.len     := "b000".U //every burst transfer 1 data
   out.ar.bits.size    := "b011".U //every clock transfer 8 bytes
   out.ar.bits.burst   := "b01".U  
