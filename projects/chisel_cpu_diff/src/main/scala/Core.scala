@@ -274,8 +274,8 @@ mem_reg_dmem_en     := false.B
 
 }
 
-
-
+when(!exe_call_stall && !exe_reg_stall) //非stall时接受
+{
 mem_reg_pc          := exe_reg_pc
 mem_reg_inst        := exe_reg_inst
 
@@ -308,7 +308,7 @@ mem_reg_intrpt_no   := csr.io.intrpt_no
 mem_reg_clint_en    := clint_en
 mem_reg_csr_rd_wen  := csr.io.rd_wen
 mem_reg_csr_rd_data := csr.io.out 
-
+}
 
 
 //*******************************************************************
