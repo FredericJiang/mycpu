@@ -344,8 +344,7 @@ mem_rd_data   := lsu.io.mem_rdata
 when(mem_reg_dmem_en && !io.dmem.data_ready){ exe_call_stall := true.B }
 .otherwise{ exe_call_stall := false.B}
 
-//when(!mem_reg_dmem_en || (mem_reg_dmem_en && io.dmem.data_ready)){ exe_stage_done := true.B}
-//.otherwise{ exe_stage_done :=false.B}
+
 // Memmory >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Write Back
 //*******************************************************************
 // signals for difftest

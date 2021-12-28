@@ -35,7 +35,7 @@ class AXI_R extends Bundle {
 class AXI_W extends Bundle {
   val id    = Output(UInt(AXI_Id_Width.W))
   val data = Output(UInt(AXI_Data_Width.W))
-  val strb = Output(UInt(2.W))
+  val strb = Output(UInt(8.W))
   val last = Output(Bool())
 }
 
