@@ -32,7 +32,7 @@ when(inst_gen_ready || if_reg_pc === "h80000000".U)      { io.imem.inst_req   :=
 
 when(!stall && !reg_kill_flag && exe_stage_done) { if_reg_pc := if_reg_pc + 4.U; inst_gen_ready:= true.B } 
 .elsewhen(reg_kill_flag && exe_stage_done)       { if_reg_pc := reg_exe_pc_nxt;  reg_kill_flag := false.B; inst_gen_ready:= true.B  }
-.elsewhen(stall && exe_stage_done)               { if_reg_pc := if_reg_pc;       inst_gen_ready:= true.B  }
+.elsewhen(stall && exe_stage_done)               { if_reg_pc := if_reg_pc;       inst_gen_ready:= false.B  }
 
 
 io.imem.inst_addr  := if_reg_pc
