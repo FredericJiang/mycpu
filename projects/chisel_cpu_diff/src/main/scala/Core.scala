@@ -56,14 +56,13 @@ id_reg_pc    := "hffffffffffffffff".U
 id_reg_inst  := BUBBLE
 
 }
-.elsewhen(stall){
-id_reg_pc    := id_reg_pc
-id_reg_inst  := id_reg_inst 
-
-}*/
+*/
 
 id_reg_pc    := if_reg_pc
 id_reg_inst  := if_inst
+}.elsewhen(stall){
+id_reg_pc    := id_reg_pc
+id_reg_inst  := id_reg_inst 
 
 }.otherwise{
 id_reg_pc    := 0.U
