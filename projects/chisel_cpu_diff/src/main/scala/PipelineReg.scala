@@ -130,6 +130,6 @@ val exe_stage_done = RegInit(false.B) //used for predict instruction
 
 val exe_call_stall = RegInit(false.B)
 val id_call_stall  = WireInit(false.B)
-
+val reg_pc_ready       = RegInit(false.B) 
 
 }
