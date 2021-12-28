@@ -340,7 +340,16 @@ mem_rd_data   := lsu.io.mem_rdata
 // Memmory >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Write Back
 //*******************************************************************
 // signals for difftest
-when(io.dmem.data_ready){
+when(mem_reg_dmem_en){
+  when(io.dmem.data_ready){
+    wb_reg_pc          := mem_reg_pc
+    wb_reg_inst        := mem_reg_inst
+  }.otherwise{
+    wb_reg_pc := 0.U
+    wb_reg_inst:=0.U
+  }
+
+}.otherwise{
 wb_reg_pc          := mem_reg_pc
 wb_reg_inst        := mem_reg_inst
 
@@ -362,7 +371,6 @@ wb_reg_csr_rd_data := mem_reg_csr_rd_data
 wb_reg_dmem_wen    := mem_reg_dmem_wen
 wb_reg_wdata       := lsu.io.dmem_wdata
 wb_reg_wdest       := mem_dmem_addr
-}
 
 //*******************************************************************
 // WB CSR REG
@@ -378,7 +386,7 @@ wb_reg_mstatus  :=  mem_reg_mstatus
 wb_reg_mepc     :=  mem_reg_mepc
 wb_reg_mcause   :=  mem_reg_mcause
 
-
+}
 
 //*******************************************************************
 //WriteBack
