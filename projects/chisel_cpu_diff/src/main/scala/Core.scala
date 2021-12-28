@@ -274,7 +274,7 @@ mem_reg_dmem_en     := false.B
 
 }
 
-when(!exe_call_stall && !exe_reg_stall) //非stall时接受
+when(!exe_call_stall && !exe_reg_stall) //非stall时接受exe级数据，否则默认保持
 {
 mem_reg_pc          := exe_reg_pc
 mem_reg_inst        := exe_reg_inst
@@ -343,6 +343,7 @@ when((mem_reg_rs2_addr === wb_reg_rd_addr)
 
 // LD instruction Data Path
 mem_rd_data   := lsu.io.mem_rdata
+val mem_reg_rd_data = mem_rd_data 
 when(mem_reg_dmem_en && !io.dmem.data_ready) { exe_reg_stall := true.B ;  exe_call_stall:= true.B }
 .elsewhen(io.dmem.data_ready)                { exe_reg_stall := false.B ; }
 
@@ -363,7 +364,7 @@ wb_reg_rs1_data    := mem_reg_rs1_data //used for print
 
 wb_reg_rd_addr     := mem_reg_rd_addr
 wb_reg_rd_wen      := mem_reg_rd_wen
-wb_reg_rd_data     := mem_rd_data
+wb_reg_rd_data     := mem_reg_rd_data
 wb_reg_csr_rd_data := mem_reg_csr_rd_data
 
 
