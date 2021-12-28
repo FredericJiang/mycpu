@@ -2503,50 +2503,50 @@ module Core(
     end
     if (reset) begin // @[PipelineReg.scala 79:32]
       wb_reg_pc <= 32'h0; // @[PipelineReg.scala 79:32]
-    end else if (_T_2) begin // @[Core.scala 353:13]
+    end else if (~exe_call_stall) begin // @[Core.scala 353:22]
       wb_reg_pc <= mem_reg_pc; // @[Core.scala 354:20]
     end
     if (reset) begin // @[PipelineReg.scala 80:32]
       wb_reg_inst <= 64'h0; // @[PipelineReg.scala 80:32]
-    end else if (_T_2) begin // @[Core.scala 353:13]
+    end else if (~exe_call_stall) begin // @[Core.scala 353:22]
       wb_reg_inst <= mem_reg_inst; // @[Core.scala 355:20]
     end
     if (reset) begin // @[PipelineReg.scala 82:32]
       wb_reg_mem_rtype <= 3'h0; // @[PipelineReg.scala 82:32]
-    end else if (_T_2) begin // @[Core.scala 353:13]
+    end else if (~exe_call_stall) begin // @[Core.scala 353:22]
       wb_reg_mem_rtype <= mem_reg_mem_rtype; // @[Core.scala 358:20]
     end
     if (reset) begin // @[PipelineReg.scala 83:32]
       wb_reg_alu_type <= 5'h0; // @[PipelineReg.scala 83:32]
-    end else if (_T_2) begin // @[Core.scala 353:13]
+    end else if (~exe_call_stall) begin // @[Core.scala 353:22]
       wb_reg_alu_type <= mem_reg_alu_type; // @[Core.scala 357:20]
     end
     if (reset) begin // @[PipelineReg.scala 84:32]
       wb_reg_csr_type <= 3'h0; // @[PipelineReg.scala 84:32]
-    end else if (_T_2) begin // @[Core.scala 353:13]
+    end else if (~exe_call_stall) begin // @[Core.scala 353:22]
       wb_reg_csr_type <= mem_reg_csr_type; // @[Core.scala 359:20]
     end
-    if (_T_2) begin // @[Core.scala 353:13]
+    if (~exe_call_stall) begin // @[Core.scala 353:22]
       wb_reg_alu_out <= mem_reg_alu_out; // @[Core.scala 361:20]
     end
-    if (_T_2) begin // @[Core.scala 353:13]
+    if (~exe_call_stall) begin // @[Core.scala 353:22]
       wb_reg_rd_data <= mem_rd_data; // @[Core.scala 366:20]
     end
-    if (_T_2) begin // @[Core.scala 353:13]
+    if (~exe_call_stall) begin // @[Core.scala 353:22]
       wb_reg_rd_wen <= mem_reg_rd_wen; // @[Core.scala 365:20]
     end
     if (reset) begin // @[PipelineReg.scala 88:32]
       wb_reg_rd_addr <= 64'h0; // @[PipelineReg.scala 88:32]
-    end else if (_T_2) begin // @[Core.scala 353:13]
+    end else if (~exe_call_stall) begin // @[Core.scala 353:22]
       wb_reg_rd_addr <= mem_reg_rd_addr; // @[Core.scala 364:20]
     end
-    if (_T_2) begin // @[Core.scala 353:13]
+    if (~exe_call_stall) begin // @[Core.scala 353:22]
       wb_reg_rs1_data <= mem_reg_rs1_data; // @[Core.scala 362:20]
     end
     wb_reg_csr_rd_wen <= mem_reg_csr_rd_wen; // @[Core.scala 380:20]
     if (reset) begin // @[PipelineReg.scala 94:33]
       wb_reg_csr_rd_data <= 64'h0; // @[PipelineReg.scala 94:33]
-    end else if (_T_2) begin // @[Core.scala 353:13]
+    end else if (~exe_call_stall) begin // @[Core.scala 353:22]
       wb_reg_csr_rd_data <= mem_reg_csr_rd_data; // @[Core.scala 367:20]
     end
     if (reset) begin // @[PipelineReg.scala 95:31]

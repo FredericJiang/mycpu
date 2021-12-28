@@ -350,7 +350,7 @@ when(mem_reg_dmem_en && !io.dmem.data_ready) { exe_call_stall := true.B  }
 // Memmory >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Write Back
 //*******************************************************************
 // signals for difftest
-when(!stall){
+when(!exe_call_stall){
 wb_reg_pc          := mem_reg_pc
 wb_reg_inst        := mem_reg_inst
 
