@@ -1747,15 +1747,14 @@ module Core(
   reg [31:0] _RAND_74;
   reg [31:0] _RAND_75;
   reg [31:0] _RAND_76;
-  reg [31:0] _RAND_77;
-  reg [63:0] _RAND_78;
-  reg [31:0] _RAND_79;
+  reg [63:0] _RAND_77;
+  reg [31:0] _RAND_78;
+  reg [63:0] _RAND_79;
   reg [63:0] _RAND_80;
   reg [63:0] _RAND_81;
   reg [63:0] _RAND_82;
   reg [63:0] _RAND_83;
-  reg [63:0] _RAND_84;
-  reg [31:0] _RAND_85;
+  reg [31:0] _RAND_84;
 `endif // RANDOMIZE_REG_INIT
   wire [31:0] decode_io_inst; // @[Core.scala 78:20]
   wire [4:0] decode_io_alu_type; // @[Core.scala 78:20]
@@ -1951,8 +1950,8 @@ module Core(
   reg  reg_kill_flag; // @[PipelineReg.scala 124:29]
   reg [31:0] reg_exe_pc_nxt; // @[PipelineReg.scala 125:29]
   reg  exe_stage_done; // @[PipelineReg.scala 129:29]
-  reg  exe_call_stall; // @[PipelineReg.scala 131:29]
   reg  reg_pc_ready; // @[PipelineReg.scala 133:33]
+  wire  exe_call_stall = mem_reg_dmem_en & ~io_dmem_data_ready; // @[Core.scala 346:22]
   wire [4:0] id_rs2_addr = id_reg_inst[24:20]; // @[Core.scala 75:30]
   wire [63:0] _GEN_89 = {{59'd0}, id_rs2_addr}; // @[Core.scala 134:20]
   wire  _T_18 = id_rs2_addr != 5'h0; // @[Core.scala 134:51]
@@ -2022,8 +2021,6 @@ module Core(
   wire  _mem_reg_dmem_wen_T = ~clint_en; // @[Core.scala 266:44]
   wire [63:0] mem_dmem_addr = mem_reg_dmem_en ? mem_reg_alu_out : 64'h0; // @[Core.scala 321:22 Core.scala 321:37 Core.scala 322:37]
   wire  _T_40 = mem_reg_rs2_addr == wb_reg_rd_addr; // @[Core.scala 340:24]
-  wire  _GEN_61 = io_dmem_data_ready ? 1'h0 : exe_call_stall; // @[Core.scala 347:46 Core.scala 347:63 PipelineReg.scala 131:29]
-  wire  _GEN_62 = mem_reg_dmem_en & ~io_dmem_data_ready | _GEN_61; // @[Core.scala 346:46 Core.scala 346:63]
   wire  _T_46 = wb_reg_alu_type == 5'h14; // @[Core.scala 418:22]
   reg  dt_valid; // @[Core.scala 446:23]
   reg  skip; // @[Core.scala 448:19]
@@ -2653,11 +2650,6 @@ module Core(
     end else begin
       exe_stage_done <= exe_stage_done_REG_1; // @[Core.scala 42:16]
     end
-    if (reset) begin // @[PipelineReg.scala 131:29]
-      exe_call_stall <= 1'h0; // @[PipelineReg.scala 131:29]
-    end else begin
-      exe_call_stall <= _GEN_62;
-    end
     if (reset) begin // @[PipelineReg.scala 133:33]
       reg_pc_ready <= 1'h0; // @[PipelineReg.scala 133:33]
     end else begin
@@ -2899,35 +2891,33 @@ initial begin
   _RAND_70 = {1{`RANDOM}};
   exe_stage_done = _RAND_70[0:0];
   _RAND_71 = {1{`RANDOM}};
-  exe_call_stall = _RAND_71[0:0];
+  reg_pc_ready = _RAND_71[0:0];
   _RAND_72 = {1{`RANDOM}};
-  reg_pc_ready = _RAND_72[0:0];
+  exe_stage_done_REG = _RAND_72[0:0];
   _RAND_73 = {1{`RANDOM}};
-  exe_stage_done_REG = _RAND_73[0:0];
+  exe_stage_done_REG_1 = _RAND_73[0:0];
   _RAND_74 = {1{`RANDOM}};
-  exe_stage_done_REG_1 = _RAND_74[0:0];
+  dt_valid = _RAND_74[0:0];
   _RAND_75 = {1{`RANDOM}};
-  dt_valid = _RAND_75[0:0];
+  skip = _RAND_75[0:0];
   _RAND_76 = {1{`RANDOM}};
-  skip = _RAND_76[0:0];
-  _RAND_77 = {1{`RANDOM}};
-  dt_ic_io_pc_REG = _RAND_77[31:0];
-  _RAND_78 = {2{`RANDOM}};
-  dt_ic_io_instr_REG = _RAND_78[63:0];
-  _RAND_79 = {1{`RANDOM}};
-  dt_ic_io_wen_REG = _RAND_79[0:0];
+  dt_ic_io_pc_REG = _RAND_76[31:0];
+  _RAND_77 = {2{`RANDOM}};
+  dt_ic_io_instr_REG = _RAND_77[63:0];
+  _RAND_78 = {1{`RANDOM}};
+  dt_ic_io_wen_REG = _RAND_78[0:0];
+  _RAND_79 = {2{`RANDOM}};
+  dt_ic_io_wdata_REG = _RAND_79[63:0];
   _RAND_80 = {2{`RANDOM}};
-  dt_ic_io_wdata_REG = _RAND_80[63:0];
+  dt_ic_io_wdest_REG = _RAND_80[63:0];
   _RAND_81 = {2{`RANDOM}};
-  dt_ic_io_wdest_REG = _RAND_81[63:0];
+  cycle_cnt = _RAND_81[63:0];
   _RAND_82 = {2{`RANDOM}};
-  cycle_cnt = _RAND_82[63:0];
+  instr_cnt = _RAND_82[63:0];
   _RAND_83 = {2{`RANDOM}};
-  instr_cnt = _RAND_83[63:0];
-  _RAND_84 = {2{`RANDOM}};
-  dt_ae_io_intrNO_REG = _RAND_84[63:0];
-  _RAND_85 = {1{`RANDOM}};
-  dt_ae_io_exceptionPC_REG = _RAND_85[31:0];
+  dt_ae_io_intrNO_REG = _RAND_83[63:0];
+  _RAND_84 = {1{`RANDOM}};
+  dt_ae_io_exceptionPC_REG = _RAND_84[31:0];
 `endif // RANDOMIZE_REG_INIT
   `endif // RANDOMIZE
 end // initial

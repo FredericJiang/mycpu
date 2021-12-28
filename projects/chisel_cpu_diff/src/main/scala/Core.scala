@@ -343,8 +343,8 @@ when((mem_reg_rs2_addr === wb_reg_rd_addr)
 
 // LD instruction Data Path
 mem_rd_data   := lsu.io.mem_rdata
-when(mem_reg_dmem_en && !io.dmem.data_ready) { exe_call_stall := true.B  }
-.elsewhen(io.dmem.data_ready)                { exe_call_stall := false.B }
+when(mem_reg_dmem_en && !io.dmem.data_ready) { exe_call_stall := true.B ;   }
+.elsewhen(io.dmem.data_ready)                { exe_call_stall := false.B ; }
 
 
 // Memmory >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Write Back
