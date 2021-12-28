@@ -17,10 +17,10 @@ class Core extends Module {
 //Instruction Fetch Stage
 
 
-//when(exe_call_stall || id_call_stall)        { stall:= true.B  }
-//.elsewhen(!exe_call_stall && !id_call_stall) { stall:= false.B }
+//when(exe_reg_stall || id_call_stall)        { stall:= true.B  }
+//.elsewhen(!exe_reg_stall && !id_call_stall) { stall:= false.B }
 
-stall := exe_call_stall || id_call_stall
+stall := exe_reg_stall || id_call_stall
 //Signal Clarify
 //inst_gen_ready === exe_stage_done
 //indt_req -> reg_pc = ar.addr
@@ -343,14 +343,14 @@ when((mem_reg_rs2_addr === wb_reg_rd_addr)
 
 // LD instruction Data Path
 mem_rd_data   := lsu.io.mem_rdata
-when(mem_reg_dmem_en && !io.dmem.data_ready) { exe_call_stall := true.B ;   }
-.elsewhen(io.dmem.data_ready)                { exe_call_stall := false.B ; }
+when(mem_reg_dmem_en && !io.dmem.data_ready) { exe_reg_stall := true.B ;  exe_call_stall:= true.B }
+.elsewhen(io.dmem.data_ready)                { exe_reg_stall := false.B ; }
 
 
 // Memmory >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Write Back
 //*******************************************************************
 // signals for difftest
-when(!exe_call_stall){
+when(!exe_reg_stall && !exe_call_stall){
 wb_reg_pc          := mem_reg_pc
 wb_reg_inst        := mem_reg_inst
 
