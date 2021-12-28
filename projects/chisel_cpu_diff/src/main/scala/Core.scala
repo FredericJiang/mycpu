@@ -275,6 +275,7 @@ mem_reg_dmem_en     := false.B
 }
 
 
+
 mem_reg_pc          := exe_reg_pc
 mem_reg_inst        := exe_reg_inst
 
@@ -349,7 +350,7 @@ when(mem_reg_dmem_en && !io.dmem.data_ready) { exe_call_stall := true.B  }
 // Memmory >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Write Back
 //*******************************************************************
 // signals for difftest
-
+when(!stall){
 wb_reg_pc          := mem_reg_pc
 wb_reg_inst        := mem_reg_inst
 
@@ -371,7 +372,7 @@ wb_reg_csr_rd_data := mem_reg_csr_rd_data
 wb_reg_dmem_wen    := mem_reg_dmem_wen
 wb_reg_wdata       := lsu.io.dmem_wdata
 wb_reg_wdest       := mem_dmem_addr
-
+}
 //*******************************************************************
 // WB CSR REG
 wb_reg_intrpt      :=  mem_reg_intrpt
