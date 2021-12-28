@@ -319,7 +319,7 @@ when(mem_reg_dmem_en){mem_dmem_addr := mem_reg_alu_out}
 io.dmem.data_req_r  := mem_reg_dmem_en && !mem_reg_dmem_wen
 io.dmem.data_req_w  := mem_reg_dmem_wen
 io.dmem.data_addr   := mem_dmem_addr
-io.dmem.data_strb   := lsu.io.dmem_wmask
+io.dmem.data_strb   := lsu.io.dmem_strb
 io.dmem.data_write  := lsu.io.dmem_wdata
 
 when(io.dmem.data_ready){lsu.io.dmem_rdata  := io.dmem.data_read}

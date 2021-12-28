@@ -160,10 +160,8 @@ switch(write_state){
 
    is(w_data_done)  { write_state := w_idle       }
 }
-/*
-  val axi_addr  = Mux(read_state === r_inst_addr, imem.inst_addr , 
-                  Mux(read_state === r_data_addr, dmem.data_addr, 0.U))  
-*/
+
+
 // Read address channel signals
   out.ar.bits.id     := 0.U 
   out.ar.bits.addr   := imem.inst_addr

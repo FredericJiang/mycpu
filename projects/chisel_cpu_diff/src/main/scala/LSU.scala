@@ -16,7 +16,7 @@ val rs2_data     = Input(UInt(64.W))
 val mem_rdata    = Output(UInt(64.W))
 val dmem_wmask   = Output(UInt(64.W))
 val dmem_wdata   = Output(UInt(64.W))
-
+val dmem_strb    = Output(UInt(4.W))
 })
 
 val dmem_addr  = io.dmem_addr
@@ -25,12 +25,12 @@ val rs2_data   = io.rs2_data
 val mem_rdata  = WireInit(0.U(64.W))
 val dmem_wmask = WireInit(0.U(64.W))
 val dmem_wdata = WireInit(0.U(64.W))
-
+val dmem_strb  = WireInit(0.U(8.W))
 
 io.mem_rdata  := mem_rdata
 io.dmem_wmask := dmem_wmask
 io.dmem_wdata := dmem_wdata
-
+io.dmem_strb  := dmem_strb
 
 
 // Load Data From Memory
@@ -112,27 +112,35 @@ when(io.wb_type === WB_MEM_B){
 //sb
 when(dmem_addr(2,0)==="b000".U){
 dmem_wmask := "h00000000000000ff".U
+dmem_strb  := "b00000001".U
 dmem_wdata:= Cat(Fill(56, 0.U),rs2_data(7,0))
 }.elsewhen(dmem_addr(2,0)==="b001".U){
 dmem_wmask := "h000000000000ff00".U
+dmem_strb  := "b00000010".U
 dmem_wdata:= Cat(Fill(48, 0.U),rs2_data(7,0),Fill(8,0.U))
 }.elsewhen(dmem_addr(2,0)==="b010".U){
 dmem_wmask := "h0000000000ff0000".U
+dmem_strb  := "b00000100".U
 dmem_wdata:= Cat(Fill(40, 0.U),rs2_data(7,0),Fill(16,0.U))
 }.elsewhen(dmem_addr(2,0)==="b011".U){
 dmem_wmask := "h00000000ff000000".U
+dmem_strb  := "b00001000".U
 dmem_wdata:= Cat(Fill(32, 0.U),rs2_data(7,0),Fill(24,0.U))
 }.elsewhen(dmem_addr(2,0)==="b100".U){
 dmem_wmask := "h000000ff00000000".U
+dmem_strb  := "b00010000".U
 dmem_wdata:= Cat(Fill(24, 0.U),rs2_data(7,0),Fill(32,0.U))
 }.elsewhen(dmem_addr(2,0)==="b101".U){
 dmem_wmask := "h0000ff0000000000".U
+dmem_strb  := "b00100000".U
 dmem_wdata:= Cat(Fill(16, 0.U),rs2_data(7,0),Fill(40,0.U))
 }.elsewhen(dmem_addr(2,0)==="b110".U){
 dmem_wmask := "h00ff000000000000".U
+dmem_strb  := "b01000000".U
 dmem_wdata:= Cat(Fill(8, 0.U),rs2_data(7,0),Fill(48,0.U))
 }.elsewhen(dmem_addr(2,0)==="b111".U){
 dmem_wmask := "hff00000000000000".U
+dmem_strb  := "b10000000".U
 dmem_wdata:= Cat(rs2_data(7,0),Fill(56,0.U))
 }
 
@@ -140,15 +148,19 @@ dmem_wdata:= Cat(rs2_data(7,0),Fill(56,0.U))
 //sh
 when(dmem_addr(2,1)==="b00".U){
 dmem_wmask := "h000000000000ffff".U
+dmem_strb  := "b00000011".U
 dmem_wdata:= Cat(Fill(48, 0.U),rs2_data(15,0))
 }.elsewhen(dmem_addr(2,1)==="b01".U){
 dmem_wmask := "h00000000ffff0000".U
+dmem_strb  := "b00001100".U
 dmem_wdata:= Cat(Fill(32, 0.U),rs2_data(15,0),Fill(16,0.U))
 }.elsewhen(dmem_addr(2,1)==="b10".U){
 dmem_wmask := "h0000ffff00000000".U
+dmem_strb  := "b00110000".U
 dmem_wdata:= Cat(Fill(16, 0.U),rs2_data(15,0),Fill(32,0.U))
 }.elsewhen(dmem_addr(2,1)==="b11".U){
 dmem_wmask := "hffff000000000000".U
+dmem_strb  := "b11000000".U
 dmem_wdata:= Cat(rs2_data(15,0),Fill(48,0.U))
 }  
 
@@ -158,9 +170,11 @@ dmem_wdata:= Cat(rs2_data(15,0),Fill(48,0.U))
 
 when(dmem_addr(2)==="b0".U){
 dmem_wmask := "h00000000ffffffff".U
+dmem_strb  := "b00001111".U
 dmem_wdata:= Cat(Fill(32, 0.U),rs2_data(31,0))
 }.elsewhen(dmem_addr(2)==="b1".U){
 dmem_wmask := "hffffffff00000000".U
+dmem_strb  := "b11110000".U
 dmem_wdata:= Cat(rs2_data(31,0),Fill(32, 0.U))}
 
 
@@ -168,6 +182,7 @@ dmem_wdata:= Cat(rs2_data(31,0),Fill(32, 0.U))}
 }.elsewhen(io.wb_type === WB_MEM_D){
 //sd
 dmem_wmask :="hffffffffffffffff".U
+dmem_strb  := "b11111111".U
 dmem_wdata:= rs2_data
 }
 
