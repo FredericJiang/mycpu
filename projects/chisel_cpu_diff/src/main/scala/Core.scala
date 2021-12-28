@@ -16,7 +16,12 @@ class Core extends Module {
 //********************************************************
 //Instruction Fetch Stage
 val inst_gen_ready = WireInit(false.B)  
-val exe_stage_done = RegInit(false.B)
+val exe_stage_done = RegInit(false.B) //used for predict instruction
+
+val exe_call_stall = RegInit(false.B)
+val id_call_stall  = WireInit(false.B)
+
+stall := exe_call_stall || id_call_stall
 
 //Signal Clarify
 //inst_gen_ready === exe_stage_done
@@ -130,7 +135,7 @@ val id_op2 =  MuxCase( regfile.io.rs2_data , Array(
 //generate a bubble
 when((exe_reg_mem_rtype =/= MEM_X || exe_reg_alu_type === ALU_COPY2 ) && 
 ( (exe_reg_rd_addr === id_rs2_addr  && id_rs2_addr=/= 0.U && decode.io.op2_type === OP_REG) || (exe_reg_rd_addr === id_rs1_addr && id_rs1_addr=/= 0.U && decode.io.op1_type === OP_REG)))
-{ stall := true.B }.otherwise{ stall := false.B }
+{ id_call_stall := true.B }.otherwise{ id_call_stall := false.B }
 
 
 
@@ -336,6 +341,8 @@ when((mem_reg_rs2_addr === wb_reg_rd_addr)
 
 // LD instruction Data Path
 mem_rd_data   := lsu.io.mem_rdata
+when(mem_reg_dmem_en && !io.dmem.data_ready){ exe_call_stall := true.B }
+.otherwise{ exe_call_stall := false.B}
 
 //when(!mem_reg_dmem_en || (mem_reg_dmem_en && io.dmem.data_ready)){ exe_stage_done := true.B}
 //.otherwise{ exe_stage_done :=false.B}
