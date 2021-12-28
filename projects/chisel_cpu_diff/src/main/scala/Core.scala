@@ -17,9 +17,10 @@ class Core extends Module {
 //Instruction Fetch Stage
 
 
-when(exe_call_stall || id_call_stall)        { stall:= true.B  }
-.elsewhen(!exe_call_stall && !id_call_stall) { stall:= false.B }
+//when(exe_call_stall || id_call_stall)        { stall:= true.B  }
+//.elsewhen(!exe_call_stall && !id_call_stall) { stall:= false.B }
 
+stall := exe_call_stall || id_call_stall
 //Signal Clarify
 //inst_gen_ready === exe_stage_done
 //indt_req -> reg_pc = ar.addr

@@ -120,7 +120,7 @@ val mem_rd_data = Wire(UInt(64.W))
 val wb_rd_data = Wire(UInt(64.W))
 
 
-val stall = RegInit(false.B)
+val stall = WireInit(false.B)
 val reg_kill_flag  = RegInit(false.B)
 val reg_exe_pc_nxt = RegInit(0.U(32.W))
 val if_inst        = WireInit(0.U(32.W))
