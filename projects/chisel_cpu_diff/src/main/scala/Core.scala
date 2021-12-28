@@ -18,8 +18,10 @@ class Core extends Module {
 val inst_gen_ready = WireInit(false.B)  
 val exe_stage_done = RegInit(false.B)
 
+//Signal Clarify
 //inst_gen_ready === exe_stage_done
 //indt_req -> reg_pc = ar.addr
+
 when(inst_gen_ready || if_reg_pc === "h80000000".U)      { io.imem.inst_req   := true.B  }
 .otherwise                                               { io.imem.inst_req   := false.B }
 
@@ -28,9 +30,6 @@ when(!stall && !reg_kill_flag && exe_stage_done) { if_reg_pc := if_reg_pc + 4.U;
 .elsewhen(stall && exe_stage_done)               { if_reg_pc := if_reg_pc;       inst_gen_ready:= true.B  }
 
 
-
-//when(!stall && !reg_kill_flag ){io.imem.inst_addr  := if_reg_pc}
-//.otherwise                     {io.imem.inst_addr  := 0.U}
 io.imem.inst_addr  := if_reg_pc
 
 when(io.imem.inst_ready && reg_kill_flag )     {if_inst := 0.U}
@@ -42,6 +41,7 @@ exe_stage_done := RegNext(RegNext(if_stage_done))
 // Instruction Fetch >>>>>>>> Instruction Decode
 //*******************************************************************
 when(if_stage_done){
+/*
 when(!stall && !reg_kill_flag ){
 id_reg_pc    := if_reg_pc
 id_reg_inst  := if_inst
@@ -55,7 +55,12 @@ id_reg_inst  := BUBBLE
 id_reg_pc    := id_reg_pc
 id_reg_inst  := id_reg_inst 
 
-}}.otherwise{
+}*/
+
+id_reg_pc    := if_reg_pc
+id_reg_inst  := if_inst
+
+}.otherwise{
 id_reg_pc    := 0.U
 id_reg_inst  := BUBBLE
 
