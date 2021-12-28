@@ -1747,14 +1747,15 @@ module Core(
   reg [31:0] _RAND_74;
   reg [31:0] _RAND_75;
   reg [31:0] _RAND_76;
-  reg [63:0] _RAND_77;
-  reg [31:0] _RAND_78;
-  reg [63:0] _RAND_79;
+  reg [31:0] _RAND_77;
+  reg [63:0] _RAND_78;
+  reg [31:0] _RAND_79;
   reg [63:0] _RAND_80;
   reg [63:0] _RAND_81;
   reg [63:0] _RAND_82;
   reg [63:0] _RAND_83;
-  reg [31:0] _RAND_84;
+  reg [63:0] _RAND_84;
+  reg [31:0] _RAND_85;
 `endif // RANDOMIZE_REG_INIT
   wire [31:0] decode_io_inst; // @[Core.scala 77:20]
   wire [4:0] decode_io_alu_type; // @[Core.scala 77:20]
@@ -1971,8 +1972,9 @@ module Core(
   wire  inst_gen_ready = ~stall & ~reg_kill_flag & exe_stage_done | _T_6; // @[Core.scala 31:50 Core.scala 31:96]
   wire [31:0] _if_reg_pc_T_1 = if_reg_pc + 32'h4; // @[Core.scala 31:75]
   wire [31:0] if_inst = io_imem_inst_ready & reg_kill_flag ? 32'h0 : io_imem_inst_read; // @[Core.scala 38:48 Core.scala 38:57 Core.scala 39:57]
-  reg  exe_stage_done_REG; // @[Core.scala 42:34]
-  reg  exe_stage_done_REG_1; // @[Core.scala 42:26]
+  reg  exe_stage_done_REG; // @[Core.scala 42:42]
+  reg  exe_stage_done_REG_1; // @[Core.scala 42:34]
+  reg  exe_stage_done_REG_2; // @[Core.scala 42:26]
   wire  _id_rs1_T_2 = id_rs1_addr == 5'h0 & _T_25; // @[Core.scala 96:40]
   wire  _id_rs1_T_7 = exe_reg_mem_rtype == 3'h0; // @[Core.scala 97:118]
   wire  _id_rs1_T_8 = _T_24 & exe_reg_rd_wen & exe_reg_mem_rtype == 3'h0; // @[Core.scala 97:97]
@@ -2630,15 +2632,16 @@ module Core(
     if (reset) begin // @[PipelineReg.scala 129:29]
       exe_stage_done <= 1'h0; // @[PipelineReg.scala 129:29]
     end else begin
-      exe_stage_done <= exe_stage_done_REG_1; // @[Core.scala 42:16]
+      exe_stage_done <= exe_stage_done_REG_2; // @[Core.scala 42:16]
     end
     if (reset) begin // @[PipelineReg.scala 131:29]
       exe_call_stall <= 1'h0; // @[PipelineReg.scala 131:29]
     end else begin
       exe_call_stall <= _GEN_59;
     end
-    exe_stage_done_REG <= io_imem_inst_ready; // @[Core.scala 42:34]
-    exe_stage_done_REG_1 <= exe_stage_done_REG; // @[Core.scala 42:26]
+    exe_stage_done_REG <= io_imem_inst_ready; // @[Core.scala 42:42]
+    exe_stage_done_REG_1 <= exe_stage_done_REG; // @[Core.scala 42:34]
+    exe_stage_done_REG_2 <= exe_stage_done_REG_1; // @[Core.scala 42:26]
     if (reset) begin // @[Core.scala 439:23]
       dt_valid <= 1'h0; // @[Core.scala 439:23]
     end else begin
@@ -2879,27 +2882,29 @@ initial begin
   _RAND_73 = {1{`RANDOM}};
   exe_stage_done_REG_1 = _RAND_73[0:0];
   _RAND_74 = {1{`RANDOM}};
-  dt_valid = _RAND_74[0:0];
+  exe_stage_done_REG_2 = _RAND_74[0:0];
   _RAND_75 = {1{`RANDOM}};
-  skip = _RAND_75[0:0];
+  dt_valid = _RAND_75[0:0];
   _RAND_76 = {1{`RANDOM}};
-  dt_ic_io_pc_REG = _RAND_76[31:0];
-  _RAND_77 = {2{`RANDOM}};
-  dt_ic_io_instr_REG = _RAND_77[63:0];
-  _RAND_78 = {1{`RANDOM}};
-  dt_ic_io_wen_REG = _RAND_78[0:0];
-  _RAND_79 = {2{`RANDOM}};
-  dt_ic_io_wdata_REG = _RAND_79[63:0];
+  skip = _RAND_76[0:0];
+  _RAND_77 = {1{`RANDOM}};
+  dt_ic_io_pc_REG = _RAND_77[31:0];
+  _RAND_78 = {2{`RANDOM}};
+  dt_ic_io_instr_REG = _RAND_78[63:0];
+  _RAND_79 = {1{`RANDOM}};
+  dt_ic_io_wen_REG = _RAND_79[0:0];
   _RAND_80 = {2{`RANDOM}};
-  dt_ic_io_wdest_REG = _RAND_80[63:0];
+  dt_ic_io_wdata_REG = _RAND_80[63:0];
   _RAND_81 = {2{`RANDOM}};
-  cycle_cnt = _RAND_81[63:0];
+  dt_ic_io_wdest_REG = _RAND_81[63:0];
   _RAND_82 = {2{`RANDOM}};
-  instr_cnt = _RAND_82[63:0];
+  cycle_cnt = _RAND_82[63:0];
   _RAND_83 = {2{`RANDOM}};
-  dt_ae_io_intrNO_REG = _RAND_83[63:0];
-  _RAND_84 = {1{`RANDOM}};
-  dt_ae_io_exceptionPC_REG = _RAND_84[31:0];
+  instr_cnt = _RAND_83[63:0];
+  _RAND_84 = {2{`RANDOM}};
+  dt_ae_io_intrNO_REG = _RAND_84[63:0];
+  _RAND_85 = {1{`RANDOM}};
+  dt_ae_io_exceptionPC_REG = _RAND_85[31:0];
 `endif // RANDOMIZE_REG_INIT
   `endif // RANDOMIZE
 end // initial
@@ -2990,7 +2995,7 @@ module Core2AXI(
   assign io_axi2ram_w_bits_last = 1'h1; // @[AXI.scala 198:23]
   assign io_axi2ram_b_ready = 1'h1; // @[AXI.scala 203:18]
   assign io_imem_inst_read = _T_12 == 4'h0 ? io_axi2ram_r_bits_data[31:0] : {{2'd0}, io_axi2ram_r_bits_data[61:32]}; // @[AXI.scala 212:39 AXI.scala 212:57 AXI.scala 213:57]
-  assign io_imem_inst_ready = read_state == 3'h3; // @[AXI.scala 208:34]
+  assign io_imem_inst_ready = r_hs & io_axi2ram_r_bits_last; // @[AXI.scala 112:23]
   assign io_dmem_data_read = io_axi2ram_r_bits_data; // @[AXI.scala 219:19]
   assign io_dmem_data_ready = read_state == 3'h6 | write_state == 3'h4; // @[AXI.scala 218:51]
   always @(posedge clock) begin

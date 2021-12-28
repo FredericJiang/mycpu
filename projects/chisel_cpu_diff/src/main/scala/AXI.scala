@@ -205,7 +205,7 @@ switch(write_state){
 
 
 // Core part for inst read
-  imem.inst_ready := (read_state === r_inst_done)
+  imem.inst_ready := r_done
 
 
 //need to aligned the fetched data  

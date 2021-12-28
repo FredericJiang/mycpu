@@ -39,7 +39,7 @@ when(io.imem.inst_ready && reg_kill_flag )     {if_inst := 0.U}
 .otherwise                                     {if_inst := io.imem.inst_read}
 
 if_stage_done := io.imem.inst_ready //AXI read_state = r_inst_done
-exe_stage_done := RegNext(RegNext(if_stage_done)) //used to wait the right instruction
+exe_stage_done := RegNext(RegNext(RegNext(if_stage_done))) //used to wait the right instruction
 
 // Instruction Fetch >>>>>>>> Instruction Decode
 //*******************************************************************
