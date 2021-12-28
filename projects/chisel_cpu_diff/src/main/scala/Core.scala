@@ -178,7 +178,7 @@ exe_reg_rd_wen    := false.B
 exe_reg_dmem_wen  := false.B
 exe_reg_dmem_en   := false.B
 
-}.elsewhen(stall){
+}.elsewhen(id_call_stall){
 exe_reg_pc        := exe_reg_pc
 exe_reg_inst      := exe_reg_inst
 
