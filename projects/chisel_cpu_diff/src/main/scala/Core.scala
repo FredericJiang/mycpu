@@ -15,13 +15,9 @@ class Core extends Module {
 
 //********************************************************
 //Instruction Fetch Stage
-val inst_gen_ready = WireInit(false.B)  
-val exe_stage_done = RegInit(false.B) //used for predict instruction
 
-val exe_call_stall = RegInit(false.B)
-val id_call_stall  = WireInit(false.B)
 
-stall := exe_call_stall || id_call_stall
+when(exe_call_stall || id_call_stall){ stall:= true.B }
 
 //Signal Clarify
 //inst_gen_ready === exe_stage_done

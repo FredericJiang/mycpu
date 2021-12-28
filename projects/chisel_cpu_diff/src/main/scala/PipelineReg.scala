@@ -125,6 +125,11 @@ val reg_kill_flag  = RegInit(false.B)
 val reg_exe_pc_nxt = RegInit(0.U(32.W))
 val if_inst        = WireInit(0.U(32.W))
 val if_stage_done  = WireInit(false.B) // AXI read_state = r_inst_done 
+val inst_gen_ready = WireInit(false.B)  
+val exe_stage_done = RegInit(false.B) //used for predict instruction
+
+val exe_call_stall = RegInit(false.B)
+val id_call_stall  = WireInit(false.B)
 
 
 }
