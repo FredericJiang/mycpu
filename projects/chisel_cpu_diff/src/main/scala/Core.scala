@@ -39,11 +39,11 @@ when(io.imem.inst_ready && reg_kill_flag )     {if_inst := 0.U}
 .otherwise                                     {if_inst := io.imem.inst_read}
 
 if_stage_done := io.imem.inst_ready //AXI read_state = r_inst_done
-exe_stage_done := RegNext(RegNext(if_stage_done))
+exe_stage_done := RegNext(RegNext(if_stage_done)) //used to wait the right instruction
 
 // Instruction Fetch >>>>>>>> Instruction Decode
 //*******************************************************************
-when(if_stage_done){
+when(if_stage_done && !stall && !reg_kill_flag){
 /*
 when(!stall && !reg_kill_flag ){
 id_reg_pc    := if_reg_pc
@@ -55,7 +55,6 @@ id_reg_inst  := BUBBLE
 
 }
 */
-
 id_reg_pc    := if_reg_pc
 id_reg_inst  := if_inst
 }.elsewhen(stall){
@@ -164,7 +163,7 @@ exe_reg_rd_wen    := (decode.io.wb_type === WB_REG)
 exe_reg_dmem_wen  := (decode.io.wb_type =/= WB_REG) && (decode.io.wb_type =/= WB_X)
 exe_reg_dmem_en   := (decode.io.mem_rtype =/= MEM_X) || ((decode.io.wb_type =/= WB_REG) && (decode.io.wb_type =/= WB_X))
 
-}.elsewhen(kill_stage || stall){
+}.elsewhen(kill_stage){
 exe_reg_pc        := "hffffffffffffffff".U
 exe_reg_inst      := BUBBLE
 
@@ -177,6 +176,10 @@ exe_reg_csr_type  := 0.U
 exe_reg_rd_wen    := false.B
 exe_reg_dmem_wen  := false.B
 exe_reg_dmem_en   := false.B
+
+}.elsewhen(stall){
+exe_reg_pc        := exe_reg_pc
+exe_reg_inst      := exe_reg_inst
 
 }
 
