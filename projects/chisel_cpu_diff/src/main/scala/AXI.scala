@@ -167,7 +167,7 @@ when(read_state === r_inst_addr)     {axi_addr:= imem.inst_addr }
 
 // Read address channel signals
   out.ar.bits.id     := 0.U 
-  out.ar.bits.addr   := imem.inst_addr
+  out.ar.bits.addr   := axi_addr
   out.ar.bits.len    := "b000".U //every burst transfer 1 data
   out.ar.bits.size   := "b011".U //every clock transfer 8 bytes
   out.ar.bits.burst  := "b01".U  
