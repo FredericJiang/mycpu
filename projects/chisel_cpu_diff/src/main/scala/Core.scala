@@ -260,17 +260,16 @@ when(kill_stage){ reg_exe_pc_nxt:= nxt_pc.io.pc_nxt; reg_kill_flag := nxt_pc.io.
 //*******************************************************************
 
 // timer inrerupt stop read and write to ram and register
-when(!csr.io.intrpt){
+when(csr.io.intrpt){
+mem_reg_rd_wen      := false.B
+mem_reg_dmem_wen    := false.B
+mem_reg_dmem_en     := false.B
+
+}.otherwise{
 
 mem_reg_rd_wen      := exe_reg_rd_wen 
 mem_reg_dmem_wen    := exe_reg_dmem_wen && !clint_en
 mem_reg_dmem_en     := exe_reg_dmem_en  && !clint_en
-
-}.otherwise{
-
-mem_reg_rd_wen      := false.B
-mem_reg_dmem_wen    := false.B
-mem_reg_dmem_en     := false.B
 
 }
 
@@ -286,6 +285,9 @@ mem_reg_wb_type     := exe_reg_wb_type
 mem_reg_csr_type    := exe_reg_csr_type
 mem_reg_alu_out     := exe_alu_out
 
+mem_reg_rd_wen      := exe_reg_rd_wen 
+mem_reg_dmem_wen    := exe_reg_dmem_wen && !clint_en
+mem_reg_dmem_en     := exe_reg_dmem_en  && !clint_en
 
 // Data Signal
 mem_reg_rs1_addr    := exe_reg_rs1_addr
