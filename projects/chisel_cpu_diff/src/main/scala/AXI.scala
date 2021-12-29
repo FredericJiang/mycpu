@@ -217,10 +217,11 @@ inst_reg_addr:= imem.inst_addr
 
 
 //need to aligned the fetched data  
+when(r_done ){
   when(inst_reg_addr % 8.U === 0.U){ imem.inst_read  := out.r.bits.data(31,0) }
 .otherwise                          { imem.inst_read  := out.r.bits.data(61,32)}
 
-
+}.otherwise{ imem.inst_read  := 0.U}
 
 // Core part for data read
   dmem.data_ready := (read_state === r_data_done) || (write_state === w_data_done )
