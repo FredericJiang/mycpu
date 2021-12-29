@@ -2016,8 +2016,6 @@ module Core(
   wire  _id_op2_T_4 = decode_io_op2_type == 3'h4; // @[Core.scala 133:39]
   wire  kill_stage = nxt_pc_io_pc_jmp; // @[PipelineReg.scala 116:23 Core.scala 261:13]
   wire  _exe_reg_dmem_wen_T_2 = decode_io_wb_type != 3'h1 & decode_io_wb_type != 3'h0; // @[Core.scala 172:53]
-  wire [63:0] _GEN_23 = kill_stage ? 64'hffffffffffffffff : {{32'd0}, exe_reg_pc}; // @[Core.scala 175:23 Core.scala 176:19]
-  wire [63:0] _GEN_33 = _T_5 & ~kill_stage ? {{32'd0}, id_reg_pc} : _GEN_23; // @[Core.scala 150:28 Core.scala 151:19]
   wire  _T_29 = exe_alu_out == 64'h2004000; // @[Core.scala 217:13]
   wire  _T_30 = exe_alu_out == 64'h200bff8 | _T_29; // @[Core.scala 216:30]
   wire  clint_en = exe_reg_dmem_en & _T_30; // @[Core.scala 215:22]
@@ -2322,8 +2320,10 @@ module Core(
     end
     if (reset) begin // @[PipelineReg.scala 25:32]
       exe_reg_pc <= 32'h0; // @[PipelineReg.scala 25:32]
-    end else begin
-      exe_reg_pc <= _GEN_33[31:0];
+    end else if (_T_5 & ~kill_stage) begin // @[Core.scala 150:28]
+      exe_reg_pc <= id_reg_pc; // @[Core.scala 151:19]
+    end else if (kill_stage) begin // @[Core.scala 175:23]
+      exe_reg_pc <= 32'h0; // @[Core.scala 176:19]
     end
     if (reset) begin // @[PipelineReg.scala 26:32]
       exe_reg_inst <= 64'h0; // @[PipelineReg.scala 26:32]
