@@ -28,9 +28,16 @@ stall := exe_reg_stall || id_call_stall
 when(inst_gen_ready || if_reg_pc === "h80000000".U)      { io.imem.inst_req   := true.B  }
 .otherwise                                               { io.imem.inst_req   := false.B }
 
-when(!stall && !reg_kill_flag && reg_pc_ready) { if_reg_pc := if_reg_pc + 4.U; inst_gen_ready:= true.B; reg_pc_ready:= false.B } 
-.elsewhen(reg_kill_flag && reg_pc_ready)       { if_reg_pc := reg_exe_pc_nxt;  reg_kill_flag := false.B; inst_gen_ready:= true.B; reg_pc_ready:= false.B  }
-.elsewhen(stall && reg_pc_ready)               { if_reg_pc := if_reg_pc;       inst_gen_ready:= false.B  }
+//when(!stall && !reg_kill_flag && reg_pc_ready) { if_reg_pc := if_reg_pc + 4.U; inst_gen_ready:= true.B; reg_pc_ready:= false.B } 
+//.elsewhen(reg_kill_flag && reg_pc_ready)       { if_reg_pc := reg_exe_pc_nxt;  reg_kill_flag := false.B; inst_gen_ready:= true.B; reg_pc_ready:= false.B  }
+//.elsewhen(stall && reg_pc_ready)               { if_reg_pc := if_reg_pc;       inst_gen_ready:= false.B  }
+
+when(reg_pc_ready){
+when(stall)             {if_reg_pc := if_reg_pc       }
+.elsewhen(reg_kill_flag) {if_reg_pc := reg_exe_pc_nxt  }
+.otherwise              {if_reg_pc := if_reg_pc + 4.U }
+}
+
 
 
 io.imem.inst_addr  := if_reg_pc
