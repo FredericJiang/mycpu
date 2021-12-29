@@ -42,8 +42,8 @@ when(stall)              {if_reg_pc := if_reg_pc; inst_gen_ready:= false.B      
 
 io.imem.inst_addr  := if_reg_pc
 
-when(io.imem.inst_ready && reg_kill_flag )     {if_inst := 0.U}
-.otherwise                                     {if_inst := io.imem.inst_read}
+when(io.imem.inst_ready && !reg_kill_flag )     {if_inst := io.imem.inst_read}
+.otherwise                                      {if_inst := 0.U}
 
 if_stage_done := io.imem.inst_ready //AXI read_state = r_inst_done
 exe_stage_done := RegNext(if_stage_done) //used to wait the right instruction
