@@ -347,7 +347,7 @@ mem_reg_rd_data:= mem_rd_data
 
 
 when(mem_reg_dmem_en && !io.dmem.data_ready) { exe_reg_stall := true.B  ;  exe_call_stall:= true.B }
-.elsewhen(io.dmem.data_ready)                { exe_reg_stall := false.B ;  exe_stop_stall:= true.B}
+.elsewhen(io.dmem.data_ready)                { exe_reg_stall := false.B ;  exe_call_stall:= false.B}
 
 
 // Memmory >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Write Back
