@@ -3050,7 +3050,7 @@ module Core2AXI(
   reg [31:0] inst_reg_addr; // @[AXI.scala 170:28]
   wire [31:0] _GEN_0 = inst_reg_addr % 32'h8; // @[AXI.scala 221:22]
   wire [3:0] _T_15 = _GEN_0[3:0]; // @[AXI.scala 221:22]
-  wire [31:0] _GEN_25 = _T_15 == 4'h0 ? io_axi2ram_r_bits_data[31:0] : {{2'd0}, io_axi2ram_r_bits_data[61:32]}; // @[AXI.scala 221:36 AXI.scala 221:54 AXI.scala 222:55]
+  wire [31:0] _GEN_25 = _T_15 == 4'h0 ? io_axi2ram_r_bits_data[31:0] : io_axi2ram_r_bits_data[63:32]; // @[AXI.scala 221:36 AXI.scala 221:54 AXI.scala 222:55]
   assign io_axi2ram_ar_valid = _T_12 | _T_13; // @[AXI.scala 185:51]
   assign io_axi2ram_ar_bits_addr = read_state == 3'h1 ? io_imem_inst_addr : _GEN_23; // @[AXI.scala 167:39 AXI.scala 167:48]
   assign io_axi2ram_r_ready = 1'h1; // @[AXI.scala 187:18]
