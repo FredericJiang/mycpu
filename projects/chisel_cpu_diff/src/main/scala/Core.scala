@@ -33,9 +33,9 @@ when(inst_gen_ready || if_reg_pc === "h80000000".U)      { io.imem.inst_req   :=
 //.elsewhen(stall && reg_pc_ready)               { if_reg_pc := if_reg_pc;       inst_gen_ready:= false.B  }
 
 when(reg_pc_ready){
-when(stall)              {if_reg_pc := if_reg_pc; inst_gen_ready:= false.B      }
+when(stall)              {if_reg_pc := if_reg_pc;       inst_gen_ready:= false.B       }
 .elsewhen(reg_kill_flag) {if_reg_pc := reg_exe_pc_nxt;  reg_kill_flag := false.B; inst_gen_ready:= true.B; reg_pc_ready:= false.B  }
-.otherwise               {if_reg_pc := if_reg_pc + 4.U; inst_gen_ready:= true.B; reg_pc_ready:= false.B  }
+.otherwise               {if_reg_pc := if_reg_pc + 4.U; inst_gen_ready:= true.B; reg_pc_ready:= false.B }
 }
 
 
@@ -43,7 +43,7 @@ when(stall)              {if_reg_pc := if_reg_pc; inst_gen_ready:= false.B      
 io.imem.inst_addr  := if_reg_pc
 
 when(io.imem.inst_ready && !reg_kill_flag )     {if_inst := io.imem.inst_read}
-.otherwise                                      {if_inst := 0.U}
+.otherwise                                     {if_inst := 0.U}
 
 if_stage_done := io.imem.inst_ready //AXI read_state = r_inst_done
 exe_stage_done := RegNext(if_stage_done) //used to wait the right instruction
