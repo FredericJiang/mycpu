@@ -354,7 +354,7 @@ val mem_reg_stall_wen = RegInit(false.B)
 
 when(mem_reg_dmem_en && !io.dmem.data_ready) { exe_reg_stall := true.B  ;  exe_call_stall:= true.B 
 
-mem_reg_stall_wen:= mem_reg_dmem_wen
+mem_reg_stall_wen:= mem_reg_rd_wen
 
 }
 .elsewhen(io.dmem.data_ready)                { exe_reg_stall := false.B ;  exe_stop_stall:= true.B}
@@ -375,7 +375,7 @@ wb_reg_alu_out     := mem_reg_alu_out
 wb_reg_rs1_data    := mem_reg_rs1_data //used for print
 
 wb_reg_rd_addr     := mem_reg_rd_addr
-wb_reg_rd_wen      := mem_reg_rd_wen 
+wb_reg_rd_wen      := mem_reg_rd_wen || mem_reg_stall_wen
 wb_reg_rd_data     := mem_reg_rd_data
 wb_reg_csr_rd_data := mem_reg_csr_rd_data
 
