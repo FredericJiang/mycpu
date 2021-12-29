@@ -212,7 +212,7 @@ inst_reg_addr:= imem.inst_addr
 
 
 // Core part for inst read
-  imem.inst_ready := read_state === r_idle
+  imem.inst_ready := read_state === r_inst_done
 
 
 //need to aligned the fetched data  

@@ -3052,7 +3052,7 @@ module Core2AXI(
   assign io_axi2ram_w_bits_last = 1'h1; // @[AXI.scala 205:23]
   assign io_axi2ram_b_ready = 1'h1; // @[AXI.scala 210:18]
   assign io_imem_inst_read = _T_14 == 4'h0 ? io_axi2ram_r_bits_data[31:0] : {{2'd0}, io_axi2ram_r_bits_data[61:32]}; // @[AXI.scala 219:36 AXI.scala 219:54 AXI.scala 220:57]
-  assign io_imem_inst_ready = read_state == 3'h0; // @[AXI.scala 215:33]
+  assign io_imem_inst_ready = read_state == 3'h3; // @[AXI.scala 215:33]
   assign io_dmem_data_read = io_axi2ram_r_bits_data; // @[AXI.scala 226:19]
   assign io_dmem_data_ready = read_state == 3'h6 | write_state == 3'h4; // @[AXI.scala 225:51]
   always @(posedge clock) begin
