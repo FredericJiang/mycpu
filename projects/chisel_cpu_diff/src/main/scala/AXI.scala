@@ -161,7 +161,7 @@ switch(write_state){
    is(w_data_done)  { write_state := w_idle       }
 }
 
-val axi_addr = RegInit(0.U(32.W))
+val axi_addr = WireInit(0.U(32.W))
 when(read_state === r_inst_addr)     {axi_addr:= imem.inst_addr }
 .elsewhen(read_state === r_data_addr){axi_addr:= dmem.data_addr}
 
