@@ -2990,6 +2990,7 @@ module Core2AXI(
 `ifdef RANDOMIZE_REG_INIT
   reg [31:0] _RAND_0;
   reg [31:0] _RAND_1;
+  reg [31:0] _RAND_2;
 `endif // RANDOMIZE_REG_INIT
   wire  ar_hs = io_axi2ram_ar_ready & io_axi2ram_ar_valid; // @[AXI.scala 105:31]
   wire  r_hs = io_axi2ram_r_ready & io_axi2ram_r_valid; // @[AXI.scala 106:31]
@@ -3024,22 +3025,23 @@ module Core2AXI(
   wire  _T_11 = 3'h4 == write_state; // @[Conditional.scala 37:30]
   wire [2:0] _GEN_18 = _T_11 ? 3'h0 : write_state; // @[Conditional.scala 39:67 AXI.scala 161:35 AXI.scala 117:28]
   wire [2:0] _GEN_19 = _T_10 ? _GEN_17 : _GEN_18; // @[Conditional.scala 39:67]
-  wire [31:0] _GEN_0 = io_axi2ram_ar_bits_addr % 32'h8; // @[AXI.scala 212:25]
-  wire [3:0] _T_12 = _GEN_0[3:0]; // @[AXI.scala 212:25]
-  assign io_axi2ram_ar_valid = read_state == 3'h1 | read_state == 3'h4; // @[AXI.scala 177:51]
-  assign io_axi2ram_ar_bits_addr = io_imem_inst_addr; // @[AXI.scala 167:22]
-  assign io_axi2ram_r_ready = 1'h1; // @[AXI.scala 179:18]
-  assign io_axi2ram_aw_valid = write_state == 3'h1; // @[AXI.scala 193:34]
-  assign io_axi2ram_aw_bits_addr = io_dmem_data_addr; // @[AXI.scala 183:23]
-  assign io_axi2ram_w_valid = write_state == 3'h2; // @[AXI.scala 200:34]
-  assign io_axi2ram_w_bits_data = io_dmem_data_write; // @[AXI.scala 196:23]
-  assign io_axi2ram_w_bits_strb = io_dmem_data_strb; // @[AXI.scala 197:23]
-  assign io_axi2ram_w_bits_last = 1'h1; // @[AXI.scala 198:23]
-  assign io_axi2ram_b_ready = 1'h1; // @[AXI.scala 203:18]
-  assign io_imem_inst_read = _T_12 == 4'h0 ? io_axi2ram_r_bits_data[31:0] : {{2'd0}, io_axi2ram_r_bits_data[61:32]}; // @[AXI.scala 212:39 AXI.scala 212:57 AXI.scala 213:57]
+  reg [31:0] axi_addr; // @[AXI.scala 164:23]
+  wire [31:0] _GEN_0 = io_axi2ram_ar_bits_addr % 32'h8; // @[AXI.scala 215:25]
+  wire [3:0] _T_12 = _GEN_0[3:0]; // @[AXI.scala 215:25]
+  assign io_axi2ram_ar_valid = read_state == 3'h1 | read_state == 3'h4; // @[AXI.scala 180:51]
+  assign io_axi2ram_ar_bits_addr = axi_addr; // @[AXI.scala 170:22]
+  assign io_axi2ram_r_ready = 1'h1; // @[AXI.scala 182:18]
+  assign io_axi2ram_aw_valid = write_state == 3'h1; // @[AXI.scala 196:34]
+  assign io_axi2ram_aw_bits_addr = io_dmem_data_addr; // @[AXI.scala 186:23]
+  assign io_axi2ram_w_valid = write_state == 3'h2; // @[AXI.scala 203:34]
+  assign io_axi2ram_w_bits_data = io_dmem_data_write; // @[AXI.scala 199:23]
+  assign io_axi2ram_w_bits_strb = io_dmem_data_strb; // @[AXI.scala 200:23]
+  assign io_axi2ram_w_bits_last = 1'h1; // @[AXI.scala 201:23]
+  assign io_axi2ram_b_ready = 1'h1; // @[AXI.scala 206:18]
+  assign io_imem_inst_read = _T_12 == 4'h0 ? io_axi2ram_r_bits_data[31:0] : {{2'd0}, io_axi2ram_r_bits_data[61:32]}; // @[AXI.scala 215:39 AXI.scala 215:57 AXI.scala 216:57]
   assign io_imem_inst_ready = r_hs & io_axi2ram_r_bits_last; // @[AXI.scala 112:23]
-  assign io_dmem_data_read = io_axi2ram_r_bits_data; // @[AXI.scala 219:19]
-  assign io_dmem_data_ready = read_state == 3'h6 | write_state == 3'h4; // @[AXI.scala 218:51]
+  assign io_dmem_data_read = io_axi2ram_r_bits_data; // @[AXI.scala 222:19]
+  assign io_dmem_data_ready = read_state == 3'h6 | write_state == 3'h4; // @[AXI.scala 221:51]
   always @(posedge clock) begin
     if (reset) begin // @[AXI.scala 116:28]
       read_state <= 3'h0; // @[AXI.scala 116:28]
@@ -3072,6 +3074,13 @@ module Core2AXI(
       write_state <= _GEN_16;
     end else begin
       write_state <= _GEN_19;
+    end
+    if (reset) begin // @[AXI.scala 164:23]
+      axi_addr <= 32'h0; // @[AXI.scala 164:23]
+    end else if (io_imem_inst_req) begin // @[AXI.scala 165:15]
+      axi_addr <= io_imem_inst_addr; // @[AXI.scala 165:24]
+    end else if (io_dmem_data_req_r) begin // @[AXI.scala 166:20]
+      axi_addr <= io_dmem_data_addr; // @[AXI.scala 166:29]
     end
   end
 // Register and memory initialization
@@ -3114,6 +3123,8 @@ initial begin
   read_state = _RAND_0[2:0];
   _RAND_1 = {1{`RANDOM}};
   write_state = _RAND_1[2:0];
+  _RAND_2 = {1{`RANDOM}};
+  axi_addr = _RAND_2[31:0];
 `endif // RANDOMIZE_REG_INIT
   `endif // RANDOMIZE
 end // initial
