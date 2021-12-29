@@ -168,7 +168,6 @@ when(read_state === r_inst_addr)      {axi_addr:= imem.inst_addr }
 val inst_reg_addr = RegInit(0.U(32.W))
 inst_reg_addr:= imem.inst_addr 
 
-
 // Read address channel signals
   out.ar.bits.id     := 0.U 
   out.ar.bits.addr   := axi_addr
@@ -212,12 +211,12 @@ inst_reg_addr:= imem.inst_addr
 
 
 // Core part for inst read
-  imem.inst_ready := read_state === r_inst_done
+  imem.inst_ready := (read_state === r_inst_done) 
 
 
 //need to aligned the fetched data  
   when(inst_reg_addr % 8.U === 0.U){ imem.inst_read  := out.r.bits.data(31,0) }
-.otherwise                            { imem.inst_read  := out.r.bits.data(61,32)}
+.otherwise                          { imem.inst_read  := out.r.bits.data(61,32)}
 
 
 
