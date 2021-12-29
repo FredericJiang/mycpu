@@ -217,7 +217,7 @@ inst_reg_addr:= imem.inst_addr
 
 
 //need to aligned the fetched data  
-when(r_done ){
+when(read_state < 4.U){
   when(inst_reg_addr % 8.U === 0.U){ imem.inst_read  := out.r.bits.data(31,0) }
 .otherwise                          { imem.inst_read  := out.r.bits.data(61,32)}
 
