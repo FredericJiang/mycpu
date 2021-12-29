@@ -347,7 +347,7 @@ when((mem_reg_rs2_addr === wb_reg_rd_addr)
 mem_rd_data   := lsu.io.mem_rdata
 
 val mem_reg_rd_data = RegInit(0.U(64.W))
-when(exe_reg_stall === false.B){mem_reg_rd_data:= mem_rd_data}
+when(io.dmem.data_ready){mem_reg_rd_data:= mem_rd_data}
 
 
 when(mem_reg_dmem_en && !io.dmem.data_ready) { exe_reg_stall := true.B  ;  exe_call_stall:= true.B }

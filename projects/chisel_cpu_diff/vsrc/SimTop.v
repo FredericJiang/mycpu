@@ -2029,10 +2029,10 @@ module Core(
   wire  _T_43 = mem_reg_rs2_addr == wb_reg_rd_addr; // @[Core.scala 342:24]
   wire  _GEN_85 = io_dmem_data_ready ? 1'h0 : exe_reg_stall; // @[Core.scala 354:46 Core.scala 354:62 PipelineReg.scala 131:28]
   wire  _GEN_86 = exe_call_stall | _GEN_85; // @[Core.scala 353:46 Core.scala 353:62]
-  wire  _T_52 = wb_reg_alu_type == 5'h14; // @[Core.scala 425:22]
+  wire  _T_51 = wb_reg_alu_type == 5'h14; // @[Core.scala 425:22]
   reg  dt_valid; // @[Core.scala 453:23]
   reg  skip; // @[Core.scala 455:19]
-  wire  _T_61 = _T_52 | wb_reg_csr_type != 3'h0 & wb_reg_inst[31:20] == 12'hb00 | wb_reg_clint_en; // @[Core.scala 457:113]
+  wire  _T_60 = _T_51 | wb_reg_csr_type != 3'h0 & wb_reg_inst[31:20] == 12'hb00 | wb_reg_clint_en; // @[Core.scala 457:113]
   wire [63:0] _GEN_128 = {{32'd0}, wb_reg_pc}; // @[Core.scala 465:50]
   reg [31:0] dt_ic_io_pc_REG; // @[Core.scala 469:31]
   reg [63:0] dt_ic_io_instr_REG; // @[Core.scala 470:31]
@@ -2684,7 +2684,7 @@ module Core(
     if (reset) begin // @[Core.scala 455:19]
       skip <= 1'h0; // @[Core.scala 455:19]
     end else begin
-      skip <= _T_61;
+      skip <= _T_60;
     end
     dt_ic_io_pc_REG <= wb_reg_pc; // @[Core.scala 469:31]
     dt_ic_io_instr_REG <= wb_reg_inst; // @[Core.scala 470:31]
@@ -2723,7 +2723,7 @@ module Core(
     `ifdef PRINTF_COND
       if (`PRINTF_COND) begin
     `endif
-        if (_T_52 & ~reset) begin
+        if (_T_51 & ~reset) begin
           $fwrite(32'h80000002,"%c",wb_reg_rs1_data); // @[Core.scala 428:7]
         end
     `ifdef PRINTF_COND
