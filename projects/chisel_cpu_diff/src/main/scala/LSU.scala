@@ -16,7 +16,7 @@ val rs2_data     = Input(UInt(64.W))
 val mem_rdata    = Output(UInt(64.W))
 val dmem_wmask   = Output(UInt(64.W))
 val dmem_wdata   = Output(UInt(64.W))
-val dmem_strb    = Output(UInt(4.W))
+val dmem_strb    = Output(UInt(8.W))
 })
 
 val dmem_addr  = io.dmem_addr

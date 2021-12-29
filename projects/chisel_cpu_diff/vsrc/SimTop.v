@@ -1484,7 +1484,7 @@ module LSU(
   input  [63:0] io_rs2_data,
   output [63:0] io_mem_rdata,
   output [63:0] io_dmem_wdata,
-  output [3:0]  io_dmem_strb
+  output [7:0]  io_dmem_strb
 );
   wire  _T_3 = 3'h1 == io_mem_rtype; // @[Conditional.scala 37:30]
   wire  _mem_rdata_T_1 = io_dmem_addr[2:0] == 3'h0; // @[LSU.scala 45:34]
@@ -1649,10 +1649,9 @@ module LSU(
   wire [12:0] _GEN_57 = io_wb_type == 3'h3 ? {{5'd0}, _GEN_42} : _GEN_54; // @[LSU.scala 147:36]
   wire [63:0] _GEN_58 = io_wb_type == 3'h3 ? _GEN_43 : _GEN_55; // @[LSU.scala 147:36]
   wire [12:0] _GEN_60 = io_wb_type == 3'h2 ? {{5'd0}, _GEN_30} : _GEN_57; // @[LSU.scala 111:30]
-  wire [7:0] dmem_strb = _GEN_60[7:0];
   assign io_mem_rdata = io_wb_type == 3'h1 & io_mem_rtype != 3'h0 ? _GEN_6 : 64'h0; // @[LSU.scala 37:54]
   assign io_dmem_wdata = io_wb_type == 3'h2 ? _GEN_31 : _GEN_58; // @[LSU.scala 111:30]
-  assign io_dmem_strb = dmem_strb[3:0]; // @[LSU.scala 33:15]
+  assign io_dmem_strb = _GEN_60[7:0]; // @[LSU.scala 33:15]
 endmodule
 module Core(
   input         clock,
@@ -1835,7 +1834,7 @@ module Core(
   wire [63:0] lsu_io_rs2_data; // @[Core.scala 324:17]
   wire [63:0] lsu_io_mem_rdata; // @[Core.scala 324:17]
   wire [63:0] lsu_io_dmem_wdata; // @[Core.scala 324:17]
-  wire [3:0] lsu_io_dmem_strb; // @[Core.scala 324:17]
+  wire [7:0] lsu_io_dmem_strb; // @[Core.scala 324:17]
   wire  dt_ic_clock; // @[Core.scala 483:19]
   wire [7:0] dt_ic_coreid; // @[Core.scala 483:19]
   wire [7:0] dt_ic_index; // @[Core.scala 483:19]
@@ -2204,7 +2203,7 @@ module Core(
   assign io_dmem_data_req_w = exe_reg_dmem_wen & _mem_reg_dmem_wen_T; // @[Core.scala 335:41]
   assign io_dmem_data_addr = mem_dmem_addr[31:0]; // @[Core.scala 336:21]
   assign io_dmem_data_write = lsu_io_dmem_wdata; // @[Core.scala 338:21]
-  assign io_dmem_data_strb = {{4'd0}, lsu_io_dmem_strb}; // @[Core.scala 337:21]
+  assign io_dmem_data_strb = lsu_io_dmem_strb; // @[Core.scala 337:21]
   assign decode_io_inst = id_reg_inst[31:0]; // @[Core.scala 87:21]
   assign regfile_clock = clock;
   assign regfile_reset = reset;
