@@ -25,7 +25,7 @@ stall := exe_reg_stall || id_call_stall
 //inst_gen_ready === exe_stage_done
 //indt_req -> reg_pc = ar.addr
 
-when(inst_gen_ready || if_reg_pc === "h80000000".U)      { io.imem.inst_req   := true.B  }
+when(inst_gen_ready || if_reg_pc === "h80000000".U || exe_stop_stall)      { io.imem.inst_req   := true.B  }
 .otherwise                                               { io.imem.inst_req   := false.B }
 
 //when(!stall && !reg_kill_flag && reg_pc_ready) { if_reg_pc := if_reg_pc + 4.U; inst_gen_ready:= true.B; reg_pc_ready:= false.B } 
@@ -42,7 +42,7 @@ when(stall)              {if_reg_pc := if_reg_pc;       inst_gen_ready:= false.B
 
 io.imem.inst_addr  := if_reg_pc
 
-when(io.imem.inst_ready && !reg_kill_flag )     {if_inst := io.imem.inst_read}
+when(io.imem.inst_ready && !reg_kill_flag )    {if_inst := io.imem.inst_read} //not read the data as instruction
 .otherwise                                     {if_inst := 0.U}
 
 if_stage_done := io.imem.inst_ready //AXI read_state = r_inst_done
@@ -361,7 +361,7 @@ val mem_reg_stall_wen = RegInit(false.B)
 
 when(mem_reg_dmem_en && !io.dmem.data_ready) { exe_reg_stall := true.B  ;  exe_call_stall:= true.B 
 
-mem_reg_stall_wen:= mem_reg_rd_wen
+mem_reg_stall_wen:= mem_reg_rd_wen //when fetch data from AXI and reserve wen for wb stage
 
 }
 .elsewhen(io.dmem.data_ready)                { exe_reg_stall := false.B ;  exe_stop_stall:= true.B}
