@@ -52,9 +52,11 @@ class AXI_Inst extends Bundle{
 
 val inst_read   = Input(UInt(AXI_Inst_Width.W))
 val inst_ready  = Input(Bool())
+val read_idle   = Input(Bool())
 
 val inst_req    = Output(Bool())
 val inst_addr   = Output(UInt(AXI_Addr_Width.W))
+
 }
 
 class AXI_Data extends Bundle{
@@ -225,6 +227,6 @@ inst_reg_addr:= imem.inst_addr
   dmem.data_read  := out.r.bits.data
 // Core part for data write
 
-
+imem.read_idle := read_state=== r_idle
 
 }
