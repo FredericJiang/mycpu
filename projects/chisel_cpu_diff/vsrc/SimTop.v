@@ -2991,6 +2991,7 @@ module Core2AXI(
 `ifdef RANDOMIZE_REG_INIT
   reg [31:0] _RAND_0;
   reg [31:0] _RAND_1;
+  reg [31:0] _RAND_2;
 `endif // RANDOMIZE_REG_INIT
   wire  ar_hs = io_axi2ram_ar_ready & io_axi2ram_ar_valid; // @[AXI.scala 105:31]
   wire  r_hs = io_axi2ram_r_ready & io_axi2ram_r_valid; // @[AXI.scala 106:31]
@@ -3027,23 +3028,24 @@ module Core2AXI(
   wire [2:0] _GEN_19 = _T_10 ? _GEN_17 : _GEN_18; // @[Conditional.scala 39:67]
   wire  _T_12 = read_state == 3'h1; // @[AXI.scala 165:17]
   wire  _T_13 = read_state == 3'h4; // @[AXI.scala 166:22]
-  wire [31:0] _GEN_23 = read_state == 3'h4 ? io_dmem_data_addr : 32'h0; // @[AXI.scala 166:38 AXI.scala 166:47]
-  wire [31:0] _GEN_0 = io_axi2ram_ar_bits_addr % 32'h8; // @[AXI.scala 215:25]
-  wire [3:0] _T_14 = _GEN_0[3:0]; // @[AXI.scala 215:25]
-  assign io_axi2ram_ar_valid = _T_12 | _T_13; // @[AXI.scala 180:51]
-  assign io_axi2ram_ar_bits_addr = read_state == 3'h1 ? io_imem_inst_addr : _GEN_23; // @[AXI.scala 165:38 AXI.scala 165:47]
-  assign io_axi2ram_r_ready = 1'h1; // @[AXI.scala 182:18]
-  assign io_axi2ram_aw_valid = write_state == 3'h1; // @[AXI.scala 196:34]
-  assign io_axi2ram_aw_bits_addr = io_dmem_data_addr; // @[AXI.scala 186:23]
-  assign io_axi2ram_w_valid = write_state == 3'h2; // @[AXI.scala 203:34]
-  assign io_axi2ram_w_bits_data = io_dmem_data_write; // @[AXI.scala 199:23]
-  assign io_axi2ram_w_bits_strb = io_dmem_data_strb; // @[AXI.scala 200:23]
-  assign io_axi2ram_w_bits_last = 1'h1; // @[AXI.scala 201:23]
-  assign io_axi2ram_b_ready = 1'h1; // @[AXI.scala 206:18]
-  assign io_imem_inst_read = _T_14 == 4'h0 ? io_axi2ram_r_bits_data[31:0] : {{2'd0}, io_axi2ram_r_bits_data[61:32]}; // @[AXI.scala 215:39 AXI.scala 215:57 AXI.scala 216:57]
+  wire [31:0] _GEN_23 = read_state == 3'h4 ? io_dmem_data_addr : 32'h0; // @[AXI.scala 166:39 AXI.scala 166:48]
+  reg [31:0] inst_reg_addr; // @[AXI.scala 168:28]
+  wire [31:0] _GEN_0 = inst_reg_addr % 32'h8; // @[AXI.scala 218:22]
+  wire [3:0] _T_15 = _GEN_0[3:0]; // @[AXI.scala 218:22]
+  assign io_axi2ram_ar_valid = _T_12 | _T_13; // @[AXI.scala 183:51]
+  assign io_axi2ram_ar_bits_addr = read_state == 3'h1 ? io_imem_inst_addr : _GEN_23; // @[AXI.scala 165:39 AXI.scala 165:48]
+  assign io_axi2ram_r_ready = 1'h1; // @[AXI.scala 185:18]
+  assign io_axi2ram_aw_valid = write_state == 3'h1; // @[AXI.scala 199:34]
+  assign io_axi2ram_aw_bits_addr = io_dmem_data_addr; // @[AXI.scala 189:23]
+  assign io_axi2ram_w_valid = write_state == 3'h2; // @[AXI.scala 206:34]
+  assign io_axi2ram_w_bits_data = io_dmem_data_write; // @[AXI.scala 202:23]
+  assign io_axi2ram_w_bits_strb = io_dmem_data_strb; // @[AXI.scala 203:23]
+  assign io_axi2ram_w_bits_last = 1'h1; // @[AXI.scala 204:23]
+  assign io_axi2ram_b_ready = 1'h1; // @[AXI.scala 209:18]
+  assign io_imem_inst_read = _T_15 == 4'h0 ? io_axi2ram_r_bits_data[31:0] : {{2'd0}, io_axi2ram_r_bits_data[61:32]}; // @[AXI.scala 218:36 AXI.scala 218:54 AXI.scala 219:57]
   assign io_imem_inst_ready = r_hs & io_axi2ram_r_bits_last; // @[AXI.scala 112:23]
-  assign io_dmem_data_read = io_axi2ram_r_bits_data; // @[AXI.scala 222:19]
-  assign io_dmem_data_ready = read_state == 3'h6 | write_state == 3'h4; // @[AXI.scala 221:51]
+  assign io_dmem_data_read = io_axi2ram_r_bits_data; // @[AXI.scala 225:19]
+  assign io_dmem_data_ready = read_state == 3'h6 | write_state == 3'h4; // @[AXI.scala 224:51]
   always @(posedge clock) begin
     if (reset) begin // @[AXI.scala 116:28]
       read_state <= 3'h0; // @[AXI.scala 116:28]
@@ -3076,6 +3078,11 @@ module Core2AXI(
       write_state <= _GEN_16;
     end else begin
       write_state <= _GEN_19;
+    end
+    if (reset) begin // @[AXI.scala 168:28]
+      inst_reg_addr <= 32'h0; // @[AXI.scala 168:28]
+    end else if (_T_12) begin // @[AXI.scala 169:39]
+      inst_reg_addr <= io_imem_inst_addr; // @[AXI.scala 169:53]
     end
   end
 // Register and memory initialization
@@ -3118,6 +3125,8 @@ initial begin
   read_state = _RAND_0[2:0];
   _RAND_1 = {1{`RANDOM}};
   write_state = _RAND_1[2:0];
+  _RAND_2 = {1{`RANDOM}};
+  inst_reg_addr = _RAND_2[31:0];
 `endif // RANDOMIZE_REG_INIT
   `endif // RANDOMIZE
 end // initial

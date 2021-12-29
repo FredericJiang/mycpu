@@ -162,8 +162,11 @@ switch(write_state){
 }
 
 val axi_addr = WireInit(0.U(32.W))
-when(read_state === r_inst_addr)     {axi_addr:= imem.inst_addr }
-.elsewhen(read_state === r_data_addr){axi_addr:= dmem.data_addr}
+when(read_state === r_inst_addr)      {axi_addr:= imem.inst_addr }
+.elsewhen(read_state === r_data_addr) {axi_addr:= dmem.data_addr }
+
+val inst_reg_addr = RegInit(0.U(32.W))
+when(read_state === r_inst_addr)      {inst_reg_addr:= imem.inst_addr }
 
 // Read address channel signals
   out.ar.bits.id     := 0.U 
@@ -212,7 +215,7 @@ when(read_state === r_inst_addr)     {axi_addr:= imem.inst_addr }
 
 
 //need to aligned the fetched data  
-  when(out.ar.bits.addr % 8.U === 0.U){ imem.inst_read  := out.r.bits.data(31,0) }
+  when(inst_reg_addr % 8.U === 0.U){ imem.inst_read  := out.r.bits.data(31,0) }
 .otherwise                            { imem.inst_read  := out.r.bits.data(61,32)}
 
 
