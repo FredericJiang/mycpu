@@ -323,11 +323,11 @@ mem_reg_csr_rd_data := csr.io.out
 //MEMORY Stage
 val lsu = Module(new LSU)
 val mem_dmem_addr  = Wire(UInt(64.W))
-
+val mem_reg_dmem_addr  = Reg(UInt(64.W))
 
 // read & write memory address is from ALU
-when(mem_reg_dmem_en){mem_dmem_addr := mem_reg_alu_out}    
-.otherwise           {mem_dmem_addr := 0.U}
+when(mem_reg_dmem_en){mem_dmem_addr := mem_reg_alu_out; mem_reg_dmem_addr:= mem_reg_alu_out }    
+.otherwise           {mem_dmem_addr := 0.U;  }
 
 // Core to AXI for DATA_MEM
 
@@ -344,7 +344,7 @@ when(io.dmem.data_ready){lsu.io.dmem_rdata  := io.dmem.data_read}
 
 lsu.io.mem_rtype  := mem_reg_mem_rtype
 lsu.io.wb_type    := mem_reg_wb_type
-lsu.io.dmem_addr  := mem_dmem_addr
+lsu.io.dmem_addr  := mem_reg_dmem_addr
 
 
 when((mem_reg_rs2_addr === wb_reg_rd_addr) 
