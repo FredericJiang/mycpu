@@ -367,7 +367,7 @@ mem_reg_stall_wen:= mem_reg_rd_wen //when fetch data from AXI and reserve wen fo
 }
 .elsewhen(io.dmem.data_ready)                { exe_reg_stall := false.B ;  exe_stop_stall:= true.B}
 
-
+when(!exe_reg_stall && !exe_call_stall){mem_reg_stall_wen:= false.B}
 // Memmory >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Write Back
 //*******************************************************************
 // signals for difftest
