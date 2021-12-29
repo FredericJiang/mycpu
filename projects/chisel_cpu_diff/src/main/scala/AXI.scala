@@ -120,8 +120,8 @@ val data_wen = WireInit(false.B)
 
 switch(read_state){
   is(r_idle){
-      when(data_ren){ read_state := r_data_addr }
- .elsewhen(inst_ren){ read_state := r_inst_addr }}
+      when(inst_ren){ read_state := r_inst_addr }
+ .elsewhen(data_ren){ read_state := r_data_addr }}
   
   is(r_inst_addr){
       when(ar_hs)   { read_state := r_inst_read }}
