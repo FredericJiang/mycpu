@@ -344,8 +344,12 @@ when(io.dmem.data_ready){lsu.io.dmem_rdata  := io.dmem.data_read}
 
 lsu.io.mem_rtype  := mem_reg_mem_rtype
 lsu.io.wb_type    := mem_reg_wb_type
-lsu.io.dmem_addr  := mem_reg_dmem_addr
 
+when(mem_reg_dmem_wen){
+  lsu.io.dmem_addr  := mem_dmem_addr
+}.otherwise{
+lsu.io.dmem_addr  := mem_reg_dmem_addr
+}
 
 when((mem_reg_rs2_addr === wb_reg_rd_addr) 
 &&(mem_reg_dmem_wen && wb_reg_rd_wen)) { lsu.io.rs2_data  := wb_rd_data       }
