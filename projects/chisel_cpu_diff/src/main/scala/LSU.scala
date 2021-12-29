@@ -170,7 +170,7 @@ dmem_wdata:= Cat(rs2_data(15,0),Fill(48,0.U))
 
 when(dmem_addr(2)==="b0".U){
 dmem_wmask := "h00000000ffffffff".U
-dmem_strb  := "h00001111".U
+dmem_strb  := "b00001111".U
 dmem_wdata:= Cat(Fill(32, 0.U),rs2_data(31,0))
 }.elsewhen(dmem_addr(2)==="b1".U){
 dmem_wmask := "hffffffff00000000".U

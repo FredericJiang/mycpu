@@ -1640,18 +1640,17 @@ module LSU(
   wire [63:0] _dmem_wdata_T_13 = {dmem_wdata_lo_12,32'h0}; // @[Cat.scala 30:58]
   wire [7:0] _GEN_45 = io_dmem_addr[2] ? 8'hf0 : 8'h0; // @[LSU.scala 175:34 LSU.scala 177:12]
   wire [63:0] _GEN_46 = io_dmem_addr[2] ? _dmem_wdata_T_13 : 64'h0; // @[LSU.scala 175:34 LSU.scala 178:11]
-  wire [12:0] _GEN_48 = _mem_rdata_T_73 ? 13'h1111 : {{5'd0}, _GEN_45}; // @[LSU.scala 171:28 LSU.scala 173:12]
+  wire [7:0] _GEN_48 = _mem_rdata_T_73 ? 8'hf : _GEN_45; // @[LSU.scala 171:28 LSU.scala 173:12]
   wire [63:0] _GEN_49 = _mem_rdata_T_73 ? _dmem_wdata_T_12 : _GEN_46; // @[LSU.scala 171:28 LSU.scala 174:11]
   wire [7:0] _GEN_51 = io_wb_type == 3'h5 ? 8'hff : 8'h0; // @[LSU.scala 182:36 LSU.scala 185:12]
   wire [63:0] _GEN_52 = io_wb_type == 3'h5 ? io_rs2_data : 64'h0; // @[LSU.scala 182:36 LSU.scala 186:11]
-  wire [12:0] _GEN_54 = io_wb_type == 3'h4 ? _GEN_48 : {{5'd0}, _GEN_51}; // @[LSU.scala 168:36]
+  wire [7:0] _GEN_54 = io_wb_type == 3'h4 ? _GEN_48 : _GEN_51; // @[LSU.scala 168:36]
   wire [63:0] _GEN_55 = io_wb_type == 3'h4 ? _GEN_49 : _GEN_52; // @[LSU.scala 168:36]
-  wire [12:0] _GEN_57 = io_wb_type == 3'h3 ? {{5'd0}, _GEN_42} : _GEN_54; // @[LSU.scala 147:36]
+  wire [7:0] _GEN_57 = io_wb_type == 3'h3 ? _GEN_42 : _GEN_54; // @[LSU.scala 147:36]
   wire [63:0] _GEN_58 = io_wb_type == 3'h3 ? _GEN_43 : _GEN_55; // @[LSU.scala 147:36]
-  wire [12:0] _GEN_60 = io_wb_type == 3'h2 ? {{5'd0}, _GEN_30} : _GEN_57; // @[LSU.scala 111:30]
   assign io_mem_rdata = io_wb_type == 3'h1 & io_mem_rtype != 3'h0 ? _GEN_6 : 64'h0; // @[LSU.scala 37:54]
   assign io_dmem_wdata = io_wb_type == 3'h2 ? _GEN_31 : _GEN_58; // @[LSU.scala 111:30]
-  assign io_dmem_strb = _GEN_60[7:0]; // @[LSU.scala 33:15]
+  assign io_dmem_strb = io_wb_type == 3'h2 ? _GEN_30 : _GEN_57; // @[LSU.scala 111:30]
 endmodule
 module Core(
   input         clock,
