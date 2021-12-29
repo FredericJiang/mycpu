@@ -166,7 +166,8 @@ when(read_state === r_inst_addr)      {axi_addr:= imem.inst_addr }
 .elsewhen(read_state === r_data_addr) {axi_addr:= dmem.data_addr }
 
 val inst_reg_addr = RegInit(0.U(32.W))
-when(read_state === r_inst_addr)      {inst_reg_addr:= imem.inst_addr }
+inst_reg_addr:= imem.inst_addr 
+
 
 // Read address channel signals
   out.ar.bits.id     := 0.U 
