@@ -370,7 +370,7 @@ wb_reg_rs1_data    := mem_reg_rs1_data //used for print
 
 wb_reg_rd_addr     := mem_reg_rd_addr
 wb_reg_rd_wen      := mem_reg_rd_wen
-wb_reg_rd_data     := mem_reg_rd_data
+wb_reg_rd_data     := mem_rd_data
 wb_reg_csr_rd_data := mem_reg_csr_rd_data
 
 
