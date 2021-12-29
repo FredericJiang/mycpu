@@ -360,12 +360,15 @@ when(mem_reg_dmem_en && !io.dmem.data_ready) { exe_reg_stall := true.B  ;  exe_c
 when(exe_call_stall){
 wb_reg_pc          := 0.U
 wb_reg_inst        := 0.U
+wb_reg_rd_wen      := 0.U
 }.elsewhen(exe_reg_stall && !exe_stop_stall){
 wb_reg_pc          := 0.U
 wb_reg_inst        := 0.U
+wb_reg_rd_wen      := 0.U
 }.otherwise{
 wb_reg_pc          := mem_reg_pc
 wb_reg_inst        := mem_reg_inst  
+wb_reg_rd_wen      := mem_reg_rd_wen
 }
 
 
@@ -377,7 +380,7 @@ wb_reg_alu_out     := mem_reg_alu_out
 wb_reg_rs1_data    := mem_reg_rs1_data //used for print
 
 wb_reg_rd_addr     := mem_reg_rd_addr
-wb_reg_rd_wen      := mem_reg_rd_wen
+
 wb_reg_rd_data     := mem_rd_data
 wb_reg_csr_rd_data := mem_reg_csr_rd_data
 
