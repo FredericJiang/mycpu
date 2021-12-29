@@ -39,7 +39,7 @@ when(io.imem.inst_ready && reg_kill_flag )     {if_inst := 0.U}
 .otherwise                                     {if_inst := io.imem.inst_read}
 
 if_stage_done := io.imem.inst_ready //AXI read_state = r_inst_done
-//exe_stage_done := RegNext(RegNext(if_stage_done)) //used to wait the right instruction
+exe_stage_done := RegNext(if_stage_done) //used to wait the right instruction
 when(exe_stage_done){ reg_pc_ready:= true.B }
 
 // Instruction Fetch >>>>>>>> Instruction Decode
@@ -364,8 +364,6 @@ mem_reg_stall_wen:= mem_reg_rd_wen
 //*******************************************************************
 // signals for difftest
 when(!exe_reg_stall && !exe_call_stall){
-
-exe_stage_done := true.B
 
 wb_reg_pc          := mem_reg_pc
 wb_reg_inst        := mem_reg_inst
