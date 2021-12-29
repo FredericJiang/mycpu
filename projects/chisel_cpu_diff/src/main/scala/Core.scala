@@ -323,11 +323,13 @@ when(mem_reg_dmem_en){mem_dmem_addr := mem_reg_alu_out}
 
 // Core to AXI for DATA_MEM
 
-io.dmem.data_req_r  := mem_reg_dmem_en && !mem_reg_dmem_wen
-io.dmem.data_req_w  := mem_reg_dmem_wen
+io.dmem.data_req_r  := exe_reg_dmem_en  && !clint_en && !exe_reg_dmem_wen
+io.dmem.data_req_w  := exe_reg_dmem_wen && !clint_en
 io.dmem.data_addr   := mem_dmem_addr
 io.dmem.data_strb   := lsu.io.dmem_strb
 io.dmem.data_write  := lsu.io.dmem_wdata
+
+
 
 when(io.dmem.data_ready){lsu.io.dmem_rdata  := io.dmem.data_read}
 .otherwise              {lsu.io.dmem_rdata  := 0.U}
@@ -338,8 +340,8 @@ lsu.io.dmem_addr  := mem_dmem_addr
 
 
 when((mem_reg_rs2_addr === wb_reg_rd_addr) 
-&&(mem_reg_dmem_wen && wb_reg_rd_wen)){ lsu.io.rs2_data  := wb_rd_data       }
-.otherwise                            { lsu.io.rs2_data  := mem_reg_rs2_data } //write memory data is from rs2
+&&(mem_reg_dmem_wen && wb_reg_rd_wen)) { lsu.io.rs2_data  := wb_rd_data       }
+.otherwise                             { lsu.io.rs2_data  := mem_reg_rs2_data } //write memory data is from rs2
 
 // LD instruction Data Path
 mem_rd_data   := lsu.io.mem_rdata
