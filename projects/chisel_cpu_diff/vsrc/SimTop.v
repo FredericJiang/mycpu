@@ -2990,7 +2990,6 @@ module Core2AXI(
 `ifdef RANDOMIZE_REG_INIT
   reg [31:0] _RAND_0;
   reg [31:0] _RAND_1;
-  reg [31:0] _RAND_2;
 `endif // RANDOMIZE_REG_INIT
   wire  ar_hs = io_axi2ram_ar_ready & io_axi2ram_ar_valid; // @[AXI.scala 105:31]
   wire  r_hs = io_axi2ram_r_ready & io_axi2ram_r_valid; // @[AXI.scala 106:31]
@@ -3025,11 +3024,10 @@ module Core2AXI(
   wire  _T_11 = 3'h4 == write_state; // @[Conditional.scala 37:30]
   wire [2:0] _GEN_18 = _T_11 ? 3'h0 : write_state; // @[Conditional.scala 39:67 AXI.scala 161:35 AXI.scala 117:28]
   wire [2:0] _GEN_19 = _T_10 ? _GEN_17 : _GEN_18; // @[Conditional.scala 39:67]
-  reg [31:0] axi_addr; // @[AXI.scala 164:23]
   wire [31:0] _GEN_0 = io_axi2ram_ar_bits_addr % 32'h8; // @[AXI.scala 215:25]
   wire [3:0] _T_12 = _GEN_0[3:0]; // @[AXI.scala 215:25]
   assign io_axi2ram_ar_valid = read_state == 3'h1 | read_state == 3'h4; // @[AXI.scala 180:51]
-  assign io_axi2ram_ar_bits_addr = axi_addr; // @[AXI.scala 170:22]
+  assign io_axi2ram_ar_bits_addr = io_imem_inst_addr; // @[AXI.scala 170:22]
   assign io_axi2ram_r_ready = 1'h1; // @[AXI.scala 182:18]
   assign io_axi2ram_aw_valid = write_state == 3'h1; // @[AXI.scala 196:34]
   assign io_axi2ram_aw_bits_addr = io_dmem_data_addr; // @[AXI.scala 186:23]
@@ -3075,13 +3073,6 @@ module Core2AXI(
     end else begin
       write_state <= _GEN_19;
     end
-    if (reset) begin // @[AXI.scala 164:23]
-      axi_addr <= 32'h0; // @[AXI.scala 164:23]
-    end else if (io_imem_inst_req) begin // @[AXI.scala 165:15]
-      axi_addr <= io_imem_inst_addr; // @[AXI.scala 165:24]
-    end else if (io_dmem_data_req_r) begin // @[AXI.scala 166:20]
-      axi_addr <= io_dmem_data_addr; // @[AXI.scala 166:29]
-    end
   end
 // Register and memory initialization
 `ifdef RANDOMIZE_GARBAGE_ASSIGN
@@ -3123,8 +3114,6 @@ initial begin
   read_state = _RAND_0[2:0];
   _RAND_1 = {1{`RANDOM}};
   write_state = _RAND_1[2:0];
-  _RAND_2 = {1{`RANDOM}};
-  axi_addr = _RAND_2[31:0];
 `endif // RANDOMIZE_REG_INIT
   `endif // RANDOMIZE
 end // initial
