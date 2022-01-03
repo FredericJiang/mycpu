@@ -54,6 +54,7 @@ mem_rdata:= MuxCase(0.U, Array(
 
 //lh
 is(MEM_H){
+    
 
 mem_rdata:= MuxCase(0.U, Array(
                   (dmem_addr(2,1)==="b00".U) -> Cat(Fill(48, dmem_rdata(15)),  dmem_rdata(15, 0)),
