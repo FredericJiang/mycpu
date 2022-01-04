@@ -205,7 +205,7 @@ inst_reg_addr:= imem.inst_addr
   out.w.bits.strb     := io.dmem.data_strb
   out.w.bits.last     := true.B
 
-  out.w.valid    := (write_state ===w_data_write)
+  out.w.valid    := (write_state === w_data_write)
 
 // write responds channel signals
   out.b.ready    := true.B
