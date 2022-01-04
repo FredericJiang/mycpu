@@ -149,19 +149,19 @@ dmem_wdata:= Cat(rs2_data(7,0),Fill(56,0.U))
 //sh
 when(dmem_addr(2,1)==="b00".U){
 dmem_wmask := "h000000000000ffff".U
-dmem_strb  := "b00_00_00_11".U
+dmem_strb  := "b00000011".U
 dmem_wdata:= Cat(Fill(48, 0.U),rs2_data(15,0))
 }.elsewhen(dmem_addr(2,1)==="b01".U){
 dmem_wmask := "h00000000ffff0000".U
-dmem_strb  := "b00_00_11_00".U
+dmem_strb  := "b00001100".U
 dmem_wdata:= Cat(Fill(32, 0.U),rs2_data(15,0),Fill(16,0.U))
 }.elsewhen(dmem_addr(2,1)==="b10".U){
 dmem_wmask := "h0000ffff00000000".U
-dmem_strb  := "b00_11_00_00".U
+dmem_strb  := "b00110000".U
 dmem_wdata:= Cat(Fill(16, 0.U),rs2_data(15,0),Fill(32,0.U))
 }.elsewhen(dmem_addr(2,1)==="b11".U){
 dmem_wmask := "hffff000000000000".U
-dmem_strb  := "b11_00_00_00".U
+dmem_strb  := "b11000000".U
 dmem_wdata:= Cat(rs2_data(15,0),Fill(48,0.U))
 }  
 
