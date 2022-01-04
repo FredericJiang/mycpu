@@ -17,6 +17,7 @@ val mem_rdata    = Output(UInt(64.W))
 val dmem_wmask   = Output(UInt(64.W))
 val dmem_wdata   = Output(UInt(64.W))
 val dmem_strb    = Output(UInt(8.W))
+val aligned_addr   = Output(UInt(64.W))
 })
 
 val dmem_addr  = io.dmem_addr
@@ -26,6 +27,11 @@ val mem_rdata  = WireInit(0.U(64.W))
 val dmem_wmask = WireInit(0.U(64.W))
 val dmem_wdata = WireInit(0.U(64.W))
 val dmem_strb  = WireInit(0.U(8.W))
+
+val aligned_addr = WireInit(0.U(64.W))
+
+aligned_addr := Cat(dmem_addr(63,3),Fill(3,0.U))
+io.aligned_addr := aligned_addr
 
 io.mem_rdata  := mem_rdata
 io.dmem_wmask := dmem_wmask
@@ -164,6 +170,8 @@ dmem_wmask := "hffff000000000000".U
 dmem_strb  := "b11000000".U
 dmem_wdata:= Cat(rs2_data(15,0),Fill(48,0.U))
 }  
+
+
 
 
 }.elsewhen(io.wb_type === WB_MEM_W){
