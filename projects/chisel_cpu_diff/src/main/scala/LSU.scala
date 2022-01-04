@@ -30,7 +30,7 @@ val dmem_strb  = WireInit(0.U(8.W))
 
 val aligned_addr = WireInit(0.U(64.W))
 
-aligned_addr := Cat(dmem_addr(63,3),Fill(3,0.U))
+aligned_addr := Cat(io.dmem_addr(63,3),Fill(3,0.U))
 io.aligned_addr := aligned_addr
 
 io.mem_rdata  := mem_rdata
