@@ -1487,8 +1487,7 @@ module LSU(
   output [7:0]  io_dmem_strb,
   output [63:0] io_aligned_addr
 );
-  wire [63:0] _aligned_addr_T_1 = io_dmem_addr - 64'h80000000; // @[LSU.scala 33:44]
-  wire [60:0] aligned_addr_lo = _aligned_addr_T_1[63:3]; // @[LSU.scala 33:68]
+  wire [60:0] aligned_addr_lo = io_dmem_addr[63:3]; // @[LSU.scala 33:42]
   wire  _T_3 = 3'h1 == io_mem_rtype; // @[Conditional.scala 37:30]
   wire  _mem_rdata_T_1 = io_dmem_addr[2:0] == 3'h0; // @[LSU.scala 51:34]
   wire [55:0] mem_rdata_hi = io_dmem_rdata[7] ? 56'hffffffffffffff : 56'h0; // @[Bitwise.scala 72:12]
