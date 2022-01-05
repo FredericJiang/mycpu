@@ -201,7 +201,7 @@ inst_reg_addr:= imem.inst_addr
 
 // write address channel signals
   out.aw.bits.id      := 0.U   
-  out.aw.bits.addr    := dmem.data_addr
+  out.aw.bits.addr    := dmem.data_addr | write_addr
   out.aw.bits.len     := "b000".U  
   out.aw.bits.size    := "b011".U
   out.aw.bits.burst   := "b01".U
