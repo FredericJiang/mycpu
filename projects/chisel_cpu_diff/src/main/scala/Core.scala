@@ -53,17 +53,6 @@ when(exe_stage_done){ reg_pc_ready:= true.B }
 // Instruction Fetch >>>>>>>> Instruction Decode
 //*******************************************************************
 when(if_stage_done && !stall && !reg_kill_flag){
-/*
-when(!stall && !reg_kill_flag ){
-id_reg_pc    := if_reg_pc
-id_reg_inst  := if_inst
-
-}.elsewhen(!stall && reg_kill_flag){
-id_reg_pc    := "hffffffffffffffff".U
-id_reg_inst  := BUBBLE
-
-}
-*/
 id_reg_pc    := if_reg_pc
 id_reg_inst  := if_inst
 }.elsewhen(stall){
