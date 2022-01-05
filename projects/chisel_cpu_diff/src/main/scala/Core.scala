@@ -333,7 +333,7 @@ when(mem_reg_dmem_en){mem_dmem_addr := mem_reg_alu_out; mem_reg_dmem_addr:= mem_
 
 io.dmem.data_req_r  := exe_reg_dmem_en  && !clint_en && !exe_reg_dmem_wen
 io.dmem.data_req_w  := exe_reg_dmem_wen && !clint_en
-io.dmem.data_addr   := mem_dmem_addr
+io.dmem.data_addr   := lsu.io.aligned_addr //mem_dmem_addr
 io.dmem.data_strb   := lsu.io.dmem_strb
 io.dmem.data_write  := lsu.io.dmem_wdata
 
@@ -395,9 +395,9 @@ wb_reg_csr_rd_data := mem_reg_csr_rd_data
 
 // For difftest
 
-wb_reg_dmem_wen    := mem_reg_dmem_wen
-wb_reg_wdata       := lsu.io.dmem_wdata
-wb_reg_wdest       := mem_dmem_addr
+//wb_reg_dmem_wen    := mem_reg_dmem_wen
+//wb_reg_wdata       := lsu.io.dmem_wdata
+//wb_reg_wdest       := mem_dmem_addr
 
 //*******************************************************************
 // WB CSR REG
