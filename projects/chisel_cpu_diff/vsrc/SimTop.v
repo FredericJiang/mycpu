@@ -2994,8 +2994,6 @@ module Core2AXI(
   reg [31:0] _RAND_0;
   reg [31:0] _RAND_1;
   reg [31:0] _RAND_2;
-  reg [63:0] _RAND_3;
-  reg [31:0] _RAND_4;
 `endif // RANDOMIZE_REG_INIT
   wire  ar_hs = io_axi2ram_ar_ready & io_axi2ram_ar_valid; // @[AXI.scala 107:31]
   wire  r_hs = io_axi2ram_r_ready & io_axi2ram_r_valid; // @[AXI.scala 108:31]
@@ -3033,11 +3031,7 @@ module Core2AXI(
   wire  _T_12 = read_state == 3'h1; // @[AXI.scala 168:17]
   wire  _T_13 = read_state == 3'h4; // @[AXI.scala 169:22]
   wire [31:0] _GEN_23 = read_state == 3'h4 ? io_dmem_data_addr : 32'h0; // @[AXI.scala 169:39 AXI.scala 169:48]
-  reg  data_ok; // @[AXI.scala 171:24]
   wire  _T_14 = write_state == 3'h4; // @[AXI.scala 172:33]
-  wire  _GEN_25 = ~io_dmem_data_req_w ? 1'h0 : data_ok; // @[AXI.scala 175:25 AXI.scala 176:13 AXI.scala 171:24]
-  wire  _GEN_26 = io_dmem_data_req_w & write_state == 3'h4 | _GEN_25; // @[AXI.scala 172:50 AXI.scala 173:13]
-  reg [63:0] write_addr; // @[AXI.scala 179:25]
   reg [31:0] inst_reg_addr; // @[AXI.scala 183:28]
   wire [31:0] _GEN_0 = inst_reg_addr % 32'h8; // @[AXI.scala 234:22]
   wire [3:0] _T_18 = _GEN_0[3:0]; // @[AXI.scala 234:22]
@@ -3046,7 +3040,7 @@ module Core2AXI(
   assign io_axi2ram_ar_bits_addr = read_state == 3'h1 ? io_imem_inst_addr : _GEN_23; // @[AXI.scala 168:39 AXI.scala 168:48]
   assign io_axi2ram_r_ready = 1'h1; // @[AXI.scala 200:18]
   assign io_axi2ram_aw_valid = write_state == 3'h1; // @[AXI.scala 214:34]
-  assign io_axi2ram_aw_bits_addr = write_addr[31:0]; // @[AXI.scala 204:23]
+  assign io_axi2ram_aw_bits_addr = io_dmem_data_addr; // @[AXI.scala 204:23]
   assign io_axi2ram_w_valid = write_state == 3'h2; // @[AXI.scala 221:34]
   assign io_axi2ram_w_bits_data = io_dmem_data_write; // @[AXI.scala 217:23]
   assign io_axi2ram_w_bits_strb = io_dmem_data_strb; // @[AXI.scala 218:23]
@@ -3088,16 +3082,6 @@ module Core2AXI(
       write_state <= _GEN_16;
     end else begin
       write_state <= _GEN_19;
-    end
-    if (reset) begin // @[AXI.scala 171:24]
-      data_ok <= 1'h0; // @[AXI.scala 171:24]
-    end else begin
-      data_ok <= _GEN_26;
-    end
-    if (reset) begin // @[AXI.scala 179:25]
-      write_addr <= 64'h0; // @[AXI.scala 179:25]
-    end else if (data_ok) begin // @[AXI.scala 180:14]
-      write_addr <= {{32'd0}, io_dmem_data_addr}; // @[AXI.scala 181:12]
     end
     if (reset) begin // @[AXI.scala 183:28]
       inst_reg_addr <= 32'h0; // @[AXI.scala 183:28]
@@ -3146,11 +3130,7 @@ initial begin
   _RAND_1 = {1{`RANDOM}};
   write_state = _RAND_1[2:0];
   _RAND_2 = {1{`RANDOM}};
-  data_ok = _RAND_2[0:0];
-  _RAND_3 = {2{`RANDOM}};
-  write_addr = _RAND_3[63:0];
-  _RAND_4 = {1{`RANDOM}};
-  inst_reg_addr = _RAND_4[31:0];
+  inst_reg_addr = _RAND_2[31:0];
 `endif // RANDOMIZE_REG_INIT
   `endif // RANDOMIZE
 end // initial
