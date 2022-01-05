@@ -434,7 +434,7 @@ regfile.io.rd_data := wb_rd_data
 
 
 // MY_INST print output
-/*
+
 val my_inst = RegInit(0.U(1.W))
 
 when(wb_reg_alu_type === ALU_MY_INST)
@@ -442,7 +442,6 @@ when(wb_reg_alu_type === ALU_MY_INST)
   a:= wb_reg_rs1_data
 printf("%c", a) }
 
-*/
 
 
 
