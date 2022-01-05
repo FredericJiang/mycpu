@@ -338,8 +338,8 @@ io.dmem.data_strb   := lsu.io.dmem_strb
 io.dmem.data_write  := lsu.io.dmem_wdata
 
 when(mem_reg_dmem_wen)
-{io.dmem.data_addr   := Cat(mem_dmem_addr(63,3),0.U,0.U,0.U)}
-.otherwise{io.dmem.data_addr   := Cat(mem_reg_dmem_addr(63,3),0.U,0.U,0.U)}
+{io.dmem.data_addr   := mem_dmem_addr}
+.otherwise{io.dmem.data_addr   := mem_reg_dmem_addr}
 
   //lsu.io.aligned_addr 
 
