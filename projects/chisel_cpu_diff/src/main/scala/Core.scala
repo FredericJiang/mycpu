@@ -336,12 +336,13 @@ io.dmem.data_req_w  := exe_reg_dmem_wen && !clint_en
 
 io.dmem.data_strb   := lsu.io.dmem_strb
 io.dmem.data_write  := lsu.io.dmem_wdata
-
+io.dmem.data_addr  := mem_dmem_addr
+/*
 when(mem_reg_dmem_wen)
-{io.dmem.data_addr   := mem_dmem_addr}
-.otherwise{io.dmem.data_addr   := mem_reg_dmem_addr}
+{io.dmem.data_addr  := mem_dmem_addr}
+.otherwise{io.dmem.data_addr := mem_reg_dmem_addr}
+*/  //lsu.io.aligned_addr 
 
-  //lsu.io.aligned_addr 
 
 when(io.dmem.data_ready){lsu.io.dmem_rdata  := io.dmem.data_read}
 .otherwise              {lsu.io.dmem_rdata  := 0.U}
