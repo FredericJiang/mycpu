@@ -118,6 +118,7 @@ val data_wen = WireInit(false.B)
   val read_state  = RegInit(r_idle)
   val write_state = RegInit(w_idle)
 
+
 // FSM of Read Inst & Data
 
 switch(read_state){
@@ -167,6 +168,18 @@ val axi_addr = WireInit(0.U(32.W))
 when(read_state === r_inst_addr)      {axi_addr:= imem.inst_addr }
 .elsewhen(read_state === r_data_addr) {axi_addr:= dmem.data_addr }
 
+  val data_ok = RegInit(false.B)
+  when (data_wen && write_state === w_data_done) {
+    data_ok := true.B
+  }
+  .elsewhen (!data_wen) {
+    data_ok := false.B
+  } 
+
+val write_addr = RegInit(0.U(64.W))
+when(data_ok){
+write_addr := dmem.data_addr
+}
 val inst_reg_addr = RegInit(0.U(32.W))
 inst_reg_addr:= imem.inst_addr 
 
@@ -188,7 +201,7 @@ inst_reg_addr:= imem.inst_addr
 
 // write address channel signals
   out.aw.bits.id      := 0.U  
-  out.aw.bits.addr    := dmem.data_addr
+  out.aw.bits.addr    := write_addr
   out.aw.bits.len     := "b000".U  
   out.aw.bits.size    := "b011".U
   out.aw.bits.burst   := "b01".U
