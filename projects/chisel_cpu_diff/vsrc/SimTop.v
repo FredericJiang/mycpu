@@ -1484,10 +1484,8 @@ module LSU(
   input  [63:0] io_rs2_data,
   output [63:0] io_mem_rdata,
   output [63:0] io_dmem_wdata,
-  output [7:0]  io_dmem_strb,
-  output [63:0] io_aligned_addr
+  output [7:0]  io_dmem_strb
 );
-  wire [60:0] aligned_addr_hi = io_dmem_addr[63:3]; // @[LSU.scala 33:33]
   wire  _T_3 = 3'h1 == io_mem_rtype; // @[Conditional.scala 37:30]
   wire  _mem_rdata_T_1 = io_dmem_addr[2:0] == 3'h0; // @[LSU.scala 51:34]
   wire [55:0] mem_rdata_hi = io_dmem_rdata[7] ? 56'hffffffffffffff : 56'h0; // @[Bitwise.scala 72:12]
@@ -1653,7 +1651,6 @@ module LSU(
   assign io_mem_rdata = io_wb_type == 3'h1 & io_mem_rtype != 3'h0 ? _GEN_6 : 64'h0; // @[LSU.scala 43:54]
   assign io_dmem_wdata = io_wb_type == 3'h2 ? _GEN_31 : _GEN_58; // @[LSU.scala 118:30]
   assign io_dmem_strb = io_wb_type == 3'h2 ? _GEN_30 : _GEN_57; // @[LSU.scala 118:30]
-  assign io_aligned_addr = {aligned_addr_hi,3'h0}; // @[Cat.scala 30:58]
 endmodule
 module Core(
   input         clock,
@@ -1836,7 +1833,6 @@ module Core(
   wire [63:0] lsu_io_mem_rdata; // @[Core.scala 324:17]
   wire [63:0] lsu_io_dmem_wdata; // @[Core.scala 324:17]
   wire [7:0] lsu_io_dmem_strb; // @[Core.scala 324:17]
-  wire [63:0] lsu_io_aligned_addr; // @[Core.scala 324:17]
   wire  dt_ic_clock; // @[Core.scala 488:19]
   wire [7:0] dt_ic_coreid; // @[Core.scala 488:19]
   wire [7:0] dt_ic_index; // @[Core.scala 488:19]
@@ -2140,8 +2136,7 @@ module Core(
     .io_rs2_data(lsu_io_rs2_data),
     .io_mem_rdata(lsu_io_mem_rdata),
     .io_dmem_wdata(lsu_io_dmem_wdata),
-    .io_dmem_strb(lsu_io_dmem_strb),
-    .io_aligned_addr(lsu_io_aligned_addr)
+    .io_dmem_strb(lsu_io_dmem_strb)
   );
   DifftestInstrCommit dt_ic ( // @[Core.scala 488:19]
     .clock(dt_ic_clock),
@@ -2201,7 +2196,7 @@ module Core(
   assign io_imem_inst_addr = if_reg_pc; // @[Core.scala 43:20]
   assign io_dmem_data_req_r = _mem_reg_dmem_en_T_1 & ~exe_reg_dmem_wen; // @[Core.scala 334:54]
   assign io_dmem_data_req_w = exe_reg_dmem_wen & _mem_reg_dmem_wen_T; // @[Core.scala 335:41]
-  assign io_dmem_data_addr = lsu_io_aligned_addr[31:0]; // @[Core.scala 336:21]
+  assign io_dmem_data_addr = mem_dmem_addr[31:0]; // @[Core.scala 336:21]
   assign io_dmem_data_write = lsu_io_dmem_wdata; // @[Core.scala 338:21]
   assign io_dmem_data_strb = lsu_io_dmem_strb; // @[Core.scala 337:21]
   assign decode_io_inst = id_reg_inst[31:0]; // @[Core.scala 87:21]
