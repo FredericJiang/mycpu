@@ -38,6 +38,9 @@ class CSR extends Module {
 
   val csr_rw = (io.csr_type === CSR_RW) || (io.csr_type === CSR_RS) || (io.csr_type === CSR_RC)
   val csr_jmp = WireInit(Bool(), false.B)
+  val csr_ecall = WireInit(Bool(), false.B)
+  val csr_mret = WireInit(Bool(), false.B)
+  
   val csr_jmp_pc = WireInit(UInt(32.W), 0.U)
 
   val mhartid   = RegInit(UInt(64.W), 0.U)
@@ -62,18 +65,18 @@ class CSR extends Module {
     mepc := io.pc
     mcause := 11.U  // Env call from M-mode
     mstatus := Cat(mstatus(63,13), Fill(2, 1.U), mstatus(10,8), mstatus(3), mstatus(6, 4), 0.U, mstatus(2, 0))
-    csr_jmp := true.B
+    csr_ecall := true.B
     csr_jmp_pc := Cat(mtvec(31, 2), Fill(2, 0.U))
   }
 
 // MRET
   when (io.csr_type === CSR_MRET) {
     mstatus := Cat(mstatus(63,13), Fill(2, 0.U), mstatus(10,8), 1.U, mstatus(6, 4), mstatus(7), mstatus(2, 0))
-    csr_jmp := true.B
+    csr_mret := true.B
     csr_jmp_pc := mepc(31, 0)
   }
 
-
+csr_jmp := csr_ecall || csr_mret
 // Interrupt
 
 
