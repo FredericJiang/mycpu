@@ -1256,6 +1256,8 @@ module CSR(
   wire  mstatus_lo_hi_lo = mstatus[7]; // @[CSR.scala 71:92]
   wire [63:0] _mstatus_T_1 = {mstatus_hi_hi_hi,2'h0,mstatus_hi_lo_hi,1'h1,mstatus_lo_hi_hi,mstatus_lo_hi_lo,
     mstatus_lo_lo}; // @[Cat.scala 30:58]
+  wire [29:0] csr_jmp_pc_hi_1 = mepc[31:2]; // @[CSR.scala 73:27]
+  wire [31:0] _csr_jmp_pc_T_1 = {csr_jmp_pc_hi_1,2'h0}; // @[Cat.scala 30:58]
   wire [63:0] _GEN_5 = io_csr_type == 3'h2 ? _mstatus_T_1 : _GEN_2; // @[CSR.scala 70:35 CSR.scala 71:13]
   wire [63:0] _GEN_8 = io_time_intrpt ? {{32'd0}, io_pc_timer} : _GEN_0; // @[CSR.scala 85:23 CSR.scala 87:14]
   wire [63:0] _GEN_9 = io_time_intrpt ? 64'h8000000000000007 : _GEN_1; // @[CSR.scala 85:23 CSR.scala 88:16]
@@ -1282,7 +1284,7 @@ module CSR(
   wire [63:0] _mstatus_T_9 = {mstatus_hi_3,mstatus_lo_3}; // @[Cat.scala 30:58]
   assign io_out = 12'hb02 == addr ? minstret : _rdata_T_15; // @[Mux.scala 80:57]
   assign io_jmp = io_csr_type == 3'h2 | _T; // @[CSR.scala 70:35 CSR.scala 72:13]
-  assign io_jmp_pc = io_csr_type == 3'h2 ? mepc[31:0] : _GEN_4; // @[CSR.scala 70:35 CSR.scala 73:16]
+  assign io_jmp_pc = io_csr_type == 3'h2 ? _csr_jmp_pc_T_1 : _GEN_4; // @[CSR.scala 70:35 CSR.scala 73:16]
   assign io_intrpt = io_time_intrpt; // @[CSR.scala 85:23 CSR.scala 90:19 CSR.scala 80:11]
   assign io_intrpt_pc = io_time_intrpt ? _csr_jmp_pc_T : 32'h0; // @[CSR.scala 85:23 CSR.scala 92:22 CSR.scala 82:14]
   assign io_intrpt_no = {{61'd0}, _GEN_12}; // @[CSR.scala 85:23 CSR.scala 91:22 CSR.scala 81:14]
