@@ -202,8 +202,7 @@ exe_alu_out     := alu.io.alu_out
 val clint_en  = Wire(Bool())
 
 when(exe_reg_dmem_en && 
-(exe_alu_out === CLINT_MTIME || 
-exe_alu_out === CLINT_MTIMECMP))
+(exe_alu_out === CLINT_MTIME || exe_alu_out === CLINT_MTIMECMP))
            {clint_en := true.B}
 .otherwise {clint_en := false.B}
 
@@ -218,6 +217,7 @@ clint.io.cmp_wdata  :=  exe_reg_rs2_data
 
 val csr  = Module(new CSR)
 csr.io.pc          := exe_reg_pc
+csr.io.pc_timer    := id_reg_pc
 csr.io.inst        := exe_reg_inst
 csr.io.in_data     := exe_alu_out
 csr.io.csr_type    := exe_reg_csr_type

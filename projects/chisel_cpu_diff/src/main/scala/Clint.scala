@@ -9,7 +9,7 @@ import Constant._
 
 class Clint extends Module {
   val io = IO(new Bundle {
-   // val  mstatus    = Input(UInt(64.W))
+   //val  mstatus    = Input(UInt(64.W))
    //val  mie        = Input(UInt(64.W))
     val  cmp_ren    = Input(Bool())
     val  cmp_wen    = Input(Bool())

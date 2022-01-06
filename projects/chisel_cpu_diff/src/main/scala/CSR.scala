@@ -10,6 +10,7 @@ import difftest._
 class CSR extends Module {
   val io = IO(new Bundle {
     val pc          = Input(UInt(32.W))
+    val pc_timer    = Input(UInt(32.W))
     val inst        = Input(UInt(32.W))
     val csr_type    = Input(UInt(3.W))
     val in_data     = Input(UInt(64.W))
@@ -83,7 +84,7 @@ io.intrpt_pc := 0.U
 
   when(io.time_intrpt){
         
-        mepc := io.pc
+        mepc := io.pc_timer
         mcause := "h8000000000000007".U  //Machine Timer Interrupt, Only one interrupt is realized
         mstatus := Cat(mstatus(63,13), Fill(2, 1.U), mstatus(10,8), mstatus(3), mstatus(6, 4), 0.U, mstatus(2, 0))
         io.intrpt := true.B
