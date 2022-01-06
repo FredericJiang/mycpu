@@ -70,7 +70,7 @@ class CSR extends Module {
   when (io.csr_type === CSR_MRET) {
     mstatus := Cat(mstatus(63,13), Fill(2, 0.U), mstatus(10,8), 1.U, mstatus(6, 4), mstatus(7), mstatus(2, 0))
     csr_jmp := true.B
-    csr_jmp_pc := Cat(mepc(31, 2), Fill(2, 0.U))
+    csr_jmp_pc := mepc(31, 0)
   }
 
 
