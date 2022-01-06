@@ -217,7 +217,7 @@ clint.io.cmp_wdata  :=  exe_reg_rs2_data
 
 val csr  = Module(new CSR)
 csr.io.pc          := exe_reg_pc
-csr.io.pc_timer    := exe_reg_pc
+csr.io.pc_timer    := mem_reg_pc
 csr.io.inst        := exe_reg_inst
 csr.io.in_data     := exe_alu_out
 csr.io.csr_type    := exe_reg_csr_type
