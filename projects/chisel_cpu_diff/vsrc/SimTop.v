@@ -2231,7 +2231,7 @@ module Core(
   assign csr_clock = clock;
   assign csr_reset = reset;
   assign csr_io_pc = exe_reg_pc; // @[Core.scala 219:20]
-  assign csr_io_pc_timer = mem_reg_pc; // @[Core.scala 220:20]
+  assign csr_io_pc_timer = exe_reg_pc; // @[Core.scala 220:20]
   assign csr_io_inst = exe_reg_inst[31:0]; // @[Core.scala 221:20]
   assign csr_io_csr_type = exe_reg_csr_type; // @[Core.scala 223:20]
   assign csr_io_in_data = alu_io_alu_out; // @[PipelineReg.scala 118:23 Core.scala 200:17]
