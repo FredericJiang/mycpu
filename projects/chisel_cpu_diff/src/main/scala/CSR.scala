@@ -142,8 +142,8 @@ io.intrpt_pc := 0.U
       mcause := wdata 
     }
     when(addr === csr_addr.mstatus) {
-       mstatus := Cat((wdata(16) & wdata(15)) | (wdata(14) && wdata(13)), wdata(62, 13),1.U,1.U,wdata(10, 0))
-      //mstatus := Cat((wdata(16) & wdata(15)) | (wdata(14) && wdata(13)), wdata(62, 0))
+       //mstatus := Cat((wdata(16) & wdata(15)) | (wdata(14) && wdata(13)), wdata(62, 13),1.U,1.U,wdata(10, 0))
+      mstatus := Cat((wdata(16) & wdata(15)) | (wdata(14) && wdata(13)), wdata(62, 0))
     }
     when(addr === csr_addr.mie) {
       mie := wdata 

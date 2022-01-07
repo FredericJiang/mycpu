@@ -1281,10 +1281,9 @@ module CSR(
   wire [63:0] _wdata_T_4 = 3'h3 == io_csr_type ? io_in_data : 64'h0; // @[Mux.scala 80:57]
   wire [63:0] _wdata_T_6 = 3'h4 == io_csr_type ? _wdata_T : _wdata_T_4; // @[Mux.scala 80:57]
   wire [63:0] wdata = 3'h5 == io_csr_type ? _wdata_T_2 : _wdata_T_6; // @[Mux.scala 80:57]
-  wire  mstatus_hi_hi_hi_3 = wdata[16] & wdata[15] | wdata[14] & wdata[13]; // @[CSR.scala 145:47]
-  wire [49:0] mstatus_hi_hi_lo_3 = wdata[62:13]; // @[CSR.scala 145:80]
-  wire [10:0] mstatus_lo_lo_3 = wdata[10:0]; // @[CSR.scala 145:102]
-  wire [63:0] _mstatus_T_9 = {mstatus_hi_hi_hi_3,mstatus_hi_hi_lo_3,1'h1,1'h1,mstatus_lo_lo_3}; // @[Cat.scala 30:58]
+  wire  mstatus_hi_3 = wdata[16] & wdata[15] | wdata[14] & wdata[13]; // @[CSR.scala 146:46]
+  wire [62:0] mstatus_lo_3 = wdata[62:0]; // @[CSR.scala 146:79]
+  wire [63:0] _mstatus_T_9 = {mstatus_hi_3,mstatus_lo_3}; // @[Cat.scala 30:58]
   assign io_out = 12'hb02 == addr ? minstret : _rdata_T_15; // @[Mux.scala 80:57]
   assign io_jmp = csr_ecall | csr_mret; // @[CSR.scala 79:22]
   assign io_jmp_pc = csr_mret ? mepc[31:0] : _GEN_4; // @[CSR.scala 73:35 CSR.scala 76:16]
@@ -1305,7 +1304,7 @@ module CSR(
       mstatus <= 64'h1800; // @[CSR.scala 47:26]
     end else if (csr_rw) begin // @[CSR.scala 131:13]
       if (addr == 12'h300) begin // @[CSR.scala 144:37]
-        mstatus <= _mstatus_T_9; // @[CSR.scala 145:16]
+        mstatus <= _mstatus_T_9; // @[CSR.scala 146:15]
       end else begin
         mstatus <= _GEN_10;
       end
