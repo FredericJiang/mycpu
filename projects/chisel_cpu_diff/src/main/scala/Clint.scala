@@ -32,7 +32,7 @@ class Clint extends Module {
 
   mtime := mtime + 1.U
   when (cmp_wen) {
-    mtimecmp := mtimecmp + cmp_wdata
+    mtimecmp := mtimecmp + (cmp_wdata*5.U)
   }
 
   val mie = WireInit(UInt(64.W), 0.U)
