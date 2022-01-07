@@ -32,7 +32,7 @@ class Clint extends Module {
   val mtimecmp  = RegInit(UInt(64.W), 0.U)
   
   when(io.time_valid){
-  mtime := mtime + 1.U
+  mtime := mtime + 100.U
 }
   when (cmp_wen) {
     mtimecmp := mtimecmp + cmp_wdata
