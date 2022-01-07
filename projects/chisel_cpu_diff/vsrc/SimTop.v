@@ -1131,19 +1131,19 @@ module Clint(
 `endif // RANDOMIZE_REG_INIT
   reg [63:0] mtime; // @[Clint.scala 31:26]
   reg [63:0] mtimecmp; // @[Clint.scala 32:26]
-  wire [63:0] _mtime_T_1 = mtime + 64'h64; // @[Clint.scala 35:18]
-  wire [63:0] _mtimecmp_T_1 = mtimecmp + io_cmp_wdata; // @[Clint.scala 38:26]
-  assign io_time_intrpt = mtime >= mtimecmp & csr_status[3] & csr_mie[7] & io_time_valid; // @[Clint.scala 46:80]
+  wire [63:0] _mtime_T_1 = mtime + 64'h1; // @[Clint.scala 34:18]
+  wire [63:0] _mtimecmp_T_1 = mtimecmp + io_cmp_wdata; // @[Clint.scala 37:26]
+  assign io_time_intrpt = mtime >= mtimecmp & csr_status[3] & csr_mie[7] & io_time_valid; // @[Clint.scala 45:80]
   always @(posedge clock) begin
     if (reset) begin // @[Clint.scala 31:26]
       mtime <= 64'h0; // @[Clint.scala 31:26]
-    end else if (io_time_valid) begin // @[Clint.scala 34:22]
-      mtime <= _mtime_T_1; // @[Clint.scala 35:9]
+    end else begin
+      mtime <= _mtime_T_1; // @[Clint.scala 34:9]
     end
     if (reset) begin // @[Clint.scala 32:26]
       mtimecmp <= 64'h0; // @[Clint.scala 32:26]
-    end else if (io_cmp_wen) begin // @[Clint.scala 37:18]
-      mtimecmp <= _mtimecmp_T_1; // @[Clint.scala 38:14]
+    end else if (io_cmp_wen) begin // @[Clint.scala 36:18]
+      mtimecmp <= _mtimecmp_T_1; // @[Clint.scala 37:14]
     end
   end
 // Register and memory initialization
