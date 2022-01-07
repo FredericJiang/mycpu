@@ -43,7 +43,7 @@ class Clint extends Module {
   val mstatus  = WireInit(UInt(64.W), 0.U)
   BoringUtils.addSink(mstatus, "csr_status")
 
-  io.time_intrpt  := mtime >= mtimecmp && mstatus(3) === 1.U && mie(7) === 1.U
+  io.time_intrpt  := mtime >= mtimecmp && mstatus(3) === 1.U && mie(7) === 1.U && io.time_valid
   when(io.time_intrpt){io.intrpt_no := 7.U
   }.otherwise{io.intrpt_no := 0.U}
   
