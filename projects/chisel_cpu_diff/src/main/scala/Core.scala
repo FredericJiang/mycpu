@@ -184,9 +184,9 @@ exe_reg_inst      := exe_reg_inst
 //*******************************************************************
 // Execute Stage
 
-
 val exe_op1     = Wire(UInt(64.W))
 val exe_op2     = Wire(UInt(64.W))
+
 
 
 exe_op1 := exe_reg_op1_data 
@@ -206,6 +206,11 @@ when(exe_reg_dmem_en &&
            {clint_en := true.B}
 .otherwise {clint_en := false.B}
 
+val exe_stage_valid = WireInit(false.B)
+
+when(exe_reg_pc =/= 0.U){
+  exe_stage_valid := true.B
+}
 
 
 val clint = Module(new Clint)
@@ -213,7 +218,7 @@ clint.io.cmp_ren    :=  (exe_reg_mem_rtype =/= MEM_X) && clint_en
 clint.io.cmp_wen    :=  exe_reg_dmem_wen && clint_en
 clint.io.cmp_addr   :=  exe_alu_out
 clint.io.cmp_wdata  :=  exe_reg_rs2_data
-
+clint.io.time_valid :=  exe_stage_valid
 
 val csr  = Module(new CSR)
 csr.io.pc          := exe_reg_pc

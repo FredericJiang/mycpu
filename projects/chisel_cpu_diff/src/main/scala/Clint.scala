@@ -11,6 +11,7 @@ class Clint extends Module {
   val io = IO(new Bundle {
    //val  mstatus    = Input(UInt(64.W))
    //val  mie        = Input(UInt(64.W))
+   val   time_valid  = Input(Bool())
     val  cmp_ren    = Input(Bool())
     val  cmp_wen    = Input(Bool())
     val  cmp_addr   = Input(UInt(64.W))
@@ -29,8 +30,10 @@ class Clint extends Module {
 
   val mtime     = RegInit(UInt(64.W), 0.U)
   val mtimecmp  = RegInit(UInt(64.W), 0.U)
-
+  
+  when(io.time_valid){
   mtime := mtime + 1.U
+}
   when (cmp_wen) {
     mtimecmp := mtimecmp + (cmp_wdata*5.U)
   }
