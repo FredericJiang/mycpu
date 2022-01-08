@@ -143,6 +143,7 @@ io.intrpt_pc := 0.U
     }
     when(addr === csr_addr.mstatus) {
       when(io.time_intrpt){mstatus := Cat((wdata(16) & wdata(15)) | (wdata(14) && wdata(13)), wdata(62, 13),1.U,1.U,wdata(10, 0))}
+      //当csrw指令写mstatus同时携带计时器中断时，interrupt对mstatus的写操作被覆盖（因为在同一个周期），因此在这里一起写
       .otherwise{mstatus := Cat((wdata(16) & wdata(15)) | (wdata(14) && wdata(13)), wdata(62, 0))}
       
     }
