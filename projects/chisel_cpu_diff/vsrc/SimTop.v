@@ -1132,7 +1132,10 @@ module Clint(
   reg [63:0] mtime; // @[Clint.scala 31:26]
   reg [63:0] mtimecmp; // @[Clint.scala 32:26]
   wire [63:0] _mtime_T_1 = mtime + 64'h1; // @[Clint.scala 34:18]
-  wire [63:0] _mtimecmp_T_1 = mtimecmp + io_cmp_wdata; // @[Clint.scala 37:26]
+  wire [66:0] _mtimecmp_T = io_cmp_wdata * 3'h5; // @[Clint.scala 37:37]
+  wire [66:0] _GEN_2 = {{3'd0}, mtimecmp}; // @[Clint.scala 37:26]
+  wire [66:0] _mtimecmp_T_2 = _GEN_2 + _mtimecmp_T; // @[Clint.scala 37:26]
+  wire [66:0] _GEN_0 = io_cmp_wen ? _mtimecmp_T_2 : {{3'd0}, mtimecmp}; // @[Clint.scala 36:18 Clint.scala 37:14 Clint.scala 32:26]
   assign io_time_intrpt = mtime >= mtimecmp & csr_status[3] & csr_mie[7] & io_time_valid; // @[Clint.scala 45:80]
   always @(posedge clock) begin
     if (reset) begin // @[Clint.scala 31:26]
@@ -1142,8 +1145,8 @@ module Clint(
     end
     if (reset) begin // @[Clint.scala 32:26]
       mtimecmp <= 64'h0; // @[Clint.scala 32:26]
-    end else if (io_cmp_wen) begin // @[Clint.scala 36:18]
-      mtimecmp <= _mtimecmp_T_1; // @[Clint.scala 37:14]
+    end else begin
+      mtimecmp <= _GEN_0[63:0];
     end
   end
 // Register and memory initialization
