@@ -1282,9 +1282,12 @@ module CSR(
   wire [63:0] _wdata_T_4 = 3'h3 == io_csr_type ? io_in_data : 64'h0; // @[Mux.scala 80:57]
   wire [63:0] _wdata_T_6 = 3'h4 == io_csr_type ? _wdata_T : _wdata_T_4; // @[Mux.scala 80:57]
   wire [63:0] wdata = 3'h5 == io_csr_type ? _wdata_T_2 : _wdata_T_6; // @[Mux.scala 80:57]
-  wire  mstatus_hi_3 = wdata[16] & wdata[15] | wdata[14] & wdata[13]; // @[CSR.scala 146:46]
-  wire [62:0] mstatus_lo_3 = wdata[62:0]; // @[CSR.scala 146:79]
-  wire [63:0] _mstatus_T_9 = {mstatus_hi_3,mstatus_lo_3}; // @[Cat.scala 30:58]
+  wire  mstatus_hi_hi_hi_3 = wdata[16] & wdata[15] | wdata[14] & wdata[13]; // @[CSR.scala 145:67]
+  wire [49:0] mstatus_hi_hi_lo_3 = wdata[62:13]; // @[CSR.scala 145:100]
+  wire [10:0] mstatus_lo_lo_3 = wdata[10:0]; // @[CSR.scala 145:122]
+  wire [63:0] _mstatus_T_9 = {mstatus_hi_hi_hi_3,mstatus_hi_hi_lo_3,1'h1,1'h1,mstatus_lo_lo_3}; // @[Cat.scala 30:58]
+  wire [62:0] mstatus_lo_4 = wdata[62:0]; // @[CSR.scala 146:90]
+  wire [63:0] _mstatus_T_16 = {mstatus_hi_hi_hi_3,mstatus_lo_4}; // @[Cat.scala 30:58]
   assign io_out = 12'hb02 == addr ? minstret : _rdata_T_15; // @[Mux.scala 80:57]
   assign io_jmp = csr_ecall | csr_mret; // @[CSR.scala 79:22]
   assign io_jmp_pc = csr_mret ? mepc[31:0] : _GEN_4; // @[CSR.scala 73:35 CSR.scala 76:16]
@@ -1292,12 +1295,12 @@ module CSR(
   assign io_intrpt_pc = io_time_intrpt ? _csr_jmp_pc_T : 32'h0; // @[CSR.scala 88:23 CSR.scala 95:22 CSR.scala 85:14]
   assign io_intrpt_no = {{61'd0}, _GEN_12}; // @[CSR.scala 88:23 CSR.scala 94:22 CSR.scala 84:14]
   assign io_rd_wen = io_csr_type == 3'h3 | io_csr_type == 3'h4 | io_csr_type == 3'h5; // @[CSR.scala 39:69]
-  assign io_mie = mie; // @[CSR.scala 167:16]
-  assign io_mstatus = mstatus; // @[CSR.scala 168:16]
-  assign io_mepc = mepc; // @[CSR.scala 169:16]
-  assign io_mtvec = mtvec; // @[CSR.scala 170:16]
-  assign io_mcause = mcause; // @[CSR.scala 171:16]
-  assign io_mscratch = mscratch; // @[CSR.scala 172:16]
+  assign io_mie = mie; // @[CSR.scala 168:16]
+  assign io_mstatus = mstatus; // @[CSR.scala 169:16]
+  assign io_mepc = mepc; // @[CSR.scala 170:16]
+  assign io_mtvec = mtvec; // @[CSR.scala 171:16]
+  assign io_mcause = mcause; // @[CSR.scala 172:16]
+  assign io_mscratch = mscratch; // @[CSR.scala 173:16]
   assign mie_0 = mie;
   assign mstatus_0 = mstatus;
   always @(posedge clock) begin
@@ -1305,7 +1308,11 @@ module CSR(
       mstatus <= 64'h1800; // @[CSR.scala 47:26]
     end else if (csr_rw) begin // @[CSR.scala 131:13]
       if (addr == 12'h300) begin // @[CSR.scala 144:37]
-        mstatus <= _mstatus_T_9; // @[CSR.scala 146:15]
+        if (io_time_intrpt) begin // @[CSR.scala 145:27]
+          mstatus <= _mstatus_T_9; // @[CSR.scala 145:36]
+        end else begin
+          mstatus <= _mstatus_T_16; // @[CSR.scala 146:26]
+        end
       end else begin
         mstatus <= _GEN_10;
       end
@@ -1315,7 +1322,7 @@ module CSR(
     if (reset) begin // @[CSR.scala 48:26]
       mie <= 64'h0; // @[CSR.scala 48:26]
     end else if (csr_rw) begin // @[CSR.scala 131:13]
-      if (addr == 12'h304) begin // @[CSR.scala 148:33]
+      if (addr == 12'h304) begin // @[CSR.scala 149:33]
         if (3'h5 == io_csr_type) begin // @[Mux.scala 80:57]
           mie <= _wdata_T_2;
         end else begin
@@ -1337,7 +1344,7 @@ module CSR(
     if (reset) begin // @[CSR.scala 50:26]
       mscratch <= 64'h0; // @[CSR.scala 50:26]
     end else if (csr_rw) begin // @[CSR.scala 131:13]
-      if (addr == 12'h340) begin // @[CSR.scala 151:38]
+      if (addr == 12'h340) begin // @[CSR.scala 152:38]
         if (3'h5 == io_csr_type) begin // @[Mux.scala 80:57]
           mscratch <= _wdata_T_2;
         end else begin

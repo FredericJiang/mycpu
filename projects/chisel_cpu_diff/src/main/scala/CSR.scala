@@ -57,8 +57,8 @@ class CSR extends Module {
   BoringUtils.addSink(mcycle, "csr_mcycle")
   BoringUtils.addSink(minstret, "csr_minstret")
 
-  //io.mie := mie
-  //io.mstatus := mstatus
+//io.mie := mie
+//io.mstatus := mstatus
 
 //ECALL
   when (io.csr_type === CSR_ECALL) {
@@ -142,8 +142,9 @@ io.intrpt_pc := 0.U
       mcause := wdata 
     }
     when(addr === csr_addr.mstatus) {
-       //mstatus := Cat((wdata(16) & wdata(15)) | (wdata(14) && wdata(13)), wdata(62, 13),1.U,1.U,wdata(10, 0))
-      mstatus := Cat((wdata(16) & wdata(15)) | (wdata(14) && wdata(13)), wdata(62, 0))
+      when(io.time_intrpt){mstatus := Cat((wdata(16) & wdata(15)) | (wdata(14) && wdata(13)), wdata(62, 13),1.U,1.U,wdata(10, 0))}
+      .otherwise{mstatus := Cat((wdata(16) & wdata(15)) | (wdata(14) && wdata(13)), wdata(62, 0))}
+      
     }
     when(addr === csr_addr.mie) {
       mie := wdata 
