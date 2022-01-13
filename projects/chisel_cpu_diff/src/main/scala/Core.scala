@@ -32,7 +32,7 @@ when(inst_gen_ready )     { io.imem.inst_req   := true.B  }
 //.elsewhen(reg_kill_flag && reg_pc_ready)       { if_reg_pc := reg_exe_pc_nxt;  reg_kill_flag := false.B; inst_gen_ready:= true.B; reg_pc_ready:= false.B  }
 //.elsewhen(stall && reg_pc_ready)               { if_reg_pc := if_reg_pc;       inst_gen_ready:= false.B  }
 
-when(io.imem.inst_ready){
+when(io.imem.inst_ready || if_reg_pc === "h7ffffffc".U){
 when(stall)              {if_reg_pc := if_reg_pc;        inst_gen_ready:= false.B       }
 .elsewhen(reg_kill_flag) {if_reg_pc := reg_exe_pc_nxt;   inst_gen_ready:= true.B; reg_kill_flag := false.B;}
 .otherwise               {if_reg_pc := if_reg_pc + 4.U;  inst_gen_ready:= true.B;  }
