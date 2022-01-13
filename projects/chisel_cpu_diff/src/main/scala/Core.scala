@@ -238,6 +238,7 @@ when(exe_reg_rs1_addr === mem_reg_rd_addr && mem_reg_mem_rtype =/= MEM_X){
 nxt_pc.io.rs1_data := mem_rd_data
 }.otherwise(nxt_pc.io.rs1_data := exe_reg_rs1_data)
 
+when((exe_reg_rs1_addr === wb_reg_rd_addr) && wb_reg_rd_wen){exe_reg_rs1_data := wb_reg_rd_data}
 
 exe_pc_nxt  := nxt_pc.io.pc_nxt
 kill_stage  := nxt_pc.io.pc_jmp  //current instruction jmp_flag
@@ -359,7 +360,7 @@ mem_reg_stall_wen:= mem_reg_rd_wen //when fetch data from AXI and reserve wen fo
 }
 .elsewhen(io.dmem.data_ready)                { exe_reg_stall := false.B ;  exe_stop_stall:= true.B}
 
-when(!exe_reg_stall && !exe_call_stall){mem_reg_stall_wen:= false.B}
+when(!exe_reg_stall && !exe_call_stall)      {mem_reg_stall_wen:= false.B}
 // Memmory >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Write Back
 //*******************************************************************
 // signals for difftest
