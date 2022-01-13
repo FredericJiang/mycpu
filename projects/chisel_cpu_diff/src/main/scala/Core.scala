@@ -174,10 +174,11 @@ exe_reg_inst      := exe_reg_inst
 
 val exe_op1     = Wire(UInt(64.W))
 val exe_op2     = Wire(UInt(64.W))
-
+/*
 when((exe_reg_rs1_addr === wb_reg_rd_addr) && wb_reg_rd_wen){exe_op1 := wb_rd_data}
 .otherwise{exe_op1 := exe_reg_op1_data }
-
+*/
+exe_op1 := exe_reg_op1_data
 exe_op2 := exe_reg_op2_data 
 
 val alu = Module(new ALU)
