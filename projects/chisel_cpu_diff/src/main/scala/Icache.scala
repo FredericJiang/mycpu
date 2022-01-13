@@ -127,7 +127,7 @@ class Icache extends Module{
       offset(req_index) := req_offset
       
       icache_wen        := false.B     
-      state             := idle    
+      state             := search    
 
     }
 }
