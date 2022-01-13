@@ -175,7 +175,7 @@ exe_reg_inst      := exe_reg_inst
 val exe_op1     = Wire(UInt(64.W))
 val exe_op2     = Wire(UInt(64.W))
 
-
+when((exe_reg_rs1_addr === wb_reg_rd_addr) && wb_reg_rd_wen){exe_reg_op1_data := wb_reg_rd_data}
 
 exe_op1 := exe_reg_op1_data 
 exe_op2 := exe_reg_op2_data 
@@ -238,7 +238,7 @@ when(exe_reg_rs1_addr === mem_reg_rd_addr && mem_reg_mem_rtype =/= MEM_X){
 nxt_pc.io.rs1_data := mem_rd_data
 }.otherwise(nxt_pc.io.rs1_data := exe_reg_rs1_data)
 
-when((exe_reg_rs1_addr === wb_reg_rd_addr) && wb_reg_rd_wen){exe_reg_rs1_data := wb_reg_rd_data}
+
 
 exe_pc_nxt  := nxt_pc.io.pc_nxt
 kill_stage  := nxt_pc.io.pc_jmp  //current instruction jmp_flag
