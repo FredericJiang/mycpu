@@ -8,8 +8,8 @@ import PipelineReg._
 
 class Core extends Module {
   val io = IO(new Bundle {
-    val imem = new AXI_Inst
-    val dmem = new AXI_Data
+    val imem = new Core_Inst
+    val dmem = new Core_Data
   })
 
 
@@ -19,25 +19,23 @@ class Core extends Module {
 
 //when(exe_reg_stall || id_call_stall)        { stall:= true.B  }
 //.elsewhen(!exe_reg_stall && !id_call_stall) { stall:= false.B }
-
-stall := exe_reg_stall || id_call_stall
 //Signal Clarify
 //inst_gen_ready === exe_stage_done
 //indt_req -> reg_pc = ar.addr
 
-when(inst_gen_ready || if_reg_pc === "h80000000".U || RegNext(exe_stop_stall))      { io.imem.inst_req   := true.B  }
+stall := exe_reg_stall || id_call_stall
+
+when(inst_gen_ready || if_reg_pc === "h80000000".U )     { io.imem.inst_req   := true.B  }
 .otherwise                                               { io.imem.inst_req   := false.B }
 
 //when(!stall && !reg_kill_flag && reg_pc_ready) { if_reg_pc := if_reg_pc + 4.U; inst_gen_ready:= true.B; reg_pc_ready:= false.B } 
 //.elsewhen(reg_kill_flag && reg_pc_ready)       { if_reg_pc := reg_exe_pc_nxt;  reg_kill_flag := false.B; inst_gen_ready:= true.B; reg_pc_ready:= false.B  }
 //.elsewhen(stall && reg_pc_ready)               { if_reg_pc := if_reg_pc;       inst_gen_ready:= false.B  }
 
-when(reg_pc_ready){
-when(stall)              {if_reg_pc := if_reg_pc;       inst_gen_ready:= false.B       }
-.elsewhen(reg_kill_flag) {if_reg_pc := reg_exe_pc_nxt;  reg_kill_flag := false.B; inst_gen_ready:= true.B; reg_pc_ready:= false.B  }
-.otherwise               {if_reg_pc := if_reg_pc + 4.U; inst_gen_ready:= true.B; reg_pc_ready:= false.B }
-}
 
+when(stall)              {if_reg_pc := if_reg_pc;        inst_gen_ready:= false.B       }
+.elsewhen(reg_kill_flag) {if_reg_pc := reg_exe_pc_nxt;   inst_gen_ready:= true.B; reg_kill_flag := false.B;}
+.otherwise               {if_reg_pc := if_reg_pc + 4.U;  inst_gen_ready:= true.B;  }
 
 
 io.imem.inst_addr  := if_reg_pc
@@ -45,14 +43,15 @@ io.imem.inst_addr  := if_reg_pc
 when(io.imem.inst_ready && !reg_kill_flag )    {if_inst := io.imem.inst_read} //not read the data as instruction
 .otherwise                                     {if_inst := 0.U}
 
-if_stage_done := io.imem.inst_ready //AXI read_state = r_inst_done
-exe_stage_done := RegNext(if_stage_done) //used to wait the right instruction
-when(exe_stage_done){ reg_pc_ready:= true.B }
+//if_stage_done := io.imem.inst_ready //AXI read_state = r_inst_done
+
+//exe_stage_done := RegNext(if_stage_done) //used to wait the right instruction
+//when(exe_stage_done){ reg_pc_ready:= true.B }
 
 
 // Instruction Fetch >>>>>>>> Instruction Decode
 //*******************************************************************
-when(if_stage_done && !stall && !reg_kill_flag){
+when(io.imem.inst_ready && !stall && !reg_kill_flag){
 id_reg_pc    := if_reg_pc
 id_reg_inst  := if_inst
 }.elsewhen(stall){

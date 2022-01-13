@@ -46,31 +46,41 @@ class AXI_B extends Bundle {
 
 
 
-
-
-class AXI_Inst extends Bundle{
-
-val inst_read   = Input(UInt(AXI_Inst_Width.W))
+class Inst_IO extends Bundle{
 val inst_ready  = Input(Bool())
-val read_idle   = Input(Bool())
-
 val inst_req    = Output(Bool())
 val inst_addr   = Output(UInt(AXI_Addr_Width.W))
 
 }
 
-class AXI_Data extends Bundle{
+class AXI_Inst extends Inst_IO{
+val inst_read   = Input(UInt(128.W))
+}
 
-val data_read   = Input(UInt(AXI_Data_Width.W))
+class Core_Inst extends Inst_IO{
+val inst_read   = Input(UInt(32.W))
+}
+
+class Data_IO extends Bundle{
 val data_ready  = Input(Bool())
-
 val data_req_r  = Output(Bool())
 val data_req_w  = Output(Bool())
-val data_addr_r   = Output(UInt(AXI_Addr_Width.W))
+val data_addr_r   = Output(UInt(AXI_Addr_Width.W))//32 bits
 val data_addr_w   = Output(UInt(AXI_Addr_Width.W))
-val data_write  = Output(UInt(AXI_Data_Width.W)) 
 val data_strb   = Output(UInt(8.W)) 
 }
+
+class Core_Data extends Data_IO{
+val data_read   = Input(UInt(AXI_Data_Width.W)) //64 bits
+val data_write  = Output(UInt(AXI_Data_Width.W)) 
+}
+
+class AXI_Data extends Data_IO{
+val data_read   = Input(UInt(128.W))
+val data_write  = Output(UInt(128.W)) 
+}
+
+
 
 
 class Core2AXI extends Module{
@@ -175,11 +185,11 @@ inst_reg_addr:= imem.inst_addr
 // Read address channel signals
   out.ar.bits.id     := 0.U 
   out.ar.bits.addr   := axi_addr
-  out.ar.bits.len    := "b000".U //every burst transfer 1 data
-  out.ar.bits.size   := "b011".U //every clock transfer 8 bytes
-  out.ar.bits.burst  := "b01".U  
+  out.ar.bits.len    := Mux(read_state < 4.U, "b001".U, "b000".U)  //every burst transfer 2 data
+  out.ar.bits.size   := "b011".U //every clock transfer 8 bytes = 64bits
+  out.ar.bits.burst  := "b01".U  // incrementing-address burst
   out.ar.bits.lock   := 0.U  
-  out.ar.bits.cache  := "b0000".U  
+  out.ar.bits.cache  := Mux(read_state<4.U , "b0010".U , "b0000".U ) 
   out.ar.bits.prot   := "b000".U
   out.ar.bits.qos    := 0.U
   out.ar.bits.user   := 0.U
@@ -191,9 +201,9 @@ inst_reg_addr:= imem.inst_addr
 // write address channel signals
   out.aw.bits.id      := 0.U   
   out.aw.bits.addr    := dmem.data_addr_w
-  out.aw.bits.len     := "b000".U  
-  out.aw.bits.size    := "b011".U
-  out.aw.bits.burst   := "b01".U
+  out.aw.bits.len     := "b000".U //every burst transfer 1 data
+  out.aw.bits.size    := "b011".U //every clock transfer 8 bytes = 64bits
+  out.aw.bits.burst   := "b01".U  // incrementing-address burst
   out.aw.bits.lock    := 0.U
   out.aw.bits.cache   := "b0000".U  
   out.aw.bits.prot    := "b000".U
@@ -215,21 +225,48 @@ inst_reg_addr:= imem.inst_addr
 
 
 // Core part for inst read
-  imem.inst_ready := (read_state === r_inst_done) 
 
 
 //need to aligned the fetched data  
+/*
 when(read_state < 4.U){
   when(inst_reg_addr % 8.U === 0.U){ imem.inst_read  := out.r.bits.data(31,0) }
 .otherwise                          { imem.inst_read  := out.r.bits.data(63,32)}
 
 }.otherwise{ imem.inst_read  := 0.U}
+*/
+
+  val inst_read_h = RegInit(0.U(64.W))
+  val inst_read_l = RegInit(0.U(64.W))
+  val data_read_h = RegInit(0.U(64.W))
+  val data_read_l = RegInit(0.U(64.W))
+
+  when (r_hs) {
+    when (out.r.bits.last) {
+      inst_read_h := out.r.bits.data
+      data_read_h := out.r.bits.data
+    }
+    .otherwise {
+      inst_read_l := out.r.bits.data
+      data_read_l := out.r.bits.data
+    }
+  }
+
+  imem.inst_read := Cat(inst_read_h, inst_read_l)
+  //dmem.data_read := Cat(data_read_h, data_read_l)
+  dmem.data_read := data_read_h
+
+  imem.inst_ready := (read_state === r_inst_done) 
+  dmem.data_ready := (read_state === r_data_done) || (write_state === w_data_done )
+
+
 
 // Core part for data read
-  dmem.data_ready := (read_state === r_data_done) || (write_state === w_data_done )
-  dmem.data_read  := out.r.bits.data
-// Core part for data write
 
-imem.read_idle := read_state=== r_idle
+//dmem.data_read  := out.r.bits.data
+// Core part for data write
+//imem.read_idle := read_state=== r_idle
+
+
 
 }

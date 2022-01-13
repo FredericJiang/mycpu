@@ -15,9 +15,12 @@ class SimTop extends Module {
 
   val core     = Module(new Core)
   val core2axi = Module(new Core2AXI)
+  val icache   = Module(new Icache)
 
+  core.io.imem <> icache.io.core_inst
 
-  core.io.imem <> core2axi.io.imem
+  icache.io.axi_inst <> core2axi.io.imem
+  
   core.io.dmem <> core2axi.io.dmem
 
   io.memAXI_0.aw <> core2axi.io.axi2ram.aw
