@@ -2224,7 +2224,7 @@ module Core(
   assign imm_gen_io_imm_type = decode_io_imm_type; // @[Core.scala 75:21]
   assign imm_gen_io_inst = id_reg_inst[31:0]; // @[Core.scala 76:21]
   assign alu_io_alu_type = exe_reg_alu_type; // @[Core.scala 185:17]
-  assign alu_io_in1 = exe_reg_rs1_addr == wb_reg_rd_addr & wb_reg_rd_wen ? wb_reg_rd_data : exe_reg_op1_data; // @[Core.scala 178:61 Core.scala 178:70 Core.scala 179:20]
+  assign alu_io_in1 = exe_reg_rs1_addr == wb_reg_rd_addr & wb_reg_rd_wen ? wb_rd_data : exe_reg_op1_data; // @[Core.scala 178:61 Core.scala 178:70 Core.scala 179:20]
   assign alu_io_in2 = exe_reg_op2_data; // @[Core.scala 176:23 Core.scala 181:9]
   assign clint_clock = clock;
   assign clint_reset = reset;
