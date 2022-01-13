@@ -109,9 +109,11 @@ val data_wen = WireInit(false.B)
 
 val reg_data_ren = RegInit(false.B)
 val reg_data_addr_r = RegInit(0.U(32.W))
-reg_data_ren := dmem.data_req_r
 
-reg_data_addr_r := dmem.data_addr_r
+when(dmem.data_req_r){reg_data_ren := dmem.data_req_r}
+
+when(dmem.data_addr_r =/= 0.U){reg_data_addr_r := dmem.data_addr_r}
+
 
 // state control change signal
 
