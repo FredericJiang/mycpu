@@ -1980,9 +1980,9 @@ module Core(
   wire  id_call_stall = (exe_reg_mem_rtype != 3'h0 | exe_reg_alu_type == 5'h13) & _T_24; // @[Core.scala 118:71]
   wire  exe_call_stall = mem_reg_dmem_en & ~io_dmem_data_ready; // @[Core.scala 355:22]
   wire  stall = exe_reg_stall | id_call_stall | exe_call_stall; // @[Core.scala 21:41]
-  wire  _GEN_5 = stall ? 1'h0 : 1'h1; // @[Core.scala 29:26 Core.scala 29:72]
+  wire  _GEN_6 = stall ? 1'h0 : 1'h1; // @[Core.scala 29:26 Core.scala 29:72]
   wire [31:0] _if_reg_pc_T_1 = if_reg_pc + 32'h4; // @[Core.scala 31:50]
-  wire  _GEN_3 = reg_kill_flag ? 1'h0 : reg_kill_flag; // @[Core.scala 30:26 Core.scala 30:97 PipelineReg.scala 124:29]
+  wire  _GEN_4 = reg_kill_flag ? 1'h0 : reg_kill_flag; // @[Core.scala 30:26 Core.scala 30:97 PipelineReg.scala 124:29]
   wire  _T_2 = ~reg_kill_flag; // @[Core.scala 36:28]
   wire [31:0] if_inst = io_imem_inst_ready & ~reg_kill_flag ? io_imem_inst_read : 32'h0; // @[Core.scala 36:48 Core.scala 36:57 Core.scala 37:57]
   wire  _T_4 = ~stall; // @[Core.scala 43:28]
@@ -2032,12 +2032,12 @@ module Core(
   wire  _T_40 = ~exe_call_stall & ~exe_reg_stall; // @[Core.scala 267:22]
   reg [63:0] mem_reg_dmem_addr; // @[Core.scala 308:29]
   wire [63:0] mem_dmem_addr = mem_reg_dmem_en ? mem_reg_alu_out : 64'h0; // @[Core.scala 311:22 Core.scala 311:37 Core.scala 312:37]
-  wire [63:0] _GEN_82 = mem_reg_dmem_wen ? mem_dmem_addr : mem_reg_dmem_addr; // @[Core.scala 325:1 Core.scala 325:23 Core.scala 326:32]
+  wire [63:0] _GEN_83 = mem_reg_dmem_wen ? mem_dmem_addr : mem_reg_dmem_addr; // @[Core.scala 325:1 Core.scala 325:23 Core.scala 326:32]
   wire  _T_41 = mem_reg_rs2_addr == wb_reg_rd_addr; // @[Core.scala 342:24]
   reg [63:0] mem_reg_rd_data; // @[Core.scala 349:30]
   reg  mem_reg_stall_wen; // @[Core.scala 352:32]
-  wire  _GEN_85 = io_dmem_data_ready ? 1'h0 : exe_reg_stall; // @[Core.scala 360:46 Core.scala 360:62 PipelineReg.scala 131:28]
-  wire  _GEN_87 = exe_call_stall | _GEN_85; // @[Core.scala 355:46 Core.scala 355:62]
+  wire  _GEN_86 = io_dmem_data_ready ? 1'h0 : exe_reg_stall; // @[Core.scala 360:46 Core.scala 360:62 PipelineReg.scala 131:28]
+  wire  _GEN_87 = exe_call_stall | _GEN_86; // @[Core.scala 355:46 Core.scala 355:62]
   wire  _T_48 = _T_39 & _T_38; // @[Core.scala 362:21]
   wire  _T_52 = wb_reg_alu_type == 5'h14; // @[Core.scala 433:22]
   reg  dt_valid; // @[Core.scala 460:23]
@@ -2205,12 +2205,12 @@ module Core(
     .mideleg(dt_cs_mideleg),
     .medeleg(dt_cs_medeleg)
   );
-  assign io_imem_inst_req = (io_imem_inst_ready | if_reg_pc == 32'h7ffffffc) & _GEN_5; // @[Core.scala 28:56]
+  assign io_imem_inst_req = io_imem_inst_ready | if_reg_pc == 32'h7ffffffc ? _GEN_6 : io_dmem_data_ready; // @[Core.scala 28:56]
   assign io_imem_inst_addr = if_reg_pc; // @[Core.scala 34:20]
   assign io_dmem_data_req_r = _mem_reg_dmem_en_T_1 & ~exe_reg_dmem_wen; // @[Core.scala 316:54]
   assign io_dmem_data_req_w = exe_reg_dmem_wen & _mem_reg_dmem_wen_T; // @[Core.scala 317:41]
   assign io_dmem_data_addr_r = mem_dmem_addr[31:0]; // @[Core.scala 322:22]
-  assign io_dmem_data_addr_w = _GEN_82[31:0];
+  assign io_dmem_data_addr_w = _GEN_83[31:0];
   assign io_dmem_data_strb = lsu_io_dmem_strb; // @[Core.scala 318:21]
   assign io_dmem_data_write = lsu_io_dmem_wdata; // @[Core.scala 319:21]
   assign decode_io_inst = id_reg_inst[31:0]; // @[Core.scala 64:21]
@@ -2672,7 +2672,7 @@ module Core(
       reg_kill_flag <= nxt_pc_io_pc_jmp; // @[Core.scala 247:68]
     end else if (io_imem_inst_ready | if_reg_pc == 32'h7ffffffc) begin // @[Core.scala 28:56]
       if (!(stall)) begin // @[Core.scala 29:26]
-        reg_kill_flag <= _GEN_3;
+        reg_kill_flag <= _GEN_4;
       end
     end
     if (reset) begin // @[PipelineReg.scala 125:29]

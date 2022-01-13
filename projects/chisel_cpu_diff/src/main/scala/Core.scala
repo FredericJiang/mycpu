@@ -23,7 +23,7 @@ stall := exe_reg_stall || id_call_stall || exe_call_stall
 when(inst_gen_ready )     { io.imem.inst_req   := true.B  }
 .otherwise                { io.imem.inst_req   := false.B }
 
-
+when(io.dmem.data_ready){inst_gen_ready := true.B}
 
 when(io.imem.inst_ready || if_reg_pc === "h7ffffffc".U){
 when(stall)              {if_reg_pc := if_reg_pc;        inst_gen_ready:= false.B       }
