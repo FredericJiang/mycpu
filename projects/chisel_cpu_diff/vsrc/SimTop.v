@@ -2013,7 +2013,6 @@ module Core(
   wire [63:0] _id_op1_T_25 = _id_op1_T_24 ? wb_rd_data : regfile_io_rs1_data; // @[Mux.scala 98:16]
   wire [63:0] _id_op1_T_26 = _id_op1_T_16 ? _id_rs1_T_14 : _id_op1_T_25; // @[Mux.scala 98:16]
   wire [63:0] _id_op1_T_27 = _id_rs1_T_8 ? exe_alu_out : _id_op1_T_26; // @[Mux.scala 98:16]
-  wire [63:0] _id_op1_T_28 = _id_op1_T_4 ? {{32'd0}, id_reg_pc} : _id_op1_T_27; // @[Mux.scala 98:16]
   wire  _id_rs2_T_8 = _T_16 & exe_reg_rd_wen & _id_rs1_T_7; // @[Core.scala 101:97]
   wire  _id_rs2_T_12 = mem_reg_rd_addr == _GEN_116 & _T_15 & mem_reg_rd_wen; // @[Core.scala 102:79]
   wire  _id_rs2_T_18 = wb_reg_rd_addr == _GEN_116 & _T_15 & wb_reg_rd_wen; // @[Core.scala 103:79]
@@ -2225,7 +2224,7 @@ module Core(
   assign imm_gen_io_imm_type = decode_io_imm_type; // @[Core.scala 75:21]
   assign imm_gen_io_inst = id_reg_inst[31:0]; // @[Core.scala 76:21]
   assign alu_io_alu_type = exe_reg_alu_type; // @[Core.scala 185:17]
-  assign alu_io_in1 = exe_reg_op1_data; // @[Core.scala 175:23 Core.scala 180:9]
+  assign alu_io_in1 = exe_reg_rs1_addr == wb_reg_rd_addr & wb_reg_rd_wen ? wb_reg_rd_data : exe_reg_op1_data; // @[Core.scala 178:61 Core.scala 178:70 Core.scala 179:20]
   assign alu_io_in2 = exe_reg_op2_data; // @[Core.scala 176:23 Core.scala 181:9]
   assign clint_clock = clock;
   assign clint_reset = reset;
@@ -2386,15 +2385,15 @@ module Core(
     end else if (_T_4 & _T_8) begin // @[Core.scala 127:28]
       exe_reg_op2_type <= decode_io_op2_type; // @[Core.scala 132:19]
     end
-    if (exe_reg_rs1_addr == wb_reg_rd_addr & wb_reg_rd_wen) begin // @[Core.scala 178:61]
-      exe_reg_op1_data <= wb_reg_rd_data; // @[Core.scala 178:79]
-    end else if (_T_4 & _T_8) begin // @[Core.scala 127:28]
+    if (_T_4 & _T_8) begin // @[Core.scala 127:28]
       if (_id_rs1_T_2) begin // @[Mux.scala 98:16]
         exe_reg_op1_data <= 64'h0;
       end else if (_id_op1_T_3) begin // @[Mux.scala 98:16]
         exe_reg_op1_data <= imm_gen_io_imm;
+      end else if (_id_op1_T_4) begin // @[Mux.scala 98:16]
+        exe_reg_op1_data <= {{32'd0}, id_reg_pc};
       end else begin
-        exe_reg_op1_data <= _id_op1_T_28;
+        exe_reg_op1_data <= _id_op1_T_27;
       end
     end
     if (_T_4 & _T_8) begin // @[Core.scala 127:28]
