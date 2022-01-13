@@ -2025,26 +2025,26 @@ module Core(
   wire  _id_op2_T_3 = decode_io_op2_type == 3'h2; // @[Core.scala 109:39]
   wire  _id_op2_T_4 = decode_io_op2_type == 3'h4; // @[Core.scala 110:39]
   wire  _exe_reg_dmem_wen_T_2 = decode_io_wb_type != 3'h1 & decode_io_wb_type != 3'h0; // @[Core.scala 149:53]
-  wire  _T_35 = exe_alu_out == 64'h200bff8 | exe_alu_out == 64'h2004000; // @[Core.scala 194:30]
-  wire  clint_en = exe_reg_dmem_en & _T_35; // @[Core.scala 193:22]
+  wire  _T_37 = exe_alu_out == 64'h200bff8 | exe_alu_out == 64'h2004000; // @[Core.scala 194:30]
+  wire  clint_en = exe_reg_dmem_en & _T_37; // @[Core.scala 193:22]
   wire  _mem_reg_dmem_wen_T = ~clint_en; // @[Core.scala 258:44]
   wire  _mem_reg_dmem_en_T_1 = exe_reg_dmem_en & _mem_reg_dmem_wen_T; // @[Core.scala 259:41]
-  wire  _T_42 = ~exe_call_stall; // @[Core.scala 269:6]
-  wire  _T_43 = ~exe_reg_stall; // @[Core.scala 269:25]
-  wire  _T_44 = ~exe_call_stall & ~exe_reg_stall; // @[Core.scala 269:22]
+  wire  _T_44 = ~exe_call_stall; // @[Core.scala 269:6]
+  wire  _T_45 = ~exe_reg_stall; // @[Core.scala 269:25]
+  wire  _T_46 = ~exe_call_stall & ~exe_reg_stall; // @[Core.scala 269:22]
   reg [63:0] mem_reg_dmem_addr; // @[Core.scala 310:29]
   wire [63:0] mem_dmem_addr = mem_reg_dmem_en ? mem_reg_alu_out : 64'h0; // @[Core.scala 313:22 Core.scala 313:37 Core.scala 314:37]
   wire [63:0] _GEN_84 = mem_reg_dmem_wen ? mem_dmem_addr : mem_reg_dmem_addr; // @[Core.scala 327:1 Core.scala 327:23 Core.scala 328:32]
-  wire  _T_45 = mem_reg_rs2_addr == wb_reg_rd_addr; // @[Core.scala 344:24]
+  wire  _T_47 = mem_reg_rs2_addr == wb_reg_rd_addr; // @[Core.scala 344:24]
   reg [63:0] mem_reg_rd_data; // @[Core.scala 351:30]
   reg  mem_reg_stall_wen; // @[Core.scala 354:32]
   wire  _GEN_87 = io_dmem_data_ready ? 1'h0 : exe_reg_stall; // @[Core.scala 362:46 Core.scala 362:62 PipelineReg.scala 131:28]
   wire  _GEN_88 = exe_call_stall | _GEN_87; // @[Core.scala 357:46 Core.scala 357:62]
-  wire  _T_52 = _T_43 & _T_42; // @[Core.scala 364:21]
-  wire  _T_56 = wb_reg_alu_type == 5'h14; // @[Core.scala 435:22]
+  wire  _T_54 = _T_45 & _T_44; // @[Core.scala 364:21]
+  wire  _T_58 = wb_reg_alu_type == 5'h14; // @[Core.scala 435:22]
   reg  dt_valid; // @[Core.scala 462:23]
   reg  skip; // @[Core.scala 464:19]
-  wire  _T_65 = _T_56 | wb_reg_csr_type != 3'h0 & wb_reg_inst[31:20] == 12'hb00 | wb_reg_clint_en; // @[Core.scala 466:113]
+  wire  _T_67 = _T_58 | wb_reg_csr_type != 3'h0 & wb_reg_inst[31:20] == 12'hb00 | wb_reg_clint_en; // @[Core.scala 466:113]
   wire [63:0] _GEN_130 = {{32'd0}, wb_reg_pc}; // @[Core.scala 474:50]
   reg [31:0] dt_ic_io_pc_REG; // @[Core.scala 478:31]
   reg [63:0] dt_ic_io_instr_REG; // @[Core.scala 479:31]
@@ -2226,8 +2226,8 @@ module Core(
   assign imm_gen_io_imm_type = decode_io_imm_type; // @[Core.scala 75:21]
   assign imm_gen_io_inst = id_reg_inst[31:0]; // @[Core.scala 76:21]
   assign alu_io_alu_type = exe_reg_alu_type; // @[Core.scala 186:17]
-  assign alu_io_in1 = exe_reg_rs1_addr == wb_reg_rd_addr & wb_reg_rd_wen & exe_reg_op1_type == 3'h1 ? wb_rd_data :
-    exe_reg_op1_data; // @[Core.scala 178:92 Core.scala 178:101 Core.scala 179:20]
+  assign alu_io_in1 = exe_reg_rs1_addr == wb_reg_rd_addr & exe_reg_rs1_addr != mem_reg_rd_addr & wb_reg_rd_wen &
+    exe_reg_op1_type == 3'h1 ? wb_rd_data : exe_reg_op1_data; // @[Core.scala 178:133 Core.scala 178:142 Core.scala 179:20]
   assign alu_io_in2 = exe_reg_op2_data; // @[Core.scala 176:23 Core.scala 182:9]
   assign clint_clock = clock;
   assign clint_reset = reset;
@@ -2261,7 +2261,7 @@ module Core(
   assign lsu_io_wb_type = mem_reg_wb_type; // @[Core.scala 336:19]
   assign lsu_io_dmem_addr = mem_reg_dmem_wen ? mem_dmem_addr : mem_reg_dmem_addr; // @[Core.scala 327:1 Core.scala 327:23 Core.scala 328:32]
   assign lsu_io_dmem_rdata = io_dmem_data_ready ? io_dmem_data_read : 64'h0; // @[Core.scala 332:25 Core.scala 332:45 Core.scala 333:45]
-  assign lsu_io_rs2_data = _T_45 & (mem_reg_dmem_wen & wb_reg_rd_wen) ? wb_rd_data : mem_reg_rs2_data; // @[Core.scala 345:40 Core.scala 345:59 Core.scala 346:59]
+  assign lsu_io_rs2_data = _T_47 & (mem_reg_dmem_wen & wb_reg_rd_wen) ? wb_rd_data : mem_reg_rs2_data; // @[Core.scala 345:40 Core.scala 345:59 Core.scala 346:59]
   assign dt_ic_clock = clock; // @[Core.scala 480:21]
   assign dt_ic_coreid = 8'h0; // @[Core.scala 481:21]
   assign dt_ic_index = 8'h0; // @[Core.scala 482:21]
@@ -2475,203 +2475,203 @@ module Core(
     mem_reg_rd_wen <= ~csr_io_intrpt & exe_reg_rd_wen; // @[Core.scala 255:21 Core.scala 257:21 Core.scala 263:21]
     if (reset) begin // @[PipelineReg.scala 55:32]
       mem_reg_pc <= 32'h0; // @[PipelineReg.scala 55:32]
-    end else if (_T_44) begin // @[Core.scala 270:1]
+    end else if (_T_46) begin // @[Core.scala 270:1]
       mem_reg_pc <= exe_reg_pc; // @[Core.scala 271:21]
     end
     if (reset) begin // @[PipelineReg.scala 56:32]
       mem_reg_inst <= 64'h0; // @[PipelineReg.scala 56:32]
-    end else if (_T_44) begin // @[Core.scala 270:1]
+    end else if (_T_46) begin // @[Core.scala 270:1]
       mem_reg_inst <= exe_reg_inst; // @[Core.scala 272:21]
     end
-    if (_T_44) begin // @[Core.scala 270:1]
+    if (_T_46) begin // @[Core.scala 270:1]
       mem_reg_csr_rd_wen <= csr_io_rd_wen; // @[Core.scala 301:21]
     end
     if (reset) begin // @[PipelineReg.scala 59:34]
       mem_reg_csr_rd_data <= 64'h0; // @[PipelineReg.scala 59:34]
-    end else if (_T_44) begin // @[Core.scala 270:1]
+    end else if (_T_46) begin // @[Core.scala 270:1]
       mem_reg_csr_rd_data <= csr_io_out; // @[Core.scala 302:21]
     end
     if (reset) begin // @[PipelineReg.scala 60:34]
       mem_reg_clint_en <= 1'h0; // @[PipelineReg.scala 60:34]
-    end else if (_T_44) begin // @[Core.scala 270:1]
+    end else if (_T_46) begin // @[Core.scala 270:1]
       mem_reg_clint_en <= clint_en; // @[Core.scala 300:21]
     end
     if (reset) begin // @[PipelineReg.scala 62:33]
       mem_reg_alu_type <= 5'h0; // @[PipelineReg.scala 62:33]
-    end else if (_T_44) begin // @[Core.scala 270:1]
+    end else if (_T_46) begin // @[Core.scala 270:1]
       mem_reg_alu_type <= exe_reg_alu_type; // @[Core.scala 275:21]
     end
     if (reset) begin // @[PipelineReg.scala 63:33]
       mem_reg_wb_type <= 3'h0; // @[PipelineReg.scala 63:33]
-    end else if (_T_44) begin // @[Core.scala 270:1]
+    end else if (_T_46) begin // @[Core.scala 270:1]
       mem_reg_wb_type <= exe_reg_wb_type; // @[Core.scala 277:21]
     end
     if (reset) begin // @[PipelineReg.scala 64:33]
       mem_reg_mem_rtype <= 3'h0; // @[PipelineReg.scala 64:33]
-    end else if (_T_44) begin // @[Core.scala 270:1]
+    end else if (_T_46) begin // @[Core.scala 270:1]
       mem_reg_mem_rtype <= exe_reg_mem_rtype; // @[Core.scala 276:21]
     end
     if (reset) begin // @[PipelineReg.scala 65:33]
       mem_reg_csr_type <= 3'h0; // @[PipelineReg.scala 65:33]
-    end else if (_T_44) begin // @[Core.scala 270:1]
+    end else if (_T_46) begin // @[Core.scala 270:1]
       mem_reg_csr_type <= exe_reg_csr_type; // @[Core.scala 278:21]
     end
-    if (_T_44) begin // @[Core.scala 270:1]
+    if (_T_46) begin // @[Core.scala 270:1]
       mem_reg_rs1_data <= exe_reg_rs1_data; // @[Core.scala 286:21]
     end
     if (reset) begin // @[PipelineReg.scala 68:33]
       mem_reg_alu_out <= 64'h0; // @[PipelineReg.scala 68:33]
-    end else if (_T_44) begin // @[Core.scala 270:1]
+    end else if (_T_46) begin // @[Core.scala 270:1]
       mem_reg_alu_out <= exe_alu_out; // @[Core.scala 279:21]
     end
     if (reset) begin // @[PipelineReg.scala 70:33]
       mem_reg_rs2_data <= 64'h0; // @[PipelineReg.scala 70:33]
-    end else if (_T_44) begin // @[Core.scala 270:1]
+    end else if (_T_46) begin // @[Core.scala 270:1]
       mem_reg_rs2_data <= exe_reg_rs2_data; // @[Core.scala 287:21]
     end
     if (reset) begin // @[PipelineReg.scala 74:33]
       mem_reg_rs2_addr <= 64'h0; // @[PipelineReg.scala 74:33]
-    end else if (_T_44) begin // @[Core.scala 270:1]
+    end else if (_T_46) begin // @[Core.scala 270:1]
       mem_reg_rs2_addr <= exe_reg_rs2_addr; // @[Core.scala 284:21]
     end
     if (reset) begin // @[PipelineReg.scala 75:33]
       mem_reg_rd_addr <= 64'h0; // @[PipelineReg.scala 75:33]
-    end else if (_T_44) begin // @[Core.scala 270:1]
+    end else if (_T_46) begin // @[Core.scala 270:1]
       mem_reg_rd_addr <= exe_reg_rd_addr; // @[Core.scala 285:21]
     end
     if (reset) begin // @[PipelineReg.scala 79:32]
       wb_reg_pc <= 32'h0; // @[PipelineReg.scala 79:32]
-    end else if (_T_52) begin // @[Core.scala 368:40]
+    end else if (_T_54) begin // @[Core.scala 368:40]
       wb_reg_pc <= mem_reg_pc; // @[Core.scala 370:20]
     end else begin
       wb_reg_pc <= 32'h0; // @[Core.scala 407:12]
     end
     if (reset) begin // @[PipelineReg.scala 80:32]
       wb_reg_inst <= 64'h0; // @[PipelineReg.scala 80:32]
-    end else if (_T_52) begin // @[Core.scala 368:40]
+    end else if (_T_54) begin // @[Core.scala 368:40]
       wb_reg_inst <= mem_reg_inst; // @[Core.scala 371:20]
     end else begin
       wb_reg_inst <= 64'h0; // @[Core.scala 408:15]
     end
     if (reset) begin // @[PipelineReg.scala 82:32]
       wb_reg_mem_rtype <= 3'h0; // @[PipelineReg.scala 82:32]
-    end else if (_T_52) begin // @[Core.scala 368:40]
+    end else if (_T_54) begin // @[Core.scala 368:40]
       wb_reg_mem_rtype <= mem_reg_mem_rtype; // @[Core.scala 374:20]
     end
     if (reset) begin // @[PipelineReg.scala 83:32]
       wb_reg_alu_type <= 5'h0; // @[PipelineReg.scala 83:32]
-    end else if (_T_52) begin // @[Core.scala 368:40]
+    end else if (_T_54) begin // @[Core.scala 368:40]
       wb_reg_alu_type <= mem_reg_alu_type; // @[Core.scala 373:20]
     end
     if (reset) begin // @[PipelineReg.scala 84:32]
       wb_reg_csr_type <= 3'h0; // @[PipelineReg.scala 84:32]
-    end else if (_T_52) begin // @[Core.scala 368:40]
+    end else if (_T_54) begin // @[Core.scala 368:40]
       wb_reg_csr_type <= mem_reg_csr_type; // @[Core.scala 375:20]
     end
-    if (_T_52) begin // @[Core.scala 368:40]
+    if (_T_54) begin // @[Core.scala 368:40]
       wb_reg_alu_out <= mem_reg_alu_out; // @[Core.scala 377:20]
     end
-    if (_T_52) begin // @[Core.scala 368:40]
+    if (_T_54) begin // @[Core.scala 368:40]
       wb_reg_rd_data <= mem_reg_rd_data; // @[Core.scala 382:20]
     end
-    if (_T_52) begin // @[Core.scala 368:40]
+    if (_T_54) begin // @[Core.scala 368:40]
       wb_reg_rd_wen <= mem_reg_rd_wen | mem_reg_stall_wen; // @[Core.scala 381:20]
     end
     if (reset) begin // @[PipelineReg.scala 88:32]
       wb_reg_rd_addr <= 64'h0; // @[PipelineReg.scala 88:32]
-    end else if (_T_52) begin // @[Core.scala 368:40]
+    end else if (_T_54) begin // @[Core.scala 368:40]
       wb_reg_rd_addr <= mem_reg_rd_addr; // @[Core.scala 380:20]
     end
-    if (_T_52) begin // @[Core.scala 368:40]
+    if (_T_54) begin // @[Core.scala 368:40]
       wb_reg_rs1_data <= mem_reg_rs1_data; // @[Core.scala 378:20]
     end
-    if (_T_52) begin // @[Core.scala 368:40]
+    if (_T_54) begin // @[Core.scala 368:40]
       wb_reg_csr_rd_wen <= mem_reg_csr_rd_wen; // @[Core.scala 396:20]
     end
     if (reset) begin // @[PipelineReg.scala 94:33]
       wb_reg_csr_rd_data <= 64'h0; // @[PipelineReg.scala 94:33]
-    end else if (_T_52) begin // @[Core.scala 368:40]
+    end else if (_T_54) begin // @[Core.scala 368:40]
       wb_reg_csr_rd_data <= mem_reg_csr_rd_data; // @[Core.scala 383:20]
     end
     if (reset) begin // @[PipelineReg.scala 95:31]
       wb_reg_clint_en <= 1'h0; // @[PipelineReg.scala 95:31]
-    end else if (_T_52) begin // @[Core.scala 368:40]
+    end else if (_T_54) begin // @[Core.scala 368:40]
       wb_reg_clint_en <= mem_reg_clint_en; // @[Core.scala 397:20]
     end
     if (reset) begin // @[PipelineReg.scala 98:32]
       mem_reg_mie <= 64'h0; // @[PipelineReg.scala 98:32]
-    end else if (_T_44) begin // @[Core.scala 270:1]
+    end else if (_T_46) begin // @[Core.scala 270:1]
       mem_reg_mie <= csr_io_mie; // @[Core.scala 292:21]
     end
     if (reset) begin // @[PipelineReg.scala 99:32]
       mem_reg_mstatus <= 64'h0; // @[PipelineReg.scala 99:32]
-    end else if (_T_44) begin // @[Core.scala 270:1]
+    end else if (_T_46) begin // @[Core.scala 270:1]
       mem_reg_mstatus <= csr_io_mstatus; // @[Core.scala 293:21]
     end
     if (reset) begin // @[PipelineReg.scala 100:32]
       mem_reg_mepc <= 64'h0; // @[PipelineReg.scala 100:32]
-    end else if (_T_44) begin // @[Core.scala 270:1]
+    end else if (_T_46) begin // @[Core.scala 270:1]
       mem_reg_mepc <= csr_io_mepc; // @[Core.scala 294:21]
     end
     if (reset) begin // @[PipelineReg.scala 101:32]
       mem_reg_mcause <= 64'h0; // @[PipelineReg.scala 101:32]
-    end else if (_T_44) begin // @[Core.scala 270:1]
+    end else if (_T_46) begin // @[Core.scala 270:1]
       mem_reg_mcause <= csr_io_mcause; // @[Core.scala 295:21]
     end
     if (reset) begin // @[PipelineReg.scala 102:32]
       mem_reg_mtvec <= 64'h0; // @[PipelineReg.scala 102:32]
-    end else if (_T_44) begin // @[Core.scala 270:1]
+    end else if (_T_46) begin // @[Core.scala 270:1]
       mem_reg_mtvec <= csr_io_mtvec; // @[Core.scala 296:21]
     end
     if (reset) begin // @[PipelineReg.scala 103:32]
       mem_reg_mscratch <= 64'h0; // @[PipelineReg.scala 103:32]
-    end else if (_T_44) begin // @[Core.scala 270:1]
+    end else if (_T_46) begin // @[Core.scala 270:1]
       mem_reg_mscratch <= csr_io_mscratch; // @[Core.scala 297:21]
     end
-    if (_T_44) begin // @[Core.scala 270:1]
+    if (_T_46) begin // @[Core.scala 270:1]
       mem_reg_intrpt <= csr_io_intrpt; // @[Core.scala 298:21]
     end
     if (reset) begin // @[PipelineReg.scala 105:33]
       mem_reg_intrpt_no <= 64'h0; // @[PipelineReg.scala 105:33]
-    end else if (_T_44) begin // @[Core.scala 270:1]
+    end else if (_T_46) begin // @[Core.scala 270:1]
       mem_reg_intrpt_no <= csr_io_intrpt_no; // @[Core.scala 299:21]
     end
     if (reset) begin // @[PipelineReg.scala 107:31]
       wb_reg_mie <= 64'h0; // @[PipelineReg.scala 107:31]
-    end else if (_T_52) begin // @[Core.scala 368:40]
+    end else if (_T_54) begin // @[Core.scala 368:40]
       wb_reg_mie <= mem_reg_mie; // @[Core.scala 398:20]
     end
     if (reset) begin // @[PipelineReg.scala 108:31]
       wb_reg_mstatus <= 64'h0; // @[PipelineReg.scala 108:31]
-    end else if (_T_52) begin // @[Core.scala 368:40]
+    end else if (_T_54) begin // @[Core.scala 368:40]
       wb_reg_mstatus <= mem_reg_mstatus; // @[Core.scala 402:17]
     end
     if (reset) begin // @[PipelineReg.scala 109:31]
       wb_reg_mepc <= 64'h0; // @[PipelineReg.scala 109:31]
-    end else if (_T_52) begin // @[Core.scala 368:40]
+    end else if (_T_54) begin // @[Core.scala 368:40]
       wb_reg_mepc <= mem_reg_mepc; // @[Core.scala 403:17]
     end
     if (reset) begin // @[PipelineReg.scala 110:31]
       wb_reg_mcause <= 64'h0; // @[PipelineReg.scala 110:31]
-    end else if (_T_52) begin // @[Core.scala 368:40]
+    end else if (_T_54) begin // @[Core.scala 368:40]
       wb_reg_mcause <= mem_reg_mcause; // @[Core.scala 404:17]
     end
     if (reset) begin // @[PipelineReg.scala 111:31]
       wb_reg_mtvec <= 64'h0; // @[PipelineReg.scala 111:31]
-    end else if (_T_52) begin // @[Core.scala 368:40]
+    end else if (_T_54) begin // @[Core.scala 368:40]
       wb_reg_mtvec <= mem_reg_mtvec; // @[Core.scala 399:20]
     end
     if (reset) begin // @[PipelineReg.scala 112:31]
       wb_reg_mscratch <= 64'h0; // @[PipelineReg.scala 112:31]
-    end else if (_T_52) begin // @[Core.scala 368:40]
+    end else if (_T_54) begin // @[Core.scala 368:40]
       wb_reg_mscratch <= mem_reg_mscratch; // @[Core.scala 400:20]
     end
-    if (_T_52) begin // @[Core.scala 368:40]
+    if (_T_54) begin // @[Core.scala 368:40]
       wb_reg_intrpt <= mem_reg_intrpt; // @[Core.scala 394:20]
     end
     if (reset) begin // @[PipelineReg.scala 114:32]
       wb_reg_intrpt_no <= 64'h0; // @[PipelineReg.scala 114:32]
-    end else if (_T_52) begin // @[Core.scala 368:40]
+    end else if (_T_54) begin // @[Core.scala 368:40]
       wb_reg_intrpt_no <= mem_reg_intrpt_no; // @[Core.scala 395:20]
     end
     if (reset) begin // @[PipelineReg.scala 124:29]
@@ -2703,7 +2703,7 @@ module Core(
     end
     if (reset) begin // @[Core.scala 354:32]
       mem_reg_stall_wen <= 1'h0; // @[Core.scala 354:32]
-    end else if (_T_43 & _T_42) begin // @[Core.scala 364:46]
+    end else if (_T_45 & _T_44) begin // @[Core.scala 364:46]
       mem_reg_stall_wen <= 1'h0; // @[Core.scala 364:64]
     end else if (exe_call_stall) begin // @[Core.scala 357:46]
       mem_reg_stall_wen <= mem_reg_rd_wen; // @[Core.scala 359:18]
@@ -2716,7 +2716,7 @@ module Core(
     if (reset) begin // @[Core.scala 464:19]
       skip <= 1'h0; // @[Core.scala 464:19]
     end else begin
-      skip <= _T_65;
+      skip <= _T_67;
     end
     dt_ic_io_pc_REG <= wb_reg_pc; // @[Core.scala 478:31]
     dt_ic_io_instr_REG <= wb_reg_inst; // @[Core.scala 479:31]
@@ -2755,7 +2755,7 @@ module Core(
     `ifdef PRINTF_COND
       if (`PRINTF_COND) begin
     `endif
-        if (_T_56 & ~reset) begin
+        if (_T_58 & ~reset) begin
           $fwrite(32'h80000002,"%c",wb_reg_rs1_data); // @[Core.scala 438:7]
         end
     `ifdef PRINTF_COND
