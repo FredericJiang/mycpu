@@ -107,12 +107,16 @@ val data_wen = WireInit(false.B)
  
   val w_idle :: w_data_addr :: w_data_write :: w_data_resp :: w_data_done :: Nil = Enum(5)
 
+val reg_data_ren = RegInit(false.B)
+val reg_data_addr_r = RegInit(0.U(32.W))
+reg_data_ren := dmem.data_req_r
 
+reg_data_addr_r := dmem.data_addr_r
 
 // state control change signal
 
   inst_ren :=  imem.inst_req
-  data_ren :=  dmem.data_req_r 
+  data_ren :=  dmem.data_req_r || reg_data_ren
   data_wen :=  dmem.data_req_w
 
   val ar_hs    = out.ar.ready && out.ar.valid   //read address channel
@@ -135,7 +139,7 @@ val data_wen = WireInit(false.B)
 switch(read_state){
   is(r_idle){
       when(inst_ren){ read_state := r_inst_addr }
- .elsewhen(data_ren){ read_state := r_data_addr }}
+ .elsewhen(data_ren){ read_state := r_data_addr; reg_data_ren := false.B }}
   
   is(r_inst_addr){
       when(ar_hs)   { read_state := r_inst_read }}
@@ -144,7 +148,7 @@ switch(read_state){
       when(r_done)  { read_state := r_inst_done }} //stage for send inst to core
 
   is(r_inst_done){ 
-      when(data_ren){ read_state := r_data_addr } // avoid always read inst not time to read data
+      when(data_ren){ read_state := r_data_addr; reg_data_ren := false.B } // avoid always read inst not time to read data
  .otherwise         { read_state := r_idle      }}
 
   is(r_data_addr){
@@ -176,9 +180,9 @@ switch(write_state){
 }
 
 val axi_addr = WireInit(0.U(32.W))
-when(read_state === r_inst_addr)      {axi_addr:= imem.inst_addr }
-.elsewhen(read_state === r_data_addr) {axi_addr:= dmem.data_addr_r }
-
+when(read_state === r_inst_addr)      {axi_addr:= imem.inst_addr   }
+.elsewhen(read_state === r_data_addr && dmem.data_addr_r =/= 0.U ) {axi_addr:= dmem.data_addr_r }
+.elsewhen(read_state === r_data_addr && dmem.data_addr_r === 0.U ) {axi_addr:= reg_data_addr_r}
 val inst_reg_addr = RegInit(0.U(32.W))
 inst_reg_addr:= imem.inst_addr 
 
