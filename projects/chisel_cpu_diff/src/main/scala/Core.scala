@@ -25,7 +25,7 @@ class Core extends Module {
 
 stall := exe_reg_stall || id_call_stall
 
-when(inst_gen_ready || if_reg_pc === "h80000000".U )     { io.imem.inst_req   := true.B  }
+when(inst_gen_ready )     { io.imem.inst_req   := true.B  }
 .otherwise                                               { io.imem.inst_req   := false.B }
 
 //when(!stall && !reg_kill_flag && reg_pc_ready) { if_reg_pc := if_reg_pc + 4.U; inst_gen_ready:= true.B; reg_pc_ready:= false.B } 
