@@ -185,7 +185,7 @@ when((exe_reg_rs2_addr === wb_reg_rd_addr && exe_reg_rs2_addr =/= mem_reg_rd_add
 .otherwise                                        {exe_op2 := exe_reg_op2_data }
 
 when((exe_reg_rs2_addr === wb_reg_rd_addr && exe_reg_rs2_addr =/= mem_reg_rd_addr ) 
-&& wb_reg_rd_wen && exe_reg_wb_type >1.U){exe_reg_rs2_data := wb_rd_data}
+&& wb_reg_rd_wen && exe_reg_wb_type >1.U){exe_reg_rs2_data := wb_reg_rd_data}
 //exe_op1 := exe_reg_op1_data
 //exe_op2 := exe_reg_op2_data 
 

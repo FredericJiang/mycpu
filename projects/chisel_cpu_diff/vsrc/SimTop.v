@@ -2419,15 +2419,7 @@ module Core(
       end
     end
     if (_T_38 & exe_reg_wb_type > 3'h1) begin // @[Core.scala 188:42]
-      if (wb_reg_csr_rd_wen) begin // @[Mux.scala 98:16]
-        exe_reg_rs2_data <= wb_reg_csr_rd_data;
-      end else if (_wb_rd_data_T_2) begin // @[Mux.scala 98:16]
-        exe_reg_rs2_data <= wb_reg_alu_out;
-      end else if (_wb_rd_data_T_5) begin // @[Mux.scala 98:16]
-        exe_reg_rs2_data <= wb_reg_rd_data;
-      end else begin
-        exe_reg_rs2_data <= 64'h0;
-      end
+      exe_reg_rs2_data <= wb_reg_rd_data; // @[Core.scala 188:60]
     end else if (_T_4 & _T_8) begin // @[Core.scala 127:28]
       if (_id_rs1_T_2) begin // @[Mux.scala 98:16]
         exe_reg_rs2_data <= 64'h0;
