@@ -242,9 +242,12 @@ nxt_pc.io.intrpt_jmp_pc  := csr.io.intrpt_pc
 // a ld instruction before jalr 
 //only in mem stage can gain the jmp address
 
-when(exe_reg_rs1_addr === mem_reg_rd_addr && mem_reg_mem_rtype =/= MEM_X){
-nxt_pc.io.rs1_data := mem_rd_data
-}.otherwise(nxt_pc.io.rs1_data := exe_reg_rs1_data)
+when(exe_reg_rs1_addr === mem_reg_rd_addr && mem_reg_mem_rtype =/= MEM_X)
+{nxt_pc.io.rs1_data := mem_rd_data}
+.elsewhen((exe_reg_rs1_addr === wb_reg_rd_addr && exe_reg_rs1_addr =/= mem_reg_rd_addr ) 
+&& wb_reg_rd_wen && exe_reg_op1_type === OP_REG)
+{nxt_pc.io.rs1_data := wb_rd_data}
+.otherwise(nxt_pc.io.rs1_data := exe_reg_rs1_data)
 
 
 
