@@ -179,8 +179,12 @@ when((exe_reg_rs1_addr === wb_reg_rd_addr && exe_reg_rs1_addr =/= mem_reg_rd_add
 && wb_reg_rd_wen && exe_reg_op1_type === OP_REG)  {exe_op1 := wb_rd_data}
 .otherwise                                        {exe_op1 := exe_reg_op1_data }
 
+
+when((exe_reg_rs2_addr === wb_reg_rd_addr && exe_reg_rs2_addr =/= mem_reg_rd_addr ) 
+&& wb_reg_rd_wen && exe_reg_op2_type === OP_REG)  {exe_op2 := wb_rd_data}
+.otherwise                                        {exe_op2 := exe_reg_op2_data }
 //exe_op1 := exe_reg_op1_data
-exe_op2 := exe_reg_op2_data 
+//exe_op2 := exe_reg_op2_data 
 
 val alu = Module(new ALU)
 alu.io.inst     := exe_reg_inst
