@@ -102,7 +102,7 @@ class Icache extends Module{
 // cache_reg_fill 初始值为false，第一次需要从axi load数据
       state  := fetch
       inst_req2axi  := true.B
-      inst_addr2axi := req_reg_addr 
+      inst_addr2axi := Cat(req_reg_addr(31,4),0.U,0.U,0.U,0.U) 
      }
     .otherwise{
       state := update
