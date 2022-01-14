@@ -145,6 +145,8 @@ exe_reg_rs1_addr  := id_reg_inst(19, 15)
 exe_reg_rs2_addr  := id_reg_inst(24, 20)
 exe_reg_rd_addr   := id_reg_inst(11,  7)
 
+
+
 exe_reg_rd_wen    := (decode.io.wb_type === WB_REG)
 exe_reg_dmem_wen  := (decode.io.wb_type =/= WB_REG) && (decode.io.wb_type =/= WB_X)
 exe_reg_dmem_en   := (decode.io.mem_rtype =/= MEM_X) || ((decode.io.wb_type =/= WB_REG) && (decode.io.wb_type =/= WB_X))
@@ -247,7 +249,8 @@ when(exe_reg_rs1_addr === mem_reg_rd_addr && mem_reg_mem_rtype =/= MEM_X)
 .elsewhen((exe_reg_rs1_addr === wb_reg_rd_addr && exe_reg_rs1_addr =/= mem_reg_rd_addr ) 
 && wb_reg_rd_wen && exe_reg_op1_type === OP_PC)
 {nxt_pc.io.rs1_data := wb_rd_data}
-.otherwise(nxt_pc.io.rs1_data := exe_reg_rs1_data)
+.elsewhen(exe_reg_op2_type === OP_4 && exe_reg_imm_type === IMM_I) {nxt_pc.io.rs1_data := exe_reg_rs1_data}
+.otherwise(nxt_pc.io.rs1_data := 0.U)
 
 
 

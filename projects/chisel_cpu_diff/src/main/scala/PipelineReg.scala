@@ -134,4 +134,8 @@ val exe_stop_stall= WireInit(false.B)
 val id_call_stall  = WireInit(false.B)
 val reg_pc_ready       = RegInit(false.B) 
 
+val exe_reg_print = RegInit(0.U(64.W))
+val mem_reg_print = RegInit(0.U(64.W))
+val wb_reg_print = RegInit(0.U(64.W))
+
 }
