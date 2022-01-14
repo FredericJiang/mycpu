@@ -246,9 +246,11 @@ nxt_pc.io.intrpt_jmp_pc  := csr.io.intrpt_pc
 
 when(exe_reg_rs1_addr === mem_reg_rd_addr && mem_reg_mem_rtype =/= MEM_X)
 {nxt_pc.io.rs1_data := mem_rd_data}
+
 .elsewhen((exe_reg_rs1_addr === wb_reg_rd_addr && exe_reg_rs1_addr =/= mem_reg_rd_addr ) 
-&& wb_reg_rd_wen && exe_reg_op1_type === OP_PC)
+&& wb_reg_rd_wen && (exe_reg_op2_type === OP_4 && exe_reg_imm_type === IMM_I)) //11111111111
 {nxt_pc.io.rs1_data := wb_rd_data}
+
 .elsewhen(exe_reg_op2_type === OP_4 && exe_reg_imm_type === IMM_I) {nxt_pc.io.rs1_data := exe_reg_rs1_data}
 .otherwise(nxt_pc.io.rs1_data := 0.U)
 
