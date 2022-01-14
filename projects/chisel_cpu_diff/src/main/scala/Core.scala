@@ -75,6 +75,8 @@ val imm_gen = Module(new ImmGen)
 imm_gen.io.imm_type := decode.io.imm_type
 imm_gen.io.inst     := id_reg_inst
 
+
+
 //val jarl_type = (decode.io.op2_type === OP_4) && (decode.io.imm_type === IMM_I)
 
 //used only for jalr
@@ -187,6 +189,7 @@ when((exe_reg_rs2_addr === wb_reg_rd_addr && exe_reg_rs2_addr =/= mem_reg_rd_add
 .otherwise                                        {exe_op2 := exe_reg_op2_data }
 
 
+when(exe_reg_alu_type === ALU_MY_INST) {exe_reg_print := exe_reg_rs1_data}
 //exe_op1 := exe_reg_op1_data
 //exe_op2 := exe_reg_op2_data 
 
@@ -299,6 +302,7 @@ mem_reg_rs1_addr    := exe_reg_rs1_addr
 mem_reg_rs2_addr    := exe_reg_rs2_addr
 mem_reg_rd_addr     := exe_reg_rd_addr
 mem_reg_rs1_data    := exe_reg_rs1_data
+mem_reg_print       := exe_reg_print
 
 when((exe_reg_rs2_addr === wb_reg_rd_addr && exe_reg_rs2_addr =/= mem_reg_rd_addr ) 
 && wb_reg_rd_wen && exe_reg_wb_type >1.U){mem_reg_rs2_data := wb_rd_data}
@@ -394,6 +398,7 @@ wb_reg_csr_type    := mem_reg_csr_type
 
 wb_reg_alu_out     := mem_reg_alu_out
 wb_reg_rs1_data    := mem_reg_rs1_data //used for print
+wb_reg_print       := mem_reg_print
 
 wb_reg_rd_addr     := mem_reg_rd_addr
 wb_reg_rd_wen      := mem_reg_rd_wen || mem_reg_stall_wen
@@ -452,7 +457,7 @@ val my_inst = RegInit(0.U(1.W))
 
 when(wb_reg_alu_type === ALU_MY_INST)
 { val a =  WireInit(0.U(64.W))
-  a:= wb_reg_rs1_data
+  a:= wb_reg_print
 printf("%c", a) }
 
 
