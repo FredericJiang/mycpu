@@ -75,8 +75,7 @@ val data_strb   = Output(UInt(8.W))
  // Interconnect With Core & AXI
 
   val data_read2core   = WireInit(0.U)
-  core.data_ready := 0.U
-  val data_ready2core  = WireInit(false.B)
+  val data_ready2core  = RegNext((state === update && cache_hit)||(state === update))
  
   val data_req_r2axi   = WireInit(false.B)
   val data_req_w2axi   = WireInit(false.B) 
@@ -133,7 +132,7 @@ switch (state) {
     dcache_wen        := reg_data_req_w
     dcache_wdata      := reg_data_write
     dcache_strb       := reg_data_strb
-    core.data_ready    :=  RegNext(state === update && cache_hit )
+    //core.data_ready    :=  RegNext(state === update && cache_hit )
 
   
         when (!dirty(req_index)) {
@@ -216,7 +215,7 @@ switch (state) {
   dcache_wdata      := reg_data_write
   dcache_strb       := reg_data_strb
 
-  core.data_ready   := RegNext(state === update ) //读需要延后一拍等cache_data_out
+  //core.data_ready   := RegNext(state === update ) //读需要延后一拍等cache_data_out
 
 
 
@@ -227,8 +226,8 @@ switch (state) {
 }
 
 
-core.data_read  := data_read2core
-
+core.data_read   := data_read2core
+core.data_ready  := data_ready2core
 
 axi.data_req_r   := data_req_r2axi 
 axi.data_req_w   := data_req_w2axi
