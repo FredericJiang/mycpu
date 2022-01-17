@@ -75,7 +75,6 @@ val imm_gen = Module(new ImmGen)
 imm_gen.io.imm_type := decode.io.imm_type
 imm_gen.io.inst     := id_reg_inst
 
-
 val id_rs1 = regfile.io.rs1_data
 
 
@@ -192,7 +191,6 @@ when((exe_reg_rs2_addr === wb_reg_rd_addr && exe_reg_rs2_addr =/= mem_reg_rd_add
 && wb_reg_rd_wen && exe_reg_op2_type === OP_REG)  {exe_op2 := wb_rd_data}
 .otherwise                                        {exe_op2 := exe_reg_op2_data }
 
-//111
 when(exe_reg_alu_type === ALU_MY_INST && wb_reg_rd_addr === 10.U && wb_reg_rd_wen ){exe_reg_print := wb_rd_data}
 .elsewhen(exe_reg_alu_type === ALU_MY_INST) {exe_reg_print := exe_reg_rs1_data}
 
@@ -349,13 +347,14 @@ io.dmem.data_req_w  := exe_reg_dmem_wen && !clint_en
 io.dmem.data_strb   := lsu.io.dmem_strb
 io.dmem.data_write  := lsu.io.dmem_wdata
 
-
+// data_read 地址只给一拍
 io.dmem.data_addr_r  := mem_dmem_addr
 
+//data_wrtie 地址一直给
 when(mem_reg_dmem_wen)
 {io.dmem.data_addr_w  := mem_dmem_addr}
 .otherwise{io.dmem.data_addr_w := mem_reg_dmem_addr}
- //lsu.io.aligned_addr 
+
 
 
 when(io.dmem.data_ready){lsu.io.dmem_rdata  := io.dmem.data_read}

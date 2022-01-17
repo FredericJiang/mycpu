@@ -62,7 +62,7 @@ class Icache extends Module{
   val inst_req2axi     = WireInit(false.B)
   val inst_addr2axi    = WireInit(0.U(32.W))
 
-  val inst_ready2core  = RegNext(state === search && cache_hit)
+  val inst_ready2core  = RegNext(state === search && cache_hit)  //cache 读数据延后一排
   val inst_read2core   = MuxLookup(req_offset(3, 2), 0.U, Array(
                       "b00".U -> cache_data_out( 31, 0),
                       "b01".U -> cache_data_out( 63,32),

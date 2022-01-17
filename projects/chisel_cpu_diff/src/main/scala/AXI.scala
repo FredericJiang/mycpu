@@ -211,7 +211,7 @@ inst_reg_addr:= imem.inst_addr
   out.aw.bits.size    := "b011".U //every clock transfer 8 bytes = 64bits
   out.aw.bits.burst   := "b01".U  // incrementing-address burst
   out.aw.bits.lock    := 0.U
-  out.aw.bits.cache   := "b0000".U  
+  out.aw.bits.cache   := "b0010".U  
   out.aw.bits.prot    := "b000".U
   out.aw.bits.user    := 0.U
   out.aw.bits.qos     := 0.U
@@ -233,14 +233,7 @@ inst_reg_addr:= imem.inst_addr
 // Core part for inst read
 
 
-//need to aligned the fetched data  
-/*
-when(read_state < 4.U){
-  when(inst_reg_addr % 8.U === 0.U){ imem.inst_read  := out.r.bits.data(31,0) }
-.otherwise                          { imem.inst_read  := out.r.bits.data(63,32)}
 
-}.otherwise{ imem.inst_read  := 0.U}
-*/
 
   val inst_read_h = RegInit(0.U(64.W))
   val inst_read_l = RegInit(0.U(64.W))
@@ -259,8 +252,8 @@ when(read_state < 4.U){
   }
 
   imem.inst_read := Cat(inst_read_h, inst_read_l)
-  //dmem.data_read := Cat(data_read_h, data_read_l)
-  dmem.data_read := data_read_h
+  dmem.data_read := Cat(data_read_h, data_read_l)
+  //dmem.data_read := data_read_h
 
   imem.inst_ready := (read_state === r_inst_done) 
   dmem.data_ready := (read_state === r_data_done) || (write_state === w_data_done )
