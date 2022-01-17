@@ -186,7 +186,7 @@ switch (state) {
   .otherwise{ state := update }
   
   when(axi.data_ready){
-  req_addr := reg_data_addr // 因为是wire类型，因此需要重新赋值
+
 
    reg_cache_fill := true.B  //跳出当前状态的信号
    // 取后写回dcache
@@ -196,7 +196,7 @@ switch (state) {
    dcache_index := reg_data_addr(9,4)
 
  
-
+  req_addr := reg_data_addr // 因为是wire类型，因此需要重新赋值
   valid(req_index)  := true.B 
   tag(req_index)    := req_tag
   offset(req_index) := req_offset
@@ -213,9 +213,8 @@ switch (state) {
   reg_cache_fill := false.B
 
   req_addr := reg_data_addr // 因为是wire类型，因此需要重新赋值
-
   
-  dcache_index      := req_index
+  dcache_index      := reg_data_addr(9,4)
   dcache_wen        := reg_data_req_w
   dcache_wdata      := reg_data_write
   dcache_strb       := reg_data_strb
