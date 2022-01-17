@@ -106,7 +106,7 @@ switch (state) {
     
     reg_data_req_r  := core.data_req_r
     reg_data_req_w  := core.data_req_w
-    reg_data_addr   := core.data_addr_r  
+     
 
     reg_data_strb   := core.data_strb
     reg_data_write  := core.data_write
@@ -118,7 +118,7 @@ switch (state) {
  
   is(lookup){
   // req_addr,req_index,req_tag 都是wire，只在当前拍有效
-  req_addr := reg_data_addr
+  reg_data_addr   := core.data_addr_r 
 
   when(cache_hit){
    
