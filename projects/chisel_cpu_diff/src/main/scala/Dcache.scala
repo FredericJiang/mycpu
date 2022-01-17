@@ -75,7 +75,7 @@ val data_strb   = Output(UInt(8.W))
  // Interconnect With Core & AXI
 
   val data_read2core   = WireInit(0.U)
-  val data_ready2core  = RegNext((state === update && cache_hit)||(state === update))
+  val data_ready2core  = RegNext((state === lookup && cache_hit)||(state === update))
  
   val data_req_r2axi   = WireInit(false.B)
   val data_req_w2axi   = WireInit(false.B) 

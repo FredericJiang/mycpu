@@ -10105,7 +10105,7 @@ module Dcache(
         reg_data_write <= {{64'd0}, io_core_data_data_write}; // @[Dcache.scala 113:21]
       end
     end
-    data_ready2core <= state == 3'h5 & cache_hit | state == 3'h5; // @[Dcache.scala 78:65]
+    data_ready2core <= _cache_hit_T_2 & cache_hit | state == 3'h5; // @[Dcache.scala 78:65]
   end
 // Register and memory initialization
 `ifdef RANDOMIZE_GARBAGE_ASSIGN
