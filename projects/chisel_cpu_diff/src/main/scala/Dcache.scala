@@ -94,7 +94,7 @@ val data_strb   = Output(UInt(8.W))
 // DCache 的连接信号
   val dcache_wen   = RegInit(false.B)
   val dcache_strb  = RegInit(0.U(128.W))
-  val dcache_index = RegInit(0.U(4.W))
+  val dcache_index = RegInit(0.U(6.W))
   val dcache_wdata = RegInit(0.U(128.W))
 
 
