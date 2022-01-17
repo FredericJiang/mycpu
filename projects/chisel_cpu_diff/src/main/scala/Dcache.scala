@@ -103,13 +103,15 @@ val data_strb   = Output(UInt(8.W))
 switch (state) {
   is(idle){
   when(core.data_req_r || core.data_req_w){
-    state := lookup
+    
     reg_data_req_r  := core.data_req_r
     reg_data_req_w  := core.data_req_w
     reg_data_addr   := core.data_addr_r  
 
     reg_data_strb   := core.data_strb
     reg_data_write  := core.data_write
+    
+    state := lookup
   }  
 
 }
