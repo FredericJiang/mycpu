@@ -5782,10 +5782,6 @@ module Dcache(
   reg [31:0] _RAND_260;
   reg [127:0] _RAND_261;
   reg [31:0] _RAND_262;
-  reg [31:0] _RAND_263;
-  reg [127:0] _RAND_264;
-  reg [31:0] _RAND_265;
-  reg [127:0] _RAND_266;
 `endif // RANDOMIZE_REG_INIT
   wire [127:0] dcache_Q; // @[Dcache.scala 248:22]
   wire  dcache_CLK; // @[Dcache.scala 248:22]
@@ -6265,10 +6261,6 @@ module Dcache(
   reg  data_ready2core; // @[Dcache.scala 78:33]
   wire [127:0] cache_data_out = dcache_Q; // @[Dcache.scala 57:28 Dcache.scala 255:19]
   wire [63:0] data_read2core = req_offset[3] ? cache_data_out[127:64] : cache_data_out[63:0]; // @[Mux.scala 80:57]
-  reg  dcache_wen; // @[Dcache.scala 95:29]
-  reg [127:0] dcache_strb; // @[Dcache.scala 96:29]
-  reg [5:0] dcache_index; // @[Dcache.scala 97:29]
-  reg [127:0] dcache_wdata; // @[Dcache.scala 98:29]
   wire  _GEN_197 = 6'h0 == req_index | valid_0; // @[Dcache.scala 126:23 Dcache.scala 126:23 Dcache.scala 36:24]
   wire  _GEN_198 = 6'h1 == req_index | valid_1; // @[Dcache.scala 126:23 Dcache.scala 126:23 Dcache.scala 36:24]
   wire  _GEN_199 = 6'h2 == req_index | valid_2; // @[Dcache.scala 126:23 Dcache.scala 126:23 Dcache.scala 36:24]
@@ -6590,9 +6582,11 @@ module Dcache(
   wire  _GEN_515 = ~_GEN_191 ? _GEN_451 : dirty_62; // @[Dcache.scala 138:34 Dcache.scala 37:24]
   wire  _GEN_516 = ~_GEN_191 ? _GEN_452 : dirty_63; // @[Dcache.scala 138:34 Dcache.scala 37:24]
   wire [2:0] _GEN_517 = cache_dirty ? 3'h2 : 3'h4; // @[Dcache.scala 144:26 Dcache.scala 145:11 Dcache.scala 152:11]
-  wire [5:0] _GEN_518 = cache_dirty ? req_index : dcache_index; // @[Dcache.scala 144:26 Dcache.scala 147:18 Dcache.scala 97:29]
-  wire [127:0] _GEN_519 = cache_dirty ? 128'h0 : dcache_wdata; // @[Dcache.scala 144:26 Dcache.scala 148:18 Dcache.scala 98:29]
-  wire  _GEN_520 = cache_dirty ? 1'h0 : dcache_wen; // @[Dcache.scala 144:26 Dcache.scala 149:18 Dcache.scala 95:29]
+  wire [5:0] _GEN_518 = cache_dirty ? req_index : 6'h0; // @[Dcache.scala 144:26 Dcache.scala 147:18]
+  wire [5:0] _GEN_713 = cache_hit ? req_index : _GEN_518; // @[Dcache.scala 123:18 Dcache.scala 131:23]
+  wire  _GEN_714 = cache_hit & reg_data_req_w; // @[Dcache.scala 123:18 Dcache.scala 132:23]
+  wire [127:0] _GEN_715 = cache_hit ? reg_data_write : 128'h0; // @[Dcache.scala 123:18 Dcache.scala 133:23]
+  wire [127:0] _GEN_716 = cache_hit ? {{120'd0}, reg_data_strb} : 128'h0; // @[Dcache.scala 123:18 Dcache.scala 134:23]
   wire [3:0] _GEN_783 = 6'h1 == req_index ? offset_1 : offset_0; // @[Cat.scala 30:58 Cat.scala 30:58]
   wire [3:0] _GEN_784 = 6'h2 == req_index ? offset_2 : _GEN_783; // @[Cat.scala 30:58 Cat.scala 30:58]
   wire [3:0] _GEN_785 = 6'h3 == req_index ? offset_3 : _GEN_784; // @[Cat.scala 30:58 Cat.scala 30:58]
@@ -6662,10 +6656,9 @@ module Dcache(
   wire [2:0] _GEN_847 = ~reg_cache_fill ? 3'h4 : 3'h5; // @[Dcache.scala 174:24 Dcache.scala 176:11 Dcache.scala 186:21]
   wire [31:0] _GEN_850 = ~reg_cache_fill ? reg_data_addr : 32'h0; // @[Dcache.scala 174:24 Dcache.scala 179:21]
   wire  _GEN_1111 = io_axi_data_data_ready | reg_cache_fill; // @[Dcache.scala 188:23 Dcache.scala 191:19 Dcache.scala 58:31]
-  wire  _GEN_1112 = io_axi_data_data_ready | dcache_wen; // @[Dcache.scala 188:23 Dcache.scala 193:15 Dcache.scala 95:29]
-  wire [127:0] _GEN_1113 = io_axi_data_data_ready ? io_axi_data_data_read : dcache_wdata; // @[Dcache.scala 188:23 Dcache.scala 194:17 Dcache.scala 98:29]
-  wire [127:0] _GEN_1114 = io_axi_data_data_ready ? 128'hffffffffffffffffffffffffffffffff : dcache_strb; // @[Dcache.scala 188:23 Dcache.scala 195:17 Dcache.scala 96:29]
-  wire [5:0] _GEN_1115 = io_axi_data_data_ready ? reg_data_addr[9:4] : dcache_index; // @[Dcache.scala 188:23 Dcache.scala 196:17 Dcache.scala 97:29]
+  wire [127:0] _GEN_1113 = io_axi_data_data_ready ? io_axi_data_data_read : 128'h0; // @[Dcache.scala 188:23 Dcache.scala 194:17]
+  wire [127:0] _GEN_1114 = io_axi_data_data_ready ? 128'hffffffffffffffffffffffffffffffff : 128'h0; // @[Dcache.scala 188:23 Dcache.scala 195:17]
+  wire [5:0] _GEN_1115 = io_axi_data_data_ready ? reg_data_addr[9:4] : 6'h0; // @[Dcache.scala 188:23 Dcache.scala 196:17]
   wire  _GEN_1116 = io_axi_data_data_ready ? _GEN_197 : valid_0; // @[Dcache.scala 188:23 Dcache.scala 36:24]
   wire  _GEN_1117 = io_axi_data_data_ready ? _GEN_198 : valid_1; // @[Dcache.scala 188:23 Dcache.scala 36:24]
   wire  _GEN_1118 = io_axi_data_data_ready ? _GEN_199 : valid_2; // @[Dcache.scala 188:23 Dcache.scala 36:24]
@@ -6924,14 +6917,14 @@ module Dcache(
   wire  _GEN_1371 = io_axi_data_data_ready ? _GEN_452 : dirty_63; // @[Dcache.scala 188:23 Dcache.scala 37:24]
   wire [2:0] _GEN_1372 = _T_7 ? 3'h0 : state; // @[Conditional.scala 39:67 Dcache.scala 212:8 Dcache.scala 31:22]
   wire  _GEN_1373 = _T_7 ? 1'h0 : reg_cache_fill; // @[Conditional.scala 39:67 Dcache.scala 213:18 Dcache.scala 58:31]
-  wire [5:0] _GEN_1375 = _T_7 ? req_index : dcache_index; // @[Conditional.scala 39:67 Dcache.scala 218:21 Dcache.scala 97:29]
-  wire  _GEN_1376 = _T_7 ? reg_data_req_w : dcache_wen; // @[Conditional.scala 39:67 Dcache.scala 219:21 Dcache.scala 95:29]
-  wire [127:0] _GEN_1377 = _T_7 ? reg_data_write : dcache_wdata; // @[Conditional.scala 39:67 Dcache.scala 220:21 Dcache.scala 98:29]
-  wire [127:0] _GEN_1378 = _T_7 ? {{120'd0}, reg_data_strb} : dcache_strb; // @[Conditional.scala 39:67 Dcache.scala 221:21 Dcache.scala 96:29]
+  wire [5:0] _GEN_1375 = _T_7 ? req_index : 6'h0; // @[Conditional.scala 39:67 Dcache.scala 218:21]
+  wire  _GEN_1376 = _T_7 & reg_data_req_w; // @[Conditional.scala 39:67 Dcache.scala 219:21]
+  wire [127:0] _GEN_1377 = _T_7 ? reg_data_write : 128'h0; // @[Conditional.scala 39:67 Dcache.scala 220:21]
+  wire [127:0] _GEN_1378 = _T_7 ? {{120'd0}, reg_data_strb} : 128'h0; // @[Conditional.scala 39:67 Dcache.scala 221:21]
   wire [2:0] _GEN_1379 = _T_5 ? _GEN_847 : _GEN_1372; // @[Conditional.scala 39:67]
   wire [31:0] _GEN_1382 = _T_5 ? _GEN_850 : 32'h0; // @[Conditional.scala 39:67]
   wire  _GEN_1387 = _T_5 ? _GEN_1111 : _GEN_1373; // @[Conditional.scala 39:67]
-  wire  _GEN_1388 = _T_5 ? _GEN_1112 : _GEN_1376; // @[Conditional.scala 39:67]
+  wire  _GEN_1388 = _T_5 ? io_axi_data_data_ready : _GEN_1376; // @[Conditional.scala 39:67]
   wire [127:0] _GEN_1389 = _T_5 ? _GEN_1113 : _GEN_1377; // @[Conditional.scala 39:67]
   wire [127:0] _GEN_1390 = _T_5 ? _GEN_1114 : _GEN_1378; // @[Conditional.scala 39:67]
   wire [5:0] _GEN_1391 = _T_5 ? _GEN_1115 : _GEN_1375; // @[Conditional.scala 39:67]
@@ -7196,12 +7189,21 @@ module Dcache(
   wire [7:0] _GEN_1651 = _T_4 ? 8'hff : 8'h0; // @[Conditional.scala 39:67 Dcache.scala 162:19]
   wire  _GEN_1654 = _T_4 ? 1'h0 : _T_5 & _T_6; // @[Conditional.scala 39:67]
   wire [31:0] _GEN_1655 = _T_4 ? 32'h0 : _GEN_1382; // @[Conditional.scala 39:67]
+  wire  _GEN_1657 = _T_4 ? 1'h0 : _GEN_1388; // @[Conditional.scala 39:67]
+  wire [127:0] _GEN_1658 = _T_4 ? 128'h0 : _GEN_1389; // @[Conditional.scala 39:67]
+  wire [127:0] _GEN_1659 = _T_4 ? 128'h0 : _GEN_1390; // @[Conditional.scala 39:67]
+  wire [5:0] _GEN_1660 = _T_4 ? 6'h0 : _GEN_1391; // @[Conditional.scala 39:67]
+  wire [5:0] _GEN_2111 = _T_2 ? _GEN_713 : _GEN_1660; // @[Conditional.scala 39:67]
+  wire  _GEN_2112 = _T_2 ? _GEN_714 : _GEN_1657; // @[Conditional.scala 39:67]
+  wire [127:0] _GEN_2113 = _T_2 ? _GEN_715 : _GEN_1658; // @[Conditional.scala 39:67]
+  wire [127:0] _GEN_2114 = _T_2 ? _GEN_716 : _GEN_1659; // @[Conditional.scala 39:67]
   wire [31:0] _GEN_2180 = _T_2 ? 32'h0 : _GEN_1649; // @[Conditional.scala 39:67]
   wire [63:0] _GEN_2181 = _T_2 ? 64'h0 : _GEN_1650; // @[Conditional.scala 39:67]
   wire [7:0] _GEN_2182 = _T_2 ? 8'h0 : _GEN_1651; // @[Conditional.scala 39:67]
   wire  _GEN_2183 = _T_2 ? 1'h0 : _T_4; // @[Conditional.scala 39:67]
   wire  _GEN_2184 = _T_2 ? 1'h0 : _GEN_1654; // @[Conditional.scala 39:67]
   wire [31:0] _GEN_2185 = _T_2 ? 32'h0 : _GEN_1655; // @[Conditional.scala 39:67]
+  wire  dcache_wen = _T ? 1'h0 : _GEN_2112; // @[Conditional.scala 40:58]
   wire [63:0] data_write2axi = _T ? 64'h0 : _GEN_2181; // @[Conditional.scala 40:58]
   S011HD1P_X32Y2D128_BW dcache ( // @[Dcache.scala 248:22]
     .Q(dcache_Q),
@@ -7223,9 +7225,9 @@ module Dcache(
   assign dcache_CLK = clock; // @[Dcache.scala 249:19]
   assign dcache_CEN = 1'h0; // @[Dcache.scala 250:19]
   assign dcache_WEN = ~dcache_wen; // @[Dcache.scala 251:22]
-  assign dcache_BWEN = dcache_strb; // @[Dcache.scala 252:19]
-  assign dcache_A = dcache_index; // @[Dcache.scala 253:19]
-  assign dcache_D = dcache_wdata; // @[Dcache.scala 254:19]
+  assign dcache_BWEN = _T ? 128'h0 : _GEN_2114; // @[Conditional.scala 40:58]
+  assign dcache_A = _T ? 6'h0 : _GEN_2111; // @[Conditional.scala 40:58]
+  assign dcache_D = _T ? 128'h0 : _GEN_2113; // @[Conditional.scala 40:58]
   always @(posedge clock) begin
     if (reset) begin // @[Dcache.scala 31:22]
       state <= 3'h0; // @[Dcache.scala 31:22]
@@ -10098,56 +10100,6 @@ module Dcache(
       end
     end
     data_ready2core <= state == 3'h5 & cache_hit | state == 3'h5; // @[Dcache.scala 78:65]
-    if (reset) begin // @[Dcache.scala 95:29]
-      dcache_wen <= 1'h0; // @[Dcache.scala 95:29]
-    end else if (!(_T)) begin // @[Conditional.scala 40:58]
-      if (_T_2) begin // @[Conditional.scala 39:67]
-        if (cache_hit) begin // @[Dcache.scala 123:18]
-          dcache_wen <= reg_data_req_w; // @[Dcache.scala 132:23]
-        end else begin
-          dcache_wen <= _GEN_520;
-        end
-      end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dcache_wen <= _GEN_1388;
-      end
-    end
-    if (reset) begin // @[Dcache.scala 96:29]
-      dcache_strb <= 128'h0; // @[Dcache.scala 96:29]
-    end else if (!(_T)) begin // @[Conditional.scala 40:58]
-      if (_T_2) begin // @[Conditional.scala 39:67]
-        if (cache_hit) begin // @[Dcache.scala 123:18]
-          dcache_strb <= {{120'd0}, reg_data_strb}; // @[Dcache.scala 134:23]
-        end
-      end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dcache_strb <= _GEN_1390;
-      end
-    end
-    if (reset) begin // @[Dcache.scala 97:29]
-      dcache_index <= 6'h0; // @[Dcache.scala 97:29]
-    end else if (!(_T)) begin // @[Conditional.scala 40:58]
-      if (_T_2) begin // @[Conditional.scala 39:67]
-        if (cache_hit) begin // @[Dcache.scala 123:18]
-          dcache_index <= req_index; // @[Dcache.scala 131:23]
-        end else begin
-          dcache_index <= _GEN_518;
-        end
-      end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dcache_index <= _GEN_1391;
-      end
-    end
-    if (reset) begin // @[Dcache.scala 98:29]
-      dcache_wdata <= 128'h0; // @[Dcache.scala 98:29]
-    end else if (!(_T)) begin // @[Conditional.scala 40:58]
-      if (_T_2) begin // @[Conditional.scala 39:67]
-        if (cache_hit) begin // @[Dcache.scala 123:18]
-          dcache_wdata <= reg_data_write; // @[Dcache.scala 133:23]
-        end else begin
-          dcache_wdata <= _GEN_519;
-        end
-      end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dcache_wdata <= _GEN_1389;
-      end
-    end
   end
 // Register and memory initialization
 `ifdef RANDOMIZE_GARBAGE_ASSIGN
@@ -10711,14 +10663,6 @@ initial begin
   reg_data_write = _RAND_261[127:0];
   _RAND_262 = {1{`RANDOM}};
   data_ready2core = _RAND_262[0:0];
-  _RAND_263 = {1{`RANDOM}};
-  dcache_wen = _RAND_263[0:0];
-  _RAND_264 = {4{`RANDOM}};
-  dcache_strb = _RAND_264[127:0];
-  _RAND_265 = {1{`RANDOM}};
-  dcache_index = _RAND_265[5:0];
-  _RAND_266 = {4{`RANDOM}};
-  dcache_wdata = _RAND_266[127:0];
 `endif // RANDOMIZE_REG_INIT
   `endif // RANDOMIZE
 end // initial
