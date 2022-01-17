@@ -1968,6 +1968,7 @@ module Core(
   reg [63:0] exe_reg_print; // @[PipelineReg.scala 137:28]
   reg [63:0] mem_reg_print; // @[PipelineReg.scala 138:28]
   reg [63:0] wb_reg_print; // @[PipelineReg.scala 139:27]
+  wire  _stall_T = ~io_dmem_data_ready; // @[Core.scala 21:29]
   wire [4:0] id_rs2_addr = id_reg_inst[24:20]; // @[Core.scala 60:30]
   wire [63:0] _GEN_124 = {{59'd0}, id_rs2_addr}; // @[Core.scala 124:20]
   wire  _T_15 = id_rs2_addr != 5'h0; // @[Core.scala 124:51]
@@ -1981,8 +1982,8 @@ module Core(
   wire  _T_24 = exe_reg_rd_addr == _GEN_124 & id_rs2_addr != 5'h0 & decode_io_op2_type == 3'h1 | exe_reg_rd_addr ==
     _GEN_125 & id_rs1_addr != 5'h0 & decode_io_op1_type == 3'h1; // @[Core.scala 124:93]
   wire  id_call_stall = (exe_reg_mem_rtype != 3'h0 | exe_reg_alu_type == 5'h13) & _T_24; // @[Core.scala 123:71]
-  wire  exe_call_stall = mem_reg_dmem_en & ~io_dmem_data_ready; // @[Core.scala 385:22]
-  wire  stall = exe_reg_stall | id_call_stall | exe_call_stall; // @[Core.scala 21:41]
+  wire  exe_call_stall = mem_reg_dmem_en & _stall_T; // @[Core.scala 385:22]
+  wire  stall = exe_reg_stall & ~io_dmem_data_ready | id_call_stall | exe_call_stall; // @[Core.scala 21:68]
   wire  _GEN_6 = stall ? 1'h0 : 1'h1; // @[Core.scala 29:26 Core.scala 29:72]
   wire [31:0] _if_reg_pc_T_1 = if_reg_pc + 32'h4; // @[Core.scala 31:50]
   wire  _GEN_4 = reg_kill_flag ? 1'h0 : reg_kill_flag; // @[Core.scala 30:26 Core.scala 30:97 PipelineReg.scala 124:29]
