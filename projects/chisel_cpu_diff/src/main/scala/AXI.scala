@@ -191,11 +191,11 @@ inst_reg_addr:= imem.inst_addr
 // Read address channel signals
   out.ar.bits.id     := 0.U 
   out.ar.bits.addr   := axi_addr
-  out.ar.bits.len    := Mux(read_state < 4.U, "b001".U, "b000".U)  //every burst transfer 2 data
+  out.ar.bits.len    := "b001".U //every burst transfer 2 data
   out.ar.bits.size   := "b011".U //every clock transfer 8 bytes = 64bits
   out.ar.bits.burst  := "b01".U  // incrementing-address burst
   out.ar.bits.lock   := 0.U  
-  out.ar.bits.cache  := Mux(read_state<4.U , "b0010".U , "b0000".U ) 
+  out.ar.bits.cache  := "b0010".U
   out.ar.bits.prot   := "b000".U
   out.ar.bits.qos    := 0.U
   out.ar.bits.user   := 0.U

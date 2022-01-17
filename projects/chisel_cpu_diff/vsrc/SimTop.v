@@ -3007,8 +3007,6 @@ module Core2AXI(
   input          io_axi2ram_ar_ready,
   output         io_axi2ram_ar_valid,
   output [31:0]  io_axi2ram_ar_bits_addr,
-  output [7:0]   io_axi2ram_ar_bits_len,
-  output [3:0]   io_axi2ram_ar_bits_cache,
   output         io_axi2ram_r_ready,
   input          io_axi2ram_r_valid,
   input  [63:0]  io_axi2ram_r_bits_data,
@@ -3090,16 +3088,12 @@ module Core2AXI(
   wire  _T_14 = read_state == 3'h4; // @[AXI.scala 186:22]
   wire [31:0] _GEN_31 = _T_14 & io_dmem_data_addr_r == 32'h0 ? reg_data_addr_r : 32'h0; // @[AXI.scala 187:68 AXI.scala 187:77]
   wire [31:0] _GEN_32 = read_state == 3'h4 & _T ? io_dmem_data_addr_r : _GEN_31; // @[AXI.scala 186:68 AXI.scala 186:77]
-  wire  _io_axi2ram_ar_bits_len_T = read_state < 3'h4; // @[AXI.scala 194:40]
-  wire [1:0] _io_axi2ram_ar_bits_cache_T_1 = _io_axi2ram_ar_bits_len_T ? 2'h2 : 2'h0; // @[AXI.scala 198:28]
   reg [63:0] inst_read_h; // @[AXI.scala 238:28]
   reg [63:0] inst_read_l; // @[AXI.scala 239:28]
   reg [63:0] data_read_h; // @[AXI.scala 240:28]
   reg [63:0] data_read_l; // @[AXI.scala 241:28]
   assign io_axi2ram_ar_valid = _T_13 | _T_14; // @[AXI.scala 203:51]
   assign io_axi2ram_ar_bits_addr = read_state == 3'h1 ? io_imem_inst_addr : _GEN_32; // @[AXI.scala 185:39 AXI.scala 185:48]
-  assign io_axi2ram_ar_bits_len = {{7'd0}, read_state < 3'h4}; // @[AXI.scala 194:40]
-  assign io_axi2ram_ar_bits_cache = {{2'd0}, _io_axi2ram_ar_bits_cache_T_1}; // @[AXI.scala 198:28]
   assign io_axi2ram_r_ready = 1'h1; // @[AXI.scala 205:18]
   assign io_axi2ram_aw_valid = write_state == 3'h1; // @[AXI.scala 219:34]
   assign io_axi2ram_aw_bits_addr = io_dmem_data_addr_w; // @[AXI.scala 209:23]
@@ -10754,8 +10748,6 @@ module SimTop(
   wire  core2axi_io_axi2ram_ar_ready; // @[SimTop.scala 17:24]
   wire  core2axi_io_axi2ram_ar_valid; // @[SimTop.scala 17:24]
   wire [31:0] core2axi_io_axi2ram_ar_bits_addr; // @[SimTop.scala 17:24]
-  wire [7:0] core2axi_io_axi2ram_ar_bits_len; // @[SimTop.scala 17:24]
-  wire [3:0] core2axi_io_axi2ram_ar_bits_cache; // @[SimTop.scala 17:24]
   wire  core2axi_io_axi2ram_r_ready; // @[SimTop.scala 17:24]
   wire  core2axi_io_axi2ram_r_valid; // @[SimTop.scala 17:24]
   wire [63:0] core2axi_io_axi2ram_r_bits_data; // @[SimTop.scala 17:24]
@@ -10830,8 +10822,6 @@ module SimTop(
     .io_axi2ram_ar_ready(core2axi_io_axi2ram_ar_ready),
     .io_axi2ram_ar_valid(core2axi_io_axi2ram_ar_valid),
     .io_axi2ram_ar_bits_addr(core2axi_io_axi2ram_ar_bits_addr),
-    .io_axi2ram_ar_bits_len(core2axi_io_axi2ram_ar_bits_len),
-    .io_axi2ram_ar_bits_cache(core2axi_io_axi2ram_ar_bits_cache),
     .io_axi2ram_r_ready(core2axi_io_axi2ram_r_ready),
     .io_axi2ram_r_valid(core2axi_io_axi2ram_r_valid),
     .io_axi2ram_r_bits_data(core2axi_io_axi2ram_r_bits_data),
@@ -10897,11 +10887,11 @@ module SimTop(
   assign io_memAXI_0_ar_bits_id = 4'h0; // @[SimTop.scala 31:18]
   assign io_memAXI_0_ar_bits_user = 1'h0; // @[SimTop.scala 31:18]
   assign io_memAXI_0_ar_bits_addr = core2axi_io_axi2ram_ar_bits_addr; // @[SimTop.scala 31:18]
-  assign io_memAXI_0_ar_bits_len = core2axi_io_axi2ram_ar_bits_len; // @[SimTop.scala 31:18]
+  assign io_memAXI_0_ar_bits_len = 8'h1; // @[SimTop.scala 31:18]
   assign io_memAXI_0_ar_bits_size = 3'h3; // @[SimTop.scala 31:18]
   assign io_memAXI_0_ar_bits_burst = 2'h1; // @[SimTop.scala 31:18]
   assign io_memAXI_0_ar_bits_lock = 2'h0; // @[SimTop.scala 31:18]
-  assign io_memAXI_0_ar_bits_cache = core2axi_io_axi2ram_ar_bits_cache; // @[SimTop.scala 31:18]
+  assign io_memAXI_0_ar_bits_cache = 4'h2; // @[SimTop.scala 31:18]
   assign io_memAXI_0_ar_bits_prot = 3'h0; // @[SimTop.scala 31:18]
   assign io_memAXI_0_ar_bits_qos = 4'h0; // @[SimTop.scala 31:18]
   assign io_memAXI_0_r_ready = 1'h1; // @[SimTop.scala 32:18]
