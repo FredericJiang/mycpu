@@ -92,6 +92,7 @@ val data_strb   = Output(UInt(8.W))
 
 
 // DCache 的连接信号
+  val dcache_cen   = WireInit(false.B)
   val dcache_wen   = WireInit(false.B)
   val dcache_strb  = WireInit(0.U(128.W))
   val dcache_index = WireInit(0.U(6.W))
@@ -128,6 +129,7 @@ switch (state) {
     offset(req_index) := req_offset
     
     //reg_data_ready    := true.B   // data ready to core，等一拍dcache才把数据读出来
+    dcache_cen        := true.B
     dcache_index      := req_index
     dcache_wen        := reg_data_req_w
     dcache_wdata      := reg_data_write
@@ -143,7 +145,7 @@ switch (state) {
 
   .elsewhen (cache_dirty){ //需要先将dirty数据写回AXI
     state := writeback
-
+    dcache_cen        := true.B
     dcache_index := req_index //  从Dcache中读取dirty data , 下一拍当state = writeback时，dirty_data 从cache_data_out读出
     dcache_wdata := 0.U
     dcache_wen   := false.B
@@ -190,7 +192,8 @@ switch (state) {
 
    reg_cache_fill := true.B  //跳出当前状态的信号
    // 取后写回dcache
-   dcache_wen := true.B
+   dcache_cen   := true.B
+   dcache_wen   := true.B
    dcache_wdata := axi.data_read //不管需要多少位，把128位全部传进去
    dcache_strb  := "hffffffffffffffffffffffffffffffff".U
    dcache_index := reg_data_addr(9,4)
@@ -213,7 +216,7 @@ switch (state) {
   reg_cache_fill := false.B
 
   req_addr := reg_data_addr // 因为是wire类型，因此需要重新赋值
-  
+  dcache_cen        := true.B
   dcache_index      := reg_data_addr(9,4)
   dcache_wen        := reg_data_req_w
   dcache_wdata      := reg_data_write
@@ -246,7 +249,7 @@ axi.data_write   := data_write2axi
 
   val dcache = Module(new S011HD1P_X32Y2D128_BW)
   dcache.io.CLK   := clock
-  dcache.io.CEN   := false.B
+  dcache.io.CEN   := ~(dcache_wen || dcache_cen)
   dcache.io.WEN   := ~dcache_wen
   dcache.io.BWEN  := dcache_strb
   dcache.io.A     := dcache_index
