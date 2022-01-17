@@ -118,8 +118,8 @@ switch (state) {
  
   is(lookup){
   // req_addr,req_index,req_tag 都是wire，只在当前拍有效
+  req_addr        := core.data_addr_r 
   reg_data_addr   := core.data_addr_r 
-
   when(cache_hit){
    
    //记录写入的数据, 如果是读数据，则这些值为原来的值
