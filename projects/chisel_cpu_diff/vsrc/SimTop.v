@@ -7209,6 +7209,7 @@ module Dcache(
   wire [31:0] _GEN_2191 = _T_2 ? 32'h0 : _GEN_1659; // @[Conditional.scala 39:67]
   wire  dcache_cen = _T ? 1'h0 : _GEN_2116; // @[Conditional.scala 40:58]
   wire  dcache_wen = _T ? 1'h0 : _GEN_2118; // @[Conditional.scala 40:58]
+  wire [127:0] dcache_strb = _T ? 128'h0 : _GEN_2120; // @[Conditional.scala 40:58]
   wire [63:0] data_write2axi = _T ? 64'h0 : _GEN_2187; // @[Conditional.scala 40:58]
   S011HD1P_X32Y2D128_BW dcache ( // @[Dcache.scala 250:22]
     .Q(dcache_Q),
@@ -7230,7 +7231,7 @@ module Dcache(
   assign dcache_CLK = clock; // @[Dcache.scala 251:19]
   assign dcache_CEN = ~(dcache_wen | dcache_cen); // @[Dcache.scala 252:22]
   assign dcache_WEN = ~dcache_wen; // @[Dcache.scala 253:22]
-  assign dcache_BWEN = _T ? 128'h0 : _GEN_2120; // @[Conditional.scala 40:58]
+  assign dcache_BWEN = ~dcache_strb; // @[Dcache.scala 254:22]
   assign dcache_A = _T ? 6'h0 : _GEN_2117; // @[Conditional.scala 40:58]
   assign dcache_D = _T ? 128'h0 : _GEN_2119; // @[Conditional.scala 40:58]
   always @(posedge clock) begin
