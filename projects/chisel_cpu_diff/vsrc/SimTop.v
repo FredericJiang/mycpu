@@ -6460,7 +6460,7 @@ module Dcache(
   wire [3:0] _GEN_387 = 6'h3d == req_index ? req_offset : offset_61; // @[Dcache.scala 126:23 Dcache.scala 126:23 Dcache.scala 35:24]
   wire [3:0] _GEN_388 = 6'h3e == req_index ? req_offset : offset_62; // @[Dcache.scala 126:23 Dcache.scala 126:23 Dcache.scala 35:24]
   wire [3:0] _GEN_389 = 6'h3f == req_index ? req_offset : offset_63; // @[Dcache.scala 126:23 Dcache.scala 126:23 Dcache.scala 35:24]
-  reg  data_ready2core_REG; // @[Dcache.scala 133:34]
+  reg  data_ready2core_REG; // @[Dcache.scala 133:35]
   wire  _GEN_390 = 6'h0 == req_index ? reg_data_req_w : dirty_0; // @[Dcache.scala 137:28 Dcache.scala 137:28 Dcache.scala 37:24]
   wire  _GEN_391 = 6'h1 == req_index ? reg_data_req_w : dirty_1; // @[Dcache.scala 137:28 Dcache.scala 137:28 Dcache.scala 37:24]
   wire  _GEN_392 = 6'h2 == req_index ? reg_data_req_w : dirty_2; // @[Dcache.scala 137:28 Dcache.scala 137:28 Dcache.scala 37:24]
@@ -10149,28 +10149,8 @@ module Dcache(
         dcache_wdata <= _GEN_1390;
       end
     end
-    if (6'h3f == req_index) begin // @[Dcache.scala 54:49]
-      data_ready2core_REG <= valid_63; // @[Dcache.scala 54:49]
-    end else if (6'h3e == req_index) begin // @[Dcache.scala 54:49]
-      data_ready2core_REG <= valid_62; // @[Dcache.scala 54:49]
-    end else if (6'h3d == req_index) begin // @[Dcache.scala 54:49]
-      data_ready2core_REG <= valid_61; // @[Dcache.scala 54:49]
-    end else if (6'h3c == req_index) begin // @[Dcache.scala 54:49]
-      data_ready2core_REG <= valid_60; // @[Dcache.scala 54:49]
-    end else begin
-      data_ready2core_REG <= _GEN_123;
-    end
-    if (6'h3f == req_index) begin // @[Dcache.scala 54:49]
-      data_ready2core_REG_1 <= valid_63; // @[Dcache.scala 54:49]
-    end else if (6'h3e == req_index) begin // @[Dcache.scala 54:49]
-      data_ready2core_REG_1 <= valid_62; // @[Dcache.scala 54:49]
-    end else if (6'h3d == req_index) begin // @[Dcache.scala 54:49]
-      data_ready2core_REG_1 <= valid_61; // @[Dcache.scala 54:49]
-    end else if (6'h3c == req_index) begin // @[Dcache.scala 54:49]
-      data_ready2core_REG_1 <= valid_60; // @[Dcache.scala 54:49]
-    end else begin
-      data_ready2core_REG_1 <= _GEN_123;
-    end
+    data_ready2core_REG <= state == 3'h5 & cache_hit; // @[Dcache.scala 133:53]
+    data_ready2core_REG_1 <= state == 3'h5; // @[Dcache.scala 216:38]
   end
 // Register and memory initialization
 `ifdef RANDOMIZE_GARBAGE_ASSIGN

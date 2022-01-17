@@ -130,7 +130,7 @@ switch (state) {
     dcache_wen        := reg_data_req_w
     dcache_wdata      := reg_data_write
     dcache_strb       := reg_data_strb
-    data_ready2core    := RegNext(valid(req_index))
+    data_ready2core    :=  RegNext(state === update && cache_hit )
 
   
         when (!dirty(req_index)) {
@@ -213,7 +213,7 @@ switch (state) {
   dcache_wdata      := reg_data_write
   dcache_strb       := reg_data_strb
 
-  data_ready2core   := RegNext(valid(req_index)) //读需要延后一拍等cache_data_out
+  data_ready2core   := RegNext(state === update ) //读需要延后一拍等cache_data_out
 
 
 
