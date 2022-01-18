@@ -305,8 +305,8 @@ mem_reg_dmem_wen    := false.B
 mem_reg_dmem_en     := false.B
 
 }
-//when(!stall)
-when(!mem_call_stall && !mem_reg_stall) //非stall时接受exe级数据，否则默认保持
+when(!stall)
+//when(!mem_call_stall && !mem_reg_stall) //非stall时接受exe级数据，否则默认保持
 {
 mem_reg_pc          := exe_reg_pc
 mem_reg_inst        := exe_reg_inst
