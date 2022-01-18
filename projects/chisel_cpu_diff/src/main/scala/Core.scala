@@ -133,7 +133,7 @@ when((exe_reg_mem_rtype =/= MEM_X || exe_reg_alu_type === ALU_COPY2 ) &&
 //Instruction Decode  >>>>>>>>>>>>>>>>>>>   Execute
 //*******************************************************************
 
-when((!mem_call_stall && !mem_reg_stall)&& !kill_stage){
+when(!stall && !kill_stage){
 exe_reg_pc        := id_reg_pc
 exe_reg_inst      := id_reg_inst
 
