@@ -84,7 +84,7 @@ val data_strb   = Output(UInt(8.W))
   val data_strb2axi    = WireInit(0.U(8.W))
   val data_write2axi   = WireInit(0.U(64.W))
 
-  data_read2core   := MuxLookup(req_offset(3), 0.U, Array(
+  data_read2core   := MuxLookup(reg_data_addr(3), 0.U, Array(
                       "b0".U -> cache_data_out( 63, 0),
                       "b1".U -> cache_data_out( 127,64)          
                     ))
