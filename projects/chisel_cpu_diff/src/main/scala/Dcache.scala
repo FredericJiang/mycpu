@@ -65,7 +65,7 @@ val data_strb   = Output(UInt(8.W))
   val reg_data_req_w  = RegInit(false.B)
   val reg_data_addr   = RegInit(0.U(32.W))
 
-  val reg_data_strb   = RegInit(0.U(8.W)) 
+  val reg_data_strb   = RegInit(0.U(64.W)) 
   val reg_data_write  = RegInit(0.U(128.W))
 
   val reg_data_read   = RegInit(0.U(64.W))
