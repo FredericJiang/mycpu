@@ -200,10 +200,10 @@ when(exe_reg_alu_type === ALU_MY_INST && wb_reg_rd_addr === 10.U && wb_reg_rd_we
 .elsewhen(exe_reg_alu_type === ALU_MY_INST) {exe_reg_print := exe_reg_rs1_data}
 
 when((exe_reg_rs1_addr === mem_reg_rd_addr  ) 
-&& mem_reg_rd_wen && exe_reg_op1_type === OP_REG && mem_reg_alu_type =/= ALU_COPY2)   {exe_op1 := mem_reg_rd_data;  }
+&& (mem_reg_rd_wen || mem_reg_stall_wen) && exe_reg_op1_type === OP_REG && mem_reg_alu_type =/= ALU_COPY2)   {exe_op1 := mem_reg_rd_data;  }
 .otherwise                                        {exe_op1 := exe_reg_op1_data }
 when((exe_reg_rs2_addr === mem_reg_rd_addr  ) 
-&& mem_reg_rd_wen && exe_reg_op1_type === OP_REG && mem_reg_alu_type =/= ALU_COPY2)  {exe_op2 := mem_reg_rd_data;  }
+&& (mem_reg_rd_wen || mem_reg_stall_wen) && exe_reg_op1_type === OP_REG && mem_reg_alu_type =/= ALU_COPY2)  {exe_op2 := mem_reg_rd_data;  }
 .otherwise                                        {exe_op2 := exe_reg_op2_data }
 
 
