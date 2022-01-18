@@ -66,9 +66,9 @@ val data_strb   = Output(UInt(8.W))
   val reg_data_addr   = RegInit(0.U(32.W))
 
   val reg_data_strb   = RegInit(0.U(64.W)) 
-  val reg_data_write  = RegInit(0.U(128.W))
+  val reg_data_write  = RegInit(0.U(64.W))
 
-  val reg_data_read   = RegInit(0.U(64.W))
+  //val reg_data_read   = RegInit(0.U(64.W))
 
 
 
@@ -123,7 +123,7 @@ switch (state) {
   reg_data_strb   := core.data_strb
   reg_data_write  := core.data_write 
   when(cache_hit){
-   
+  
    //记录写入的数据, 如果是读数据，则这些值为原来的值
     valid(req_index)  := true.B 
     tag(req_index)    := req_tag
@@ -133,8 +133,8 @@ switch (state) {
     dcache_cen        := true.B
     dcache_index      := req_index
     dcache_wen        := reg_data_req_w
-    dcache_wdata      := core.data_write
-    dcache_strb       := core.data_strb
+    dcache_wdata      := Mux(reg_data_addr(3),Cat(core.data_write, Fill(64, 0.U)), Cat( Fill(64, 0.U),core.data_write))
+    dcache_strb       := Mux(reg_data_addr(3),Cat(core.data_strb, Fill(64, 0.U)), Cat( Fill(64, 0.U),core.data_strb))
     //core.data_ready    :=  RegNext(state === update && cache_hit )
 
   
@@ -220,8 +220,8 @@ switch (state) {
   dcache_cen        := true.B
   dcache_index      := reg_data_addr(9,4)
   dcache_wen        := reg_data_req_w
-  dcache_wdata      := reg_data_write
-  dcache_strb       := reg_data_strb
+  dcache_wdata      := Mux(reg_data_addr(3),Cat(reg_data_write, Fill(64, 0.U)), Cat( Fill(64, 0.U),reg_data_write))
+  dcache_strb       := Mux(reg_data_addr(3),Cat(reg_data_strb, Fill(64, 0.U)), Cat( Fill(64, 0.U),reg_data_strb))
 
   //core.data_ready   := RegNext(state === update ) //读需要延后一拍等cache_data_out
 
