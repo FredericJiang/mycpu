@@ -3045,7 +3045,7 @@ module Core2AXI(
   input  [31:0]  io_dmem_data_addr_w,
   input  [63:0]  io_dmem_data_strb,
   output [127:0] io_dmem_data_read,
-  input  [127:0] io_dmem_data_write
+  input  [63:0]  io_dmem_data_write
 );
 `ifdef RANDOMIZE_REG_INIT
   reg [31:0] _RAND_0;
@@ -3111,7 +3111,7 @@ module Core2AXI(
   assign io_axi2ram_aw_valid = write_state == 3'h1; // @[AXI.scala 219:34]
   assign io_axi2ram_aw_bits_addr = io_dmem_data_addr_w; // @[AXI.scala 209:23]
   assign io_axi2ram_w_valid = write_state == 3'h2; // @[AXI.scala 226:34]
-  assign io_axi2ram_w_bits_data = io_dmem_data_write[63:0]; // @[AXI.scala 222:23]
+  assign io_axi2ram_w_bits_data = io_dmem_data_write; // @[AXI.scala 222:23]
   assign io_axi2ram_w_bits_strb = io_dmem_data_strb[7:0]; // @[AXI.scala 223:23]
   assign io_axi2ram_w_bits_last = 1'h1; // @[AXI.scala 224:23]
   assign io_axi2ram_b_ready = 1'h1; // @[AXI.scala 229:18]
@@ -5523,7 +5523,7 @@ module Dcache(
   output [31:0]  io_axi_data_data_addr_w,
   output [63:0]  io_axi_data_data_strb,
   input  [127:0] io_axi_data_data_read,
-  output [127:0] io_axi_data_data_write
+  output [63:0]  io_axi_data_data_write
 );
 `ifdef RANDOMIZE_REG_INIT
   reg [31:0] _RAND_0;
@@ -7230,13 +7230,12 @@ module Dcache(
   wire  dcache_wen = _T ? 1'h0 : _GEN_2118; // @[Conditional.scala 40:58]
   wire [127:0] dcache_strb = _T ? 128'h0 : _GEN_2120; // @[Conditional.scala 40:58]
   wire [31:0] data_addr_w2axi = _T ? 32'h0 : _GEN_2186; // @[Conditional.scala 40:58]
-  wire [63:0] data_write2axi = _T ? 64'h0 : _GEN_2187; // @[Conditional.scala 40:58]
   wire [7:0] data_strb2axi = _T ? 8'h0 : _GEN_2188; // @[Conditional.scala 40:58]
   wire [31:0] data_addr_r2axi = _T ? 32'h0 : _GEN_2191; // @[Conditional.scala 40:58]
   wire [27:0] io_axi_data_data_addr_r_hi_hi_hi = data_addr_r2axi[31:4]; // @[Dcache.scala 242:41]
   wire [29:0] io_axi_data_data_addr_r_hi = {io_axi_data_data_addr_r_hi_hi_hi,1'h0,1'h0}; // @[Cat.scala 30:58]
-  wire [27:0] io_axi_data_data_addr_w_hi_hi_hi = data_addr_w2axi[31:4]; // @[Dcache.scala 243:41]
-  wire [29:0] io_axi_data_data_addr_w_hi = {io_axi_data_data_addr_w_hi_hi_hi,1'h0,1'h0}; // @[Cat.scala 30:58]
+  wire [28:0] io_axi_data_data_addr_w_hi_hi = data_addr_w2axi[31:3]; // @[Dcache.scala 243:41]
+  wire [29:0] io_axi_data_data_addr_w_hi = {io_axi_data_data_addr_w_hi_hi,1'h0}; // @[Cat.scala 30:58]
   S011HD1P_X32Y2D128_BW dcache ( // @[Dcache.scala 251:22]
     .Q(dcache_Q),
     .CLK(dcache_CLK),
@@ -7253,7 +7252,7 @@ module Dcache(
   assign io_axi_data_data_addr_r = {io_axi_data_data_addr_r_hi,2'h0}; // @[Cat.scala 30:58]
   assign io_axi_data_data_addr_w = {io_axi_data_data_addr_w_hi,2'h0}; // @[Cat.scala 30:58]
   assign io_axi_data_data_strb = {{56'd0}, data_strb2axi}; // @[Conditional.scala 40:58]
-  assign io_axi_data_data_write = {{64'd0}, data_write2axi}; // @[Conditional.scala 40:58]
+  assign io_axi_data_data_write = _T ? 64'h0 : _GEN_2187; // @[Conditional.scala 40:58]
   assign dcache_CLK = clock; // @[Dcache.scala 252:19]
   assign dcache_CEN = ~(dcache_wen | dcache_cen); // @[Dcache.scala 253:22]
   assign dcache_WEN = ~dcache_wen; // @[Dcache.scala 254:22]
@@ -10799,7 +10798,7 @@ module SimTop(
   wire [31:0] core2axi_io_dmem_data_addr_w; // @[SimTop.scala 17:24]
   wire [63:0] core2axi_io_dmem_data_strb; // @[SimTop.scala 17:24]
   wire [127:0] core2axi_io_dmem_data_read; // @[SimTop.scala 17:24]
-  wire [127:0] core2axi_io_dmem_data_write; // @[SimTop.scala 17:24]
+  wire [63:0] core2axi_io_dmem_data_write; // @[SimTop.scala 17:24]
   wire  icache_clock; // @[SimTop.scala 18:24]
   wire  icache_reset; // @[SimTop.scala 18:24]
   wire  icache_io_core_inst_inst_ready; // @[SimTop.scala 18:24]
@@ -10826,7 +10825,7 @@ module SimTop(
   wire [31:0] dcache_io_axi_data_data_addr_w; // @[SimTop.scala 19:24]
   wire [63:0] dcache_io_axi_data_data_strb; // @[SimTop.scala 19:24]
   wire [127:0] dcache_io_axi_data_data_read; // @[SimTop.scala 19:24]
-  wire [127:0] dcache_io_axi_data_data_write; // @[SimTop.scala 19:24]
+  wire [63:0] dcache_io_axi_data_data_write; // @[SimTop.scala 19:24]
   Core core ( // @[SimTop.scala 16:24]
     .clock(core_clock),
     .reset(core_reset),

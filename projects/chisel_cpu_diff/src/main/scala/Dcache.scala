@@ -240,7 +240,7 @@ core.data_ready  := data_ready2core
 axi.data_req_r   := data_req_r2axi 
 axi.data_req_w   := data_req_w2axi
 axi.data_addr_r  := Cat(data_addr_r2axi (31,4),0.U,0.U,0.U,0.U)
-axi.data_addr_w  := Cat(data_addr_w2axi (31,4),0.U,0.U,0.U,0.U)
+axi.data_addr_w  := Cat(data_addr_w2axi (31,3),0.U,0.U,0.U)
 axi.data_strb    := data_strb2axi
 axi.data_write   := data_write2axi
 

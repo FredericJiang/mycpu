@@ -77,7 +77,7 @@ val data_write  = Output(UInt(AXI_Data_Width.W))
 
 class AXI_Data extends Data_IO{
 val data_read   = Input(UInt(128.W))
-val data_write  = Output(UInt(128.W)) 
+val data_write  = Output(UInt(64.W)) 
 }
 
 
