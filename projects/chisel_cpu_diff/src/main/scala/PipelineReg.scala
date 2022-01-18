@@ -138,4 +138,6 @@ val exe_reg_print = RegInit(0.U(64.W))
 val mem_reg_print = RegInit(0.U(64.W))
 val wb_reg_print = RegInit(0.U(64.W))
 
+val mem_reg_rd_data = RegInit(0.U(64.W))
+val mem_reg_stall_wen = RegInit(false.B)
 }

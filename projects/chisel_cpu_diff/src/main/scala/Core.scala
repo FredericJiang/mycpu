@@ -199,6 +199,13 @@ when((exe_reg_rs2_addr === wb_reg_rd_addr && exe_reg_rs2_addr =/= mem_reg_rd_add
 when(exe_reg_alu_type === ALU_MY_INST && wb_reg_rd_addr === 10.U && wb_reg_rd_wen ){exe_reg_print := wb_rd_data}
 .elsewhen(exe_reg_alu_type === ALU_MY_INST) {exe_reg_print := exe_reg_rs1_data}
 
+when((exe_reg_rs1_addr === mem_reg_rd_addr  ) 
+&& mem_reg_rd_wen && exe_reg_op1_type === OP_REG)  {exe_op1 := mem_reg_rd_data;  }
+.otherwise                                        {exe_op1 := exe_reg_op1_data }
+when((exe_reg_rs2_addr === mem_reg_rd_addr  ) 
+&& mem_reg_rd_wen && exe_reg_op1_type === OP_REG)  {exe_op2 := mem_reg_rd_data;  }
+.otherwise                                        {exe_op2 := exe_reg_op2_data }
+
 
 //exe_op1 := exe_reg_op1_data
 //exe_op2 := exe_reg_op2_data 
@@ -381,10 +388,10 @@ when((mem_reg_rs2_addr === wb_reg_rd_addr)
 // LD instruction Data Path
 mem_rd_data   := lsu.io.mem_rdata
 
-val mem_reg_rd_data = RegInit(0.U(64.W))
+
 mem_reg_rd_data:= mem_rd_data
 
-val mem_reg_stall_wen = RegInit(false.B)
+
 
 
 when(mem_reg_dmem_en && !io.dmem.data_ready) { mem_reg_stall := true.B  ;  mem_call_stall:= true.B 
