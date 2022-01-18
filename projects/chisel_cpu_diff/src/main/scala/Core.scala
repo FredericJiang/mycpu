@@ -305,8 +305,8 @@ mem_reg_dmem_wen    := false.B
 mem_reg_dmem_en     := false.B
 
 }
-//when(!stall)
-when(!mem_call_stall && !mem_reg_stall) //非stall时接受exe级数据，否则默认保持
+when(!stall)
+//when(!mem_call_stall && !mem_reg_stall) //非stall时接受exe级数据，否则默认保持
 {
 mem_reg_pc          := exe_reg_pc
 mem_reg_inst        := exe_reg_inst
@@ -410,7 +410,9 @@ when(!mem_reg_stall && !mem_call_stall)      {mem_reg_stall_wen:= false.B}
 // Memmory >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Write Back
 //*******************************************************************
 // signals for difftest
-when(!stall){
+//when(!mem_reg_stall && !mem_call_stall)
+when(!stall)
+{
 
 wb_reg_pc          := mem_reg_pc
 wb_reg_inst        := mem_reg_inst
