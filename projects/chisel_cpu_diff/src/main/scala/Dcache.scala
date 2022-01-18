@@ -203,7 +203,7 @@ switch (state) {
   req_addr := reg_data_addr // 因为是wire类型，因此需要重新赋值
   valid(req_index)  := true.B 
   tag(req_index)    := req_tag
-  offset(req_index) := reg_data_addr(3,0)
+  offset(req_index) := req_offset
   dirty(req_index)  := reg_data_req_w
 
 
