@@ -21,9 +21,9 @@ class Core extends Module {
 stall := (exe_reg_stall || id_call_stall || exe_call_stall)
 
 when(inst_gen_ready  )     { io.imem.inst_req   := true.B  }
-.otherwise                { io.imem.inst_req   := false.B }
+.otherwise                 { io.imem.inst_req   := false.B }
 
-when(io.dmem.data_ready){inst_gen_ready := true.B}
+when(io.dmem.data_ready) {inst_gen_ready := true.B}
 
 when(io.imem.inst_ready || if_reg_pc === "h7ffffffc".U){
 when(stall)              {if_reg_pc := if_reg_pc;        inst_gen_ready:= false.B       }
@@ -33,7 +33,10 @@ when(stall)              {if_reg_pc := if_reg_pc;        inst_gen_ready:= false.
 
 io.imem.inst_addr  := if_reg_pc
 
-when(io.imem.inst_ready && !reg_kill_flag && !stall )    {if_inst := io.imem.inst_read} //not read the data as instruction
+val if_from_reg = RegInit(false.B)
+
+when(io.imem.inst_ready && !reg_kill_flag && stall )          {if_reg_inst:= io.imem.inst_read; if_from_reg := true.B }
+.elsewhen(io.imem.inst_ready && !reg_kill_flag && !stall )    {if_inst := io.imem.inst_read    } //not read the data as instruction
 .otherwise                                     {if_inst := 0.U}
 
 
@@ -42,7 +45,8 @@ when(io.imem.inst_ready && !reg_kill_flag && !stall )    {if_inst := io.imem.ins
 //*******************************************************************
 when(io.imem.inst_ready && !stall && !reg_kill_flag && !kill_stage){
 id_reg_pc    := if_reg_pc
-id_reg_inst  := if_inst
+id_reg_inst  :=  Mux(if_from_reg, if_reg_inst, if_inst)
+if_from_reg  :=  false.B
 }.elsewhen(stall){
 id_reg_pc    := id_reg_pc
 id_reg_inst  := id_reg_inst 
