@@ -188,13 +188,14 @@ val exe_op1     = Wire(UInt(64.W))
 val exe_op2     = Wire(UInt(64.W))
 
 when((exe_reg_rs1_addr === wb_reg_rd_addr && exe_reg_rs1_addr =/= mem_reg_rd_addr ) 
-&& wb_reg_rd_wen && exe_reg_op1_type === OP_REG)  {exe_op1 := wb_rd_data;  }
+&& wb_reg_rd_wen && exe_reg_op1_type === OP_REG)  {exe_op1 := wb_rd_data  }
 .otherwise                                        {exe_op1 := exe_reg_op1_data }
 
 
 when((exe_reg_rs2_addr === wb_reg_rd_addr && exe_reg_rs2_addr =/= mem_reg_rd_addr ) 
 && wb_reg_rd_wen && exe_reg_op2_type === OP_REG)  {exe_op2 := wb_rd_data}
 .otherwise                                        {exe_op2 := exe_reg_op2_data }
+
 
 when(exe_reg_alu_type === ALU_MY_INST && wb_reg_rd_addr === 10.U && wb_reg_rd_wen ){exe_reg_print := wb_rd_data}
 .elsewhen(exe_reg_alu_type === ALU_MY_INST) {exe_reg_print := exe_reg_rs1_data}
