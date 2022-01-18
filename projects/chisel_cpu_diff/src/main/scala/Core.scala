@@ -37,13 +37,13 @@ val if_from_reg = RegInit(false.B)
 
 when(io.imem.inst_ready && !reg_kill_flag && stall )          {if_reg_inst:= io.imem.inst_read; if_from_reg := true.B }
 .elsewhen(io.imem.inst_ready && !reg_kill_flag && !stall )    {if_inst := io.imem.inst_read    } //not read the data as instruction
-.otherwise                                     {if_inst := 0.U}
+.otherwise                                                    {if_inst := 0.U}
 
 
 
 // Instruction Fetch >>>>>>>> Instruction Decode
 //*******************************************************************
-when(io.imem.inst_ready && !stall && !reg_kill_flag && !kill_stage){
+when((io.imem.inst_ready||if_from_reg ) && !stall && !reg_kill_flag && !kill_stage){
 id_reg_pc    := if_reg_pc
 id_reg_inst  :=  Mux(if_from_reg, if_reg_inst, if_inst)
 if_from_reg  :=  false.B
