@@ -393,7 +393,6 @@ when((mem_reg_rs2_addr === wb_reg_rd_addr)
 // LD instruction Data Path
 mem_rd_data   := lsu.io.mem_rdata
 
-
 mem_reg_rd_data:= mem_rd_data
 
 
@@ -427,7 +426,7 @@ wb_reg_print       := mem_reg_print
 
 wb_reg_rd_addr     := mem_reg_rd_addr
 wb_reg_rd_wen      := mem_reg_rd_wen || mem_reg_stall_wen
-wb_reg_rd_data     := io.dmem.data_read
+wb_reg_rd_data     := mem_rd_data
 wb_reg_csr_rd_data := mem_reg_csr_rd_data
 
 
