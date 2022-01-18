@@ -410,7 +410,7 @@ when(!mem_reg_stall && !mem_call_stall)      {mem_reg_stall_wen:= false.B}
 // Memmory >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Write Back
 //*******************************************************************
 // signals for difftest
-when(!mem_reg_stall && !mem_call_stall){
+when(!stall){
 
 wb_reg_pc          := mem_reg_pc
 wb_reg_inst        := mem_reg_inst
