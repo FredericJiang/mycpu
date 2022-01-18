@@ -43,10 +43,9 @@ when(io.imem.inst_ready && !reg_kill_flag && stall )          {if_reg_inst:= io.
 
 // Instruction Fetch >>>>>>>> Instruction Decode
 //*******************************************************************
-when((io.imem.inst_ready || if_from_reg === true.B) && !stall && !reg_kill_flag && !kill_stage){
+when(io.imem.inst_ready && !stall && !reg_kill_flag && !kill_stage){
 id_reg_pc    := if_reg_pc
 id_reg_inst  :=  io.imem.inst_read
-if_from_reg  := false.B
 }.elsewhen(stall){
 id_reg_pc    := id_reg_pc
 id_reg_inst  := id_reg_inst 
