@@ -18,7 +18,7 @@ class Core extends Module {
 
 
 
-stall := (exe_reg_stall || id_call_stall || exe_call_stall) && !io.dmem.data_ready
+stall := (exe_reg_stall || id_call_stall || exe_call_stall)
 
 when(inst_gen_ready  )     { io.imem.inst_req   := true.B  }
 .otherwise                { io.imem.inst_req   := false.B }
