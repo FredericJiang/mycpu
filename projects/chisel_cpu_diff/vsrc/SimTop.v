@@ -1497,8 +1497,8 @@ module LSU(
   input  [63:0] io_dmem_rdata,
   input  [63:0] io_rs2_data,
   output [63:0] io_mem_rdata,
-  output [63:0] io_dmem_wdata,
-  output [7:0]  io_dmem_strb
+  output [63:0] io_dmem_wmask,
+  output [63:0] io_dmem_wdata
 );
   wire  _T_3 = 3'h1 == io_mem_rtype; // @[Conditional.scala 37:30]
   wire  _mem_rdata_T_1 = io_dmem_addr[2:0] == 3'h0; // @[LSU.scala 51:34]
@@ -1620,51 +1620,51 @@ module LSU(
   wire [63:0] _dmem_wdata_T_5 = {16'h0,dmem_wdata_lo,40'h0}; // @[Cat.scala 30:58]
   wire [63:0] _dmem_wdata_T_6 = {8'h0,dmem_wdata_lo,48'h0}; // @[Cat.scala 30:58]
   wire [63:0] _dmem_wdata_T_7 = {dmem_wdata_lo,56'h0}; // @[Cat.scala 30:58]
-  wire [7:0] _GEN_9 = _mem_rdata_T_36 ? 8'h80 : 8'h0; // @[LSU.scala 148:38 LSU.scala 150:12]
+  wire [63:0] _GEN_8 = _mem_rdata_T_36 ? 64'hff00000000000000 : 64'h0; // @[LSU.scala 148:38 LSU.scala 149:12]
   wire [63:0] _GEN_10 = _mem_rdata_T_36 ? _dmem_wdata_T_7 : 64'h0; // @[LSU.scala 148:38 LSU.scala 151:11]
-  wire [7:0] _GEN_12 = _mem_rdata_T_31 ? 8'h40 : _GEN_9; // @[LSU.scala 144:38 LSU.scala 146:12]
+  wire [63:0] _GEN_11 = _mem_rdata_T_31 ? 64'hff000000000000 : _GEN_8; // @[LSU.scala 144:38 LSU.scala 145:12]
   wire [63:0] _GEN_13 = _mem_rdata_T_31 ? _dmem_wdata_T_6 : _GEN_10; // @[LSU.scala 144:38 LSU.scala 147:11]
-  wire [7:0] _GEN_15 = _mem_rdata_T_26 ? 8'h20 : _GEN_12; // @[LSU.scala 140:38 LSU.scala 142:12]
+  wire [63:0] _GEN_14 = _mem_rdata_T_26 ? 64'hff0000000000 : _GEN_11; // @[LSU.scala 140:38 LSU.scala 141:12]
   wire [63:0] _GEN_16 = _mem_rdata_T_26 ? _dmem_wdata_T_5 : _GEN_13; // @[LSU.scala 140:38 LSU.scala 143:11]
-  wire [7:0] _GEN_18 = _mem_rdata_T_21 ? 8'h10 : _GEN_15; // @[LSU.scala 136:38 LSU.scala 138:12]
+  wire [63:0] _GEN_17 = _mem_rdata_T_21 ? 64'hff00000000 : _GEN_14; // @[LSU.scala 136:38 LSU.scala 137:12]
   wire [63:0] _GEN_19 = _mem_rdata_T_21 ? _dmem_wdata_T_4 : _GEN_16; // @[LSU.scala 136:38 LSU.scala 139:11]
-  wire [7:0] _GEN_21 = _mem_rdata_T_16 ? 8'h8 : _GEN_18; // @[LSU.scala 132:38 LSU.scala 134:12]
+  wire [63:0] _GEN_20 = _mem_rdata_T_16 ? 64'hff000000 : _GEN_17; // @[LSU.scala 132:38 LSU.scala 133:12]
   wire [63:0] _GEN_22 = _mem_rdata_T_16 ? _dmem_wdata_T_3 : _GEN_19; // @[LSU.scala 132:38 LSU.scala 135:11]
-  wire [7:0] _GEN_24 = _mem_rdata_T_11 ? 8'h4 : _GEN_21; // @[LSU.scala 128:38 LSU.scala 130:12]
+  wire [63:0] _GEN_23 = _mem_rdata_T_11 ? 64'hff0000 : _GEN_20; // @[LSU.scala 128:38 LSU.scala 129:12]
   wire [63:0] _GEN_25 = _mem_rdata_T_11 ? _dmem_wdata_T_2 : _GEN_22; // @[LSU.scala 128:38 LSU.scala 131:11]
-  wire [7:0] _GEN_27 = _mem_rdata_T_6 ? 8'h2 : _GEN_24; // @[LSU.scala 124:38 LSU.scala 126:12]
+  wire [63:0] _GEN_26 = _mem_rdata_T_6 ? 64'hff00 : _GEN_23; // @[LSU.scala 124:38 LSU.scala 125:12]
   wire [63:0] _GEN_28 = _mem_rdata_T_6 ? _dmem_wdata_T_1 : _GEN_25; // @[LSU.scala 124:38 LSU.scala 127:11]
-  wire [7:0] _GEN_30 = _mem_rdata_T_1 ? 8'h1 : _GEN_27; // @[LSU.scala 120:32 LSU.scala 122:12]
+  wire [63:0] _GEN_29 = _mem_rdata_T_1 ? 64'hff : _GEN_26; // @[LSU.scala 120:32 LSU.scala 121:12]
   wire [63:0] _GEN_31 = _mem_rdata_T_1 ? _dmem_wdata_T : _GEN_28; // @[LSU.scala 120:32 LSU.scala 123:11]
   wire [15:0] dmem_wdata_lo_8 = io_rs2_data[15:0]; // @[LSU.scala 159:40]
   wire [63:0] _dmem_wdata_T_8 = {48'h0,dmem_wdata_lo_8}; // @[Cat.scala 30:58]
   wire [63:0] _dmem_wdata_T_9 = {32'h0,dmem_wdata_lo_8,16'h0}; // @[Cat.scala 30:58]
   wire [63:0] _dmem_wdata_T_10 = {16'h0,dmem_wdata_lo_8,32'h0}; // @[Cat.scala 30:58]
   wire [63:0] _dmem_wdata_T_11 = {dmem_wdata_lo_8,48'h0}; // @[Cat.scala 30:58]
-  wire [7:0] _GEN_33 = _mem_rdata_T_64 ? 8'hc0 : 8'h0; // @[LSU.scala 168:37 LSU.scala 170:12]
+  wire [63:0] _GEN_32 = _mem_rdata_T_64 ? 64'hffff000000000000 : 64'h0; // @[LSU.scala 168:37 LSU.scala 169:12]
   wire [63:0] _GEN_34 = _mem_rdata_T_64 ? _dmem_wdata_T_11 : 64'h0; // @[LSU.scala 168:37 LSU.scala 171:11]
-  wire [7:0] _GEN_36 = _mem_rdata_T_59 ? 8'h30 : _GEN_33; // @[LSU.scala 164:37 LSU.scala 166:12]
+  wire [63:0] _GEN_35 = _mem_rdata_T_59 ? 64'hffff00000000 : _GEN_32; // @[LSU.scala 164:37 LSU.scala 165:12]
   wire [63:0] _GEN_37 = _mem_rdata_T_59 ? _dmem_wdata_T_10 : _GEN_34; // @[LSU.scala 164:37 LSU.scala 167:11]
-  wire [7:0] _GEN_39 = _mem_rdata_T_54 ? 8'hc : _GEN_36; // @[LSU.scala 160:37 LSU.scala 162:12]
+  wire [63:0] _GEN_38 = _mem_rdata_T_54 ? 64'hffff0000 : _GEN_35; // @[LSU.scala 160:37 LSU.scala 161:12]
   wire [63:0] _GEN_40 = _mem_rdata_T_54 ? _dmem_wdata_T_9 : _GEN_37; // @[LSU.scala 160:37 LSU.scala 163:11]
-  wire [7:0] _GEN_42 = _mem_rdata_T_49 ? 8'h3 : _GEN_39; // @[LSU.scala 156:31 LSU.scala 158:12]
+  wire [63:0] _GEN_41 = _mem_rdata_T_49 ? 64'hffff : _GEN_38; // @[LSU.scala 156:31 LSU.scala 157:12]
   wire [63:0] _GEN_43 = _mem_rdata_T_49 ? _dmem_wdata_T_8 : _GEN_40; // @[LSU.scala 156:31 LSU.scala 159:11]
   wire [31:0] dmem_wdata_lo_12 = io_rs2_data[31:0]; // @[LSU.scala 183:40]
   wire [63:0] _dmem_wdata_T_12 = {32'h0,dmem_wdata_lo_12}; // @[Cat.scala 30:58]
   wire [63:0] _dmem_wdata_T_13 = {dmem_wdata_lo_12,32'h0}; // @[Cat.scala 30:58]
-  wire [7:0] _GEN_45 = io_dmem_addr[2] ? 8'hf0 : 8'h0; // @[LSU.scala 184:34 LSU.scala 186:12]
+  wire [63:0] _GEN_44 = io_dmem_addr[2] ? 64'hffffffff00000000 : 64'h0; // @[LSU.scala 184:34 LSU.scala 185:12]
   wire [63:0] _GEN_46 = io_dmem_addr[2] ? _dmem_wdata_T_13 : 64'h0; // @[LSU.scala 184:34 LSU.scala 187:11]
-  wire [7:0] _GEN_48 = _mem_rdata_T_73 ? 8'hf : _GEN_45; // @[LSU.scala 180:28 LSU.scala 182:12]
+  wire [63:0] _GEN_47 = _mem_rdata_T_73 ? 64'hffffffff : _GEN_44; // @[LSU.scala 180:28 LSU.scala 181:12]
   wire [63:0] _GEN_49 = _mem_rdata_T_73 ? _dmem_wdata_T_12 : _GEN_46; // @[LSU.scala 180:28 LSU.scala 183:11]
-  wire [7:0] _GEN_51 = io_wb_type == 3'h5 ? 8'hff : 8'h0; // @[LSU.scala 191:36 LSU.scala 194:12]
+  wire [63:0] _GEN_50 = io_wb_type == 3'h5 ? 64'hffffffffffffffff : 64'h0; // @[LSU.scala 191:36 LSU.scala 193:12]
   wire [63:0] _GEN_52 = io_wb_type == 3'h5 ? io_rs2_data : 64'h0; // @[LSU.scala 191:36 LSU.scala 195:11]
-  wire [7:0] _GEN_54 = io_wb_type == 3'h4 ? _GEN_48 : _GEN_51; // @[LSU.scala 177:36]
+  wire [63:0] _GEN_53 = io_wb_type == 3'h4 ? _GEN_47 : _GEN_50; // @[LSU.scala 177:36]
   wire [63:0] _GEN_55 = io_wb_type == 3'h4 ? _GEN_49 : _GEN_52; // @[LSU.scala 177:36]
-  wire [7:0] _GEN_57 = io_wb_type == 3'h3 ? _GEN_42 : _GEN_54; // @[LSU.scala 154:36]
+  wire [63:0] _GEN_56 = io_wb_type == 3'h3 ? _GEN_41 : _GEN_53; // @[LSU.scala 154:36]
   wire [63:0] _GEN_58 = io_wb_type == 3'h3 ? _GEN_43 : _GEN_55; // @[LSU.scala 154:36]
   assign io_mem_rdata = io_wb_type == 3'h1 & io_mem_rtype != 3'h0 ? _GEN_6 : 64'h0; // @[LSU.scala 43:54]
+  assign io_dmem_wmask = io_wb_type == 3'h2 ? _GEN_29 : _GEN_56; // @[LSU.scala 118:30]
   assign io_dmem_wdata = io_wb_type == 3'h2 ? _GEN_31 : _GEN_58; // @[LSU.scala 118:30]
-  assign io_dmem_strb = io_wb_type == 3'h2 ? _GEN_30 : _GEN_57; // @[LSU.scala 118:30]
 endmodule
 module Core(
   input         clock,
@@ -1847,8 +1847,8 @@ module Core(
   wire [63:0] lsu_io_dmem_rdata; // @[Core.scala 352:17]
   wire [63:0] lsu_io_rs2_data; // @[Core.scala 352:17]
   wire [63:0] lsu_io_mem_rdata; // @[Core.scala 352:17]
+  wire [63:0] lsu_io_dmem_wmask; // @[Core.scala 352:17]
   wire [63:0] lsu_io_dmem_wdata; // @[Core.scala 352:17]
-  wire [7:0] lsu_io_dmem_strb; // @[Core.scala 352:17]
   wire  dt_ic_clock; // @[Core.scala 523:19]
   wire [7:0] dt_ic_coreid; // @[Core.scala 523:19]
   wire [7:0] dt_ic_index; // @[Core.scala 523:19]
@@ -2050,7 +2050,7 @@ module Core(
   wire  _T_73 = ~mem_reg_stall; // @[Core.scala 309:25]
   wire  _T_74 = ~mem_call_stall & ~mem_reg_stall; // @[Core.scala 309:22]
   reg [63:0] mem_reg_dmem_addr; // @[Core.scala 354:29]
-  wire [63:0] mem_dmem_addr = mem_reg_dmem_en ? mem_reg_alu_out : 64'h0; // @[Core.scala 357:22 Core.scala 357:37 Core.scala 358:37]
+  wire [63:0] mem_dmem_addr = mem_reg_dmem_en ? mem_reg_alu_out : 64'h0; // @[Core.scala 357:22 Core.scala 357:38 Core.scala 358:38]
   wire  _T_81 = mem_reg_rs2_addr == wb_reg_rd_addr; // @[Core.scala 389:24]
   wire  _GEN_98 = io_dmem_data_ready ? 1'h0 : mem_reg_stall; // @[Core.scala 407:46 Core.scala 407:62 PipelineReg.scala 131:28]
   wire  _GEN_99 = mem_call_stall | _GEN_98; // @[Core.scala 402:46 Core.scala 402:62]
@@ -2164,8 +2164,8 @@ module Core(
     .io_dmem_rdata(lsu_io_dmem_rdata),
     .io_rs2_data(lsu_io_rs2_data),
     .io_mem_rdata(lsu_io_mem_rdata),
-    .io_dmem_wdata(lsu_io_dmem_wdata),
-    .io_dmem_strb(lsu_io_dmem_strb)
+    .io_dmem_wmask(lsu_io_dmem_wmask),
+    .io_dmem_wdata(lsu_io_dmem_wdata)
   );
   DifftestInstrCommit dt_ic ( // @[Core.scala 523:19]
     .clock(dt_ic_clock),
@@ -2226,7 +2226,7 @@ module Core(
   assign io_dmem_data_req_r = _mem_reg_dmem_en_T_1 & ~exe_reg_dmem_wen; // @[Core.scala 362:54]
   assign io_dmem_data_req_w = exe_reg_dmem_wen & _mem_reg_dmem_wen_T; // @[Core.scala 363:41]
   assign io_dmem_data_addr_r = mem_dmem_addr[31:0]; // @[Core.scala 368:22]
-  assign io_dmem_data_strb = lsu_io_dmem_strb; // @[Core.scala 364:21]
+  assign io_dmem_data_strb = lsu_io_dmem_wmask[7:0]; // @[Core.scala 364:21]
   assign io_dmem_data_write = lsu_io_dmem_wdata; // @[Core.scala 365:21]
   assign decode_io_inst = id_reg_inst[31:0]; // @[Core.scala 67:21]
   assign regfile_clock = clock;
@@ -2743,7 +2743,7 @@ module Core(
       mem_reg_stall_wen <= mem_reg_rd_wen; // @[Core.scala 404:18]
     end
     if (mem_reg_dmem_en) begin // @[Core.scala 357:22]
-      mem_reg_dmem_addr <= mem_reg_alu_out; // @[Core.scala 357:74]
+      mem_reg_dmem_addr <= mem_reg_alu_out; // @[Core.scala 357:75]
     end
     if (reset) begin // @[Core.scala 508:23]
       dt_valid <= 1'h0; // @[Core.scala 508:23]

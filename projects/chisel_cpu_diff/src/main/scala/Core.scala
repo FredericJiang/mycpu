@@ -354,14 +354,14 @@ val mem_dmem_addr  = Wire(UInt(64.W))
 val mem_reg_dmem_addr  = Reg(UInt(64.W))
 
 // read & write memory address is from ALU
-when(mem_reg_dmem_en){mem_dmem_addr := mem_reg_alu_out; mem_reg_dmem_addr:= mem_reg_alu_out }    
-.otherwise           {mem_dmem_addr := 0.U;  }
+when(mem_reg_dmem_en){ mem_dmem_addr := mem_reg_alu_out; mem_reg_dmem_addr:= mem_reg_alu_out }    
+.otherwise           { mem_dmem_addr := 0.U;  }
 
 // Core to AXI for DATA_MEM
 
 io.dmem.data_req_r  := exe_reg_dmem_en  && !clint_en && !exe_reg_dmem_wen
 io.dmem.data_req_w  := exe_reg_dmem_wen && !clint_en
-io.dmem.data_strb   := lsu.io.dmem_strb
+io.dmem.data_strb   := lsu.io.dmem_wmask
 io.dmem.data_write  := lsu.io.dmem_wdata
 
 // data_read 地址只给一拍
