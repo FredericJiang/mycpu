@@ -125,6 +125,7 @@ switch (state) {
   when(cache_hit){
   
    //记录写入的数据, 如果是读数据，则这些值为原来的值
+
     valid(req_index)  := true.B 
     tag(req_index)    := req_tag
     offset(req_index) := req_offset
@@ -138,8 +139,9 @@ switch (state) {
     //core.data_ready    :=  RegNext(state === update && cache_hit )
 
   
-        when (!dirty(req_index)) {
-          dirty(req_index) := reg_data_req_w //当是写操作时，dirty===1
+        when (!dirty(req_index) && reg_data_req_w) {
+          dirty(req_index) := true.B
+           //当是写操作时，dirty===1
         }
     state := idle
   }
@@ -240,7 +242,7 @@ core.data_ready  := data_ready2core
 axi.data_req_r   := data_req_r2axi 
 axi.data_req_w   := data_req_w2axi
 axi.data_addr_r  := Cat(data_addr_r2axi (31,4),0.U,0.U,0.U,0.U)
-axi.data_addr_w  := Cat(data_addr_w2axi (31,4),0.U,0.U,0.U,0.U)
+axi.data_addr_w  := Cat(data_addr_w2axi (31,3),0.U,0.U,0.U)
 axi.data_strb    := data_strb2axi
 axi.data_write   := data_write2axi
 
