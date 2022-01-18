@@ -1677,7 +1677,7 @@ module Core(
   output        io_dmem_data_req_r,
   output        io_dmem_data_req_w,
   output [31:0] io_dmem_data_addr_r,
-  output [7:0]  io_dmem_data_strb,
+  output [63:0] io_dmem_data_strb,
   input  [63:0] io_dmem_data_read,
   output [63:0] io_dmem_data_write
 );
@@ -2226,7 +2226,7 @@ module Core(
   assign io_dmem_data_req_r = _mem_reg_dmem_en_T_1 & ~exe_reg_dmem_wen; // @[Core.scala 362:54]
   assign io_dmem_data_req_w = exe_reg_dmem_wen & _mem_reg_dmem_wen_T; // @[Core.scala 363:41]
   assign io_dmem_data_addr_r = mem_dmem_addr[31:0]; // @[Core.scala 368:22]
-  assign io_dmem_data_strb = lsu_io_dmem_wmask[7:0]; // @[Core.scala 364:21]
+  assign io_dmem_data_strb = lsu_io_dmem_wmask; // @[Core.scala 364:21]
   assign io_dmem_data_write = lsu_io_dmem_wdata; // @[Core.scala 365:21]
   assign decode_io_inst = id_reg_inst[31:0]; // @[Core.scala 67:21]
   assign regfile_clock = clock;
@@ -3047,7 +3047,7 @@ module Core2AXI(
   input          io_dmem_data_req_w,
   input  [31:0]  io_dmem_data_addr_r,
   input  [31:0]  io_dmem_data_addr_w,
-  input  [7:0]   io_dmem_data_strb,
+  input  [63:0]  io_dmem_data_strb,
   output [127:0] io_dmem_data_read,
   input  [127:0] io_dmem_data_write
 );
@@ -3116,7 +3116,7 @@ module Core2AXI(
   assign io_axi2ram_aw_bits_addr = io_dmem_data_addr_w; // @[AXI.scala 209:23]
   assign io_axi2ram_w_valid = write_state == 3'h2; // @[AXI.scala 226:34]
   assign io_axi2ram_w_bits_data = io_dmem_data_write[63:0]; // @[AXI.scala 222:23]
-  assign io_axi2ram_w_bits_strb = io_dmem_data_strb; // @[AXI.scala 223:23]
+  assign io_axi2ram_w_bits_strb = io_dmem_data_strb[7:0]; // @[AXI.scala 223:23]
   assign io_axi2ram_w_bits_last = 1'h1; // @[AXI.scala 224:23]
   assign io_axi2ram_b_ready = 1'h1; // @[AXI.scala 229:18]
   assign io_imem_inst_ready = read_state == 3'h3; // @[AXI.scala 258:34]
@@ -5517,7 +5517,7 @@ module Dcache(
   input          io_core_data_data_req_r,
   input          io_core_data_data_req_w,
   input  [31:0]  io_core_data_data_addr_r,
-  input  [7:0]   io_core_data_data_strb,
+  input  [63:0]  io_core_data_data_strb,
   output [63:0]  io_core_data_data_read,
   input  [63:0]  io_core_data_data_write,
   input          io_axi_data_data_ready,
@@ -5525,7 +5525,7 @@ module Dcache(
   output         io_axi_data_data_req_w,
   output [31:0]  io_axi_data_data_addr_r,
   output [31:0]  io_axi_data_data_addr_w,
-  output [7:0]   io_axi_data_data_strb,
+  output [63:0]  io_axi_data_data_strb,
   input  [127:0] io_axi_data_data_read,
   output [127:0] io_axi_data_data_write
 );
@@ -7207,6 +7207,7 @@ module Dcache(
   wire [127:0] _GEN_1661 = _T_4 ? 128'h0 : _GEN_1390; // @[Conditional.scala 39:67]
   wire [127:0] _GEN_1662 = _T_4 ? 128'h0 : _GEN_1391; // @[Conditional.scala 39:67]
   wire [5:0] _GEN_1663 = _T_4 ? 6'h0 : _GEN_1392; // @[Conditional.scala 39:67]
+  wire [63:0] _GEN_1922 = _T_2 ? io_core_data_data_strb : {{56'd0}, reg_data_strb}; // @[Conditional.scala 39:67 Dcache.scala 123:19 Dcache.scala 68:32]
   wire  _GEN_2116 = _T_2 ? _GEN_712 : _GEN_1659; // @[Conditional.scala 39:67]
   wire [5:0] _GEN_2117 = _T_2 ? _GEN_713 : _GEN_1663; // @[Conditional.scala 39:67]
   wire  _GEN_2118 = _T_2 ? _GEN_714 : _GEN_1660; // @[Conditional.scala 39:67]
@@ -7218,11 +7219,13 @@ module Dcache(
   wire  _GEN_2189 = _T_2 ? 1'h0 : _T_4; // @[Conditional.scala 39:67]
   wire  _GEN_2190 = _T_2 ? 1'h0 : _GEN_1656; // @[Conditional.scala 39:67]
   wire [31:0] _GEN_2191 = _T_2 ? 32'h0 : _GEN_1657; // @[Conditional.scala 39:67]
+  wire [63:0] _GEN_2198 = _T ? {{56'd0}, reg_data_strb} : _GEN_1922; // @[Conditional.scala 40:58 Dcache.scala 68:32]
   wire  dcache_cen = _T ? 1'h0 : _GEN_2116; // @[Conditional.scala 40:58]
   wire  dcache_wen = _T ? 1'h0 : _GEN_2118; // @[Conditional.scala 40:58]
   wire [127:0] dcache_strb = _T ? 128'h0 : _GEN_2120; // @[Conditional.scala 40:58]
   wire [31:0] data_addr_w2axi = _T ? 32'h0 : _GEN_2186; // @[Conditional.scala 40:58]
   wire [63:0] data_write2axi = _T ? 64'h0 : _GEN_2187; // @[Conditional.scala 40:58]
+  wire [7:0] data_strb2axi = _T ? 8'h0 : _GEN_2188; // @[Conditional.scala 40:58]
   wire [31:0] data_addr_r2axi = _T ? 32'h0 : _GEN_2191; // @[Conditional.scala 40:58]
   wire [27:0] io_axi_data_data_addr_r_hi_hi_hi = data_addr_r2axi[31:4]; // @[Dcache.scala 242:41]
   wire [29:0] io_axi_data_data_addr_r_hi = {io_axi_data_data_addr_r_hi_hi_hi,1'h0,1'h0}; // @[Cat.scala 30:58]
@@ -7243,7 +7246,7 @@ module Dcache(
   assign io_axi_data_data_req_w = _T ? 1'h0 : _GEN_2189; // @[Conditional.scala 40:58]
   assign io_axi_data_data_addr_r = {io_axi_data_data_addr_r_hi,2'h0}; // @[Cat.scala 30:58]
   assign io_axi_data_data_addr_w = {io_axi_data_data_addr_w_hi,2'h0}; // @[Cat.scala 30:58]
-  assign io_axi_data_data_strb = _T ? 8'h0 : _GEN_2188; // @[Conditional.scala 40:58]
+  assign io_axi_data_data_strb = {{56'd0}, data_strb2axi}; // @[Conditional.scala 40:58]
   assign io_axi_data_data_write = {{64'd0}, data_write2axi}; // @[Conditional.scala 40:58]
   assign dcache_CLK = clock; // @[Dcache.scala 252:19]
   assign dcache_CEN = ~(dcache_wen | dcache_cen); // @[Dcache.scala 253:22]
@@ -10110,10 +10113,8 @@ module Dcache(
     end
     if (reset) begin // @[Dcache.scala 68:32]
       reg_data_strb <= 8'h0; // @[Dcache.scala 68:32]
-    end else if (!(_T)) begin // @[Conditional.scala 40:58]
-      if (_T_2) begin // @[Conditional.scala 39:67]
-        reg_data_strb <= io_core_data_data_strb; // @[Dcache.scala 123:19]
-      end
+    end else begin
+      reg_data_strb <= _GEN_2198[7:0];
     end
     if (reset) begin // @[Dcache.scala 69:32]
       reg_data_write <= 128'h0; // @[Dcache.scala 69:32]
@@ -10757,7 +10758,7 @@ module SimTop(
   wire  core_io_dmem_data_req_r; // @[SimTop.scala 16:24]
   wire  core_io_dmem_data_req_w; // @[SimTop.scala 16:24]
   wire [31:0] core_io_dmem_data_addr_r; // @[SimTop.scala 16:24]
-  wire [7:0] core_io_dmem_data_strb; // @[SimTop.scala 16:24]
+  wire [63:0] core_io_dmem_data_strb; // @[SimTop.scala 16:24]
   wire [63:0] core_io_dmem_data_read; // @[SimTop.scala 16:24]
   wire [63:0] core_io_dmem_data_write; // @[SimTop.scala 16:24]
   wire  core2axi_clock; // @[SimTop.scala 17:24]
@@ -10788,7 +10789,7 @@ module SimTop(
   wire  core2axi_io_dmem_data_req_w; // @[SimTop.scala 17:24]
   wire [31:0] core2axi_io_dmem_data_addr_r; // @[SimTop.scala 17:24]
   wire [31:0] core2axi_io_dmem_data_addr_w; // @[SimTop.scala 17:24]
-  wire [7:0] core2axi_io_dmem_data_strb; // @[SimTop.scala 17:24]
+  wire [63:0] core2axi_io_dmem_data_strb; // @[SimTop.scala 17:24]
   wire [127:0] core2axi_io_dmem_data_read; // @[SimTop.scala 17:24]
   wire [127:0] core2axi_io_dmem_data_write; // @[SimTop.scala 17:24]
   wire  icache_clock; // @[SimTop.scala 18:24]
@@ -10807,7 +10808,7 @@ module SimTop(
   wire  dcache_io_core_data_data_req_r; // @[SimTop.scala 19:24]
   wire  dcache_io_core_data_data_req_w; // @[SimTop.scala 19:24]
   wire [31:0] dcache_io_core_data_data_addr_r; // @[SimTop.scala 19:24]
-  wire [7:0] dcache_io_core_data_data_strb; // @[SimTop.scala 19:24]
+  wire [63:0] dcache_io_core_data_data_strb; // @[SimTop.scala 19:24]
   wire [63:0] dcache_io_core_data_data_read; // @[SimTop.scala 19:24]
   wire [63:0] dcache_io_core_data_data_write; // @[SimTop.scala 19:24]
   wire  dcache_io_axi_data_data_ready; // @[SimTop.scala 19:24]
@@ -10815,7 +10816,7 @@ module SimTop(
   wire  dcache_io_axi_data_data_req_w; // @[SimTop.scala 19:24]
   wire [31:0] dcache_io_axi_data_data_addr_r; // @[SimTop.scala 19:24]
   wire [31:0] dcache_io_axi_data_data_addr_w; // @[SimTop.scala 19:24]
-  wire [7:0] dcache_io_axi_data_data_strb; // @[SimTop.scala 19:24]
+  wire [63:0] dcache_io_axi_data_data_strb; // @[SimTop.scala 19:24]
   wire [127:0] dcache_io_axi_data_data_read; // @[SimTop.scala 19:24]
   wire [127:0] dcache_io_axi_data_data_write; // @[SimTop.scala 19:24]
   Core core ( // @[SimTop.scala 16:24]
