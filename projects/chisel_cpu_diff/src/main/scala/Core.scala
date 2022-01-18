@@ -18,7 +18,7 @@ class Core extends Module {
 
 
 
-stall := (exe_reg_stall || id_call_stall || exe_call_stall) && !io.dmem.data_ready
+stall := (mem_reg_stall || mem_call_stall) && !io.dmem.data_ready
 
 when(inst_gen_ready )     { io.imem.inst_req   := true.B  }
 .otherwise                 { io.imem.inst_req   := false.B }
@@ -174,12 +174,13 @@ exe_reg_rd_wen    := false.B
 exe_reg_dmem_wen  := false.B
 exe_reg_dmem_en   := false.B
 
-}.elsewhen(id_call_stall){
+}
+/*.elsewhen(id_call_stall){
 exe_reg_pc        := exe_reg_pc
 exe_reg_inst      := exe_reg_inst
 
 }
-
+*/
 //*******************************************************************
 // Execute Stage
 
@@ -293,7 +294,7 @@ mem_reg_dmem_en     := false.B
 
 }
 //when(!stall)
-when(!exe_call_stall && !exe_reg_stall) //非stall时接受exe级数据，否则默认保持
+when(!mem_call_stall && !mem_reg_stall) //非stall时接受exe级数据，否则默认保持
 {
 mem_reg_pc          := exe_reg_pc
 mem_reg_inst        := exe_reg_inst
@@ -386,18 +387,18 @@ mem_reg_rd_data:= mem_rd_data
 val mem_reg_stall_wen = RegInit(false.B)
 
 
-when(mem_reg_dmem_en && !io.dmem.data_ready) { exe_reg_stall := true.B  ;  exe_call_stall:= true.B 
+when(mem_reg_dmem_en && !io.dmem.data_ready) { mem_reg_stall := true.B  ;  mem_call_stall:= true.B 
 
 mem_reg_stall_wen:= mem_reg_rd_wen //when fetch data from AXI and reserve wen for wb stage
 
 }
-.elsewhen(io.dmem.data_ready)                { exe_reg_stall := false.B ;  exe_stop_stall:= true.B}
+.elsewhen(io.dmem.data_ready)                { mem_reg_stall := false.B ;  exe_stop_stall:= true.B}
 
-when(!exe_reg_stall && !exe_call_stall)      {mem_reg_stall_wen:= false.B}
+when(!mem_reg_stall && !mem_call_stall)      {mem_reg_stall_wen:= false.B}
 // Memmory >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Write Back
 //*******************************************************************
 // signals for difftest
-when(!exe_reg_stall && !exe_call_stall){
+when(!mem_reg_stall && !mem_call_stall){
 
 wb_reg_pc          := mem_reg_pc
 wb_reg_inst        := mem_reg_inst
