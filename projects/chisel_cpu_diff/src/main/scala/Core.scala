@@ -133,7 +133,7 @@ when((exe_reg_mem_rtype =/= MEM_X || exe_reg_alu_type === ALU_COPY2 ) &&
 //Instruction Decode  >>>>>>>>>>>>>>>>>>>   Execute
 //*******************************************************************
 
-when(!stall && !kill_stage){
+when((!mem_call_stall && !mem_reg_stall)&& !kill_stage){
 exe_reg_pc        := id_reg_pc
 exe_reg_inst      := id_reg_inst
 
@@ -305,8 +305,8 @@ mem_reg_dmem_wen    := false.B
 mem_reg_dmem_en     := false.B
 
 }
-when(!stall)
-//when(!mem_call_stall && !mem_reg_stall) //非stall时接受exe级数据，否则默认保持
+//when(!stall)
+when(!mem_call_stall && !mem_reg_stall) //非stall时接受exe级数据，否则默认保持
 {
 mem_reg_pc          := exe_reg_pc
 mem_reg_inst        := exe_reg_inst
