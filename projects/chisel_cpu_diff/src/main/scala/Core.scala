@@ -78,14 +78,14 @@ val imm_gen = Module(new ImmGen)
 imm_gen.io.imm_type := decode.io.imm_type
 imm_gen.io.inst     := id_reg_inst
 
-val id_rs1 = regfile.io.rs1_data
+//val id_rs1 = regfile.io.rs1_data
 
 
 
 //val jarl_type = (decode.io.op2_type === OP_4) && (decode.io.imm_type === IMM_I)
 
 //used only for jalr
-/*
+
 val id_rs1 = MuxCase( regfile.io.rs1_data  , Array(
                   (id_rs1_addr === 0.U && decode.io.op1_type === OP_REG ) -> 0.U ,
                   ((exe_reg_rd_addr === id_rs1_addr) && (id_rs1_addr =/= 0.U) && exe_reg_rd_wen && exe_reg_mem_rtype === MEM_X) -> exe_alu_out,
@@ -93,7 +93,7 @@ val id_rs1 = MuxCase( regfile.io.rs1_data  , Array(
                   ((wb_reg_rd_addr  === id_rs1_addr) && (id_rs1_addr =/= 0.U) &&  wb_reg_rd_wen) -> wb_rd_data
                   ))
 
-*/            
+    
 
 val id_op1  =  MuxCase( regfile.io.rs1_data  , Array(
                   (id_rs1_addr === 0.U && decode.io.op1_type === OP_REG) -> 0.U ,
@@ -123,10 +123,11 @@ val id_op2 =  MuxCase( regfile.io.rs2_data , Array(
 
 // load instruciton in exe stage, and address conflict
 //generate a bubble
+/*
 when((exe_reg_mem_rtype =/= MEM_X || exe_reg_alu_type === ALU_COPY2 ) && 
 ( (exe_reg_rd_addr === id_rs2_addr  && id_rs2_addr=/= 0.U && decode.io.op2_type === OP_REG) || (exe_reg_rd_addr === id_rs1_addr && id_rs1_addr=/= 0.U && decode.io.op1_type === OP_REG)))
 { id_call_stall := true.B }.otherwise{ id_call_stall := false.B }
-
+*/
 
 
 //Instruction Decode  >>>>>>>>>>>>>>>>>>>   Execute
