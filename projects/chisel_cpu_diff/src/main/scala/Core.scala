@@ -45,7 +45,7 @@ when(io.imem.inst_ready && !reg_kill_flag && stall )          {if_reg_inst:= io.
 //*******************************************************************
 when(io.imem.inst_ready  && !stall && !reg_kill_flag && !kill_stage){
 id_reg_pc    := if_reg_pc
-id_reg_inst  :=  if_inst
+id_reg_inst  :=  io.imem.inst_read
 }.elsewhen(stall){
 id_reg_pc    := id_reg_pc
 id_reg_inst  := id_reg_inst 
