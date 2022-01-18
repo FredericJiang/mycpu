@@ -33,7 +33,7 @@ when(stall)              {if_reg_pc := if_reg_pc;        inst_gen_ready:= false.
 
 io.imem.inst_addr  := if_reg_pc
 
-when(io.imem.inst_ready && !reg_kill_flag )    {if_inst := io.imem.inst_read} //not read the data as instruction
+when(io.imem.inst_ready && !reg_kill_flag && !stall )    {if_inst := io.imem.inst_read} //not read the data as instruction
 .otherwise                                     {if_inst := 0.U}
 
 
