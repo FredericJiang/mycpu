@@ -45,9 +45,12 @@ when(io.imem.inst_ready && !reg_kill_flag && stall )          {if_reg_inst:= io.
 //*******************************************************************
 when(io.imem.inst_ready  && !stall && !reg_kill_flag && !kill_stage){
 id_reg_pc    := if_reg_pc
-id_reg_inst  :=  Mux(if_from_reg, if_reg_inst, if_inst)
-if_from_reg  :=  false.B
-}.elsewhen(stall){
+id_reg_inst  :=  if_inst
+}.elsewhen(if_from_reg && !stall && !reg_kill_flag && !kill_stage){
+id_reg_pc    := if_reg_pc
+id_reg_inst  := if_reg_inst
+}
+.elsewhen(stall){
 id_reg_pc    := id_reg_pc
 id_reg_inst  := id_reg_inst 
 
