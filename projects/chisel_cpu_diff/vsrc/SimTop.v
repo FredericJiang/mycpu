@@ -2585,7 +2585,7 @@ module Core(
       wb_reg_alu_out <= mem_reg_alu_out; // @[Core.scala 424:20]
     end
     if (_T_7) begin // @[Core.scala 415:1]
-      wb_reg_rd_data <= mem_reg_rd_data; // @[Core.scala 430:20]
+      wb_reg_rd_data <= io_dmem_data_read; // @[Core.scala 430:20]
     end
     if (_T_7) begin // @[Core.scala 415:1]
       wb_reg_rd_wen <= _T_26; // @[Core.scala 429:20]
