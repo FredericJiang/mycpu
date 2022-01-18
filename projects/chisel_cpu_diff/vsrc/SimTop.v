@@ -7233,8 +7233,8 @@ module Dcache(
   wire [31:0] data_addr_r2axi = _T ? 32'h0 : _GEN_2191; // @[Conditional.scala 40:58]
   wire [27:0] io_axi_data_data_addr_r_hi_hi_hi = data_addr_r2axi[31:4]; // @[Dcache.scala 242:41]
   wire [29:0] io_axi_data_data_addr_r_hi = {io_axi_data_data_addr_r_hi_hi_hi,1'h0,1'h0}; // @[Cat.scala 30:58]
-  wire [28:0] io_axi_data_data_addr_w_hi_hi = data_addr_w2axi[31:3]; // @[Dcache.scala 243:41]
-  wire [29:0] io_axi_data_data_addr_w_hi = {io_axi_data_data_addr_w_hi_hi,1'h0}; // @[Cat.scala 30:58]
+  wire [27:0] io_axi_data_data_addr_w_hi_hi_hi = data_addr_w2axi[31:4]; // @[Dcache.scala 243:41]
+  wire [29:0] io_axi_data_data_addr_w_hi = {io_axi_data_data_addr_w_hi_hi_hi,1'h0,1'h0}; // @[Cat.scala 30:58]
   S011HD1P_X32Y2D128_BW dcache ( // @[Dcache.scala 251:22]
     .Q(dcache_Q),
     .CLK(dcache_CLK),
