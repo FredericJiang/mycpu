@@ -133,7 +133,7 @@ switch (state) {
     dcache_cen        := true.B
     dcache_index      := req_index
     dcache_wen        := reg_data_req_w
-    dcache_wdata      := Mux(req_addr(3),Cat(core.data_write, Fill(64, 0.U)), Cat( Fill(64, 0.U),core.data_write))
+    dcache_wdata      := Mux(req_addr(3),Cat(core.data_write, Fill(64, 0.U)), Cat( Fill(64, 0.U),core.data_write)) // 写Dcache
     dcache_strb       := Mux(req_addr(3),Cat(core.data_strb, Fill(64, 0.U)), Cat( Fill(64, 0.U),core.data_strb))
     //core.data_ready    :=  RegNext(state === update && cache_hit )
 
@@ -200,11 +200,7 @@ switch (state) {
    dcache_index := reg_data_addr(9,4)
 
  
-  req_addr := reg_data_addr // 因为是wire类型，因此需要重新赋值
-  valid(req_index)  := true.B 
-  tag(req_index)    := req_tag
-  offset(req_index) := req_offset
-  dirty(req_index)  := reg_data_req_w
+ 
 
 
   }
@@ -225,6 +221,10 @@ switch (state) {
 
   //core.data_ready   := RegNext(state === update ) //读需要延后一拍等cache_data_out
 
+  valid(req_index)  := true.B 
+  tag(req_index)    := req_tag
+  offset(req_index) := req_offset
+  dirty(req_index)  := reg_data_req_w
 
 
 }

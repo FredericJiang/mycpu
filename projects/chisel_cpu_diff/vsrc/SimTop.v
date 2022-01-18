@@ -1677,7 +1677,7 @@ module Core(
   output        io_dmem_data_req_r,
   output        io_dmem_data_req_w,
   output [31:0] io_dmem_data_addr_r,
-  output [63:0] io_dmem_data_strb,
+  output [7:0]  io_dmem_data_strb,
   input  [63:0] io_dmem_data_read,
   output [63:0] io_dmem_data_write
 );
@@ -2222,7 +2222,7 @@ module Core(
   assign io_dmem_data_req_r = _mem_reg_dmem_en_T_1 & ~exe_reg_dmem_wen; // @[Core.scala 362:54]
   assign io_dmem_data_req_w = exe_reg_dmem_wen & _mem_reg_dmem_wen_T; // @[Core.scala 363:41]
   assign io_dmem_data_addr_r = mem_dmem_addr[31:0]; // @[Core.scala 368:22]
-  assign io_dmem_data_strb = lsu_io_dmem_wmask; // @[Core.scala 364:21]
+  assign io_dmem_data_strb = lsu_io_dmem_wmask[7:0]; // @[Core.scala 364:21]
   assign io_dmem_data_write = lsu_io_dmem_wdata; // @[Core.scala 365:21]
   assign decode_io_inst = id_reg_inst[31:0]; // @[Core.scala 67:21]
   assign regfile_clock = clock;
@@ -3043,7 +3043,7 @@ module Core2AXI(
   input          io_dmem_data_req_w,
   input  [31:0]  io_dmem_data_addr_r,
   input  [31:0]  io_dmem_data_addr_w,
-  input  [63:0]  io_dmem_data_strb,
+  input  [7:0]   io_dmem_data_strb,
   output [127:0] io_dmem_data_read,
   input  [63:0]  io_dmem_data_write
 );
@@ -3112,7 +3112,7 @@ module Core2AXI(
   assign io_axi2ram_aw_bits_addr = io_dmem_data_addr_w; // @[AXI.scala 209:23]
   assign io_axi2ram_w_valid = write_state == 3'h2; // @[AXI.scala 226:34]
   assign io_axi2ram_w_bits_data = io_dmem_data_write; // @[AXI.scala 222:23]
-  assign io_axi2ram_w_bits_strb = io_dmem_data_strb[7:0]; // @[AXI.scala 223:23]
+  assign io_axi2ram_w_bits_strb = io_dmem_data_strb; // @[AXI.scala 223:23]
   assign io_axi2ram_w_bits_last = 1'h1; // @[AXI.scala 224:23]
   assign io_axi2ram_b_ready = 1'h1; // @[AXI.scala 229:18]
   assign io_imem_inst_ready = read_state == 3'h3; // @[AXI.scala 258:34]
@@ -5513,7 +5513,7 @@ module Dcache(
   input          io_core_data_data_req_r,
   input          io_core_data_data_req_w,
   input  [31:0]  io_core_data_data_addr_r,
-  input  [63:0]  io_core_data_data_strb,
+  input  [7:0]   io_core_data_data_strb,
   output [63:0]  io_core_data_data_read,
   input  [63:0]  io_core_data_data_write,
   input          io_axi_data_data_ready,
@@ -5521,7 +5521,7 @@ module Dcache(
   output         io_axi_data_data_req_w,
   output [31:0]  io_axi_data_data_addr_r,
   output [31:0]  io_axi_data_data_addr_w,
-  output [63:0]  io_axi_data_data_strb,
+  output [7:0]   io_axi_data_data_strb,
   input  [127:0] io_axi_data_data_read,
   output [63:0]  io_axi_data_data_write
 );
@@ -6059,13 +6059,12 @@ module Dcache(
   wire  _T_4 = 3'h2 == state; // @[Conditional.scala 37:30]
   reg [31:0] reg_data_addr; // @[Dcache.scala 66:32]
   wire  _T_5 = 3'h4 == state; // @[Conditional.scala 37:30]
-  wire [31:0] _GEN_1115 = io_axi_data_data_ready ? reg_data_addr : 32'h0; // @[Dcache.scala 191:23 Dcache.scala 203:12]
   wire  _T_7 = 3'h5 == state; // @[Conditional.scala 37:30]
-  wire [31:0] _GEN_1374 = _T_7 ? reg_data_addr : 32'h0; // @[Conditional.scala 39:67 Dcache.scala 219:12]
-  wire [31:0] _GEN_1393 = _T_5 ? _GEN_1115 : _GEN_1374; // @[Conditional.scala 39:67]
-  wire [31:0] _GEN_1650 = _T_4 ? reg_data_addr : _GEN_1393; // @[Conditional.scala 39:67 Dcache.scala 162:12]
-  wire [31:0] _GEN_1920 = _T_2 ? io_core_data_data_addr_r : _GEN_1650; // @[Conditional.scala 39:67 Dcache.scala 120:19]
-  wire [31:0] req_addr = _T ? 32'h0 : _GEN_1920; // @[Conditional.scala 40:58]
+  wire [31:0] _GEN_1117 = _T_7 ? reg_data_addr : 32'h0; // @[Conditional.scala 39:67 Dcache.scala 215:12]
+  wire [31:0] _GEN_1392 = _T_5 ? 32'h0 : _GEN_1117; // @[Conditional.scala 39:67]
+  wire [31:0] _GEN_1649 = _T_4 ? reg_data_addr : _GEN_1392; // @[Conditional.scala 39:67 Dcache.scala 162:12]
+  wire [31:0] _GEN_1919 = _T_2 ? io_core_data_data_addr_r : _GEN_1649; // @[Conditional.scala 39:67 Dcache.scala 120:19]
+  wire [31:0] req_addr = _T ? 32'h0 : _GEN_1919; // @[Conditional.scala 40:58]
   wire [21:0] req_tag = req_addr[31:10]; // @[Dcache.scala 46:26]
   wire [5:0] req_index = req_addr[9:4]; // @[Dcache.scala 47:26]
   wire [3:0] req_offset = req_addr[3:0]; // @[Dcache.scala 48:26]
@@ -6462,9 +6461,9 @@ module Dcache(
   wire [127:0] _dcache_wdata_T_1 = {io_core_data_data_write,64'h0}; // @[Cat.scala 30:58]
   wire [127:0] _dcache_wdata_T_2 = {64'h0,io_core_data_data_write}; // @[Cat.scala 30:58]
   wire [127:0] _dcache_wdata_T_3 = req_addr[3] ? _dcache_wdata_T_1 : _dcache_wdata_T_2; // @[Dcache.scala 136:29]
-  wire [127:0] _dcache_strb_T_1 = {io_core_data_data_strb,64'h0}; // @[Cat.scala 30:58]
-  wire [127:0] _dcache_strb_T_2 = {64'h0,io_core_data_data_strb}; // @[Cat.scala 30:58]
-  wire [127:0] _dcache_strb_T_3 = req_addr[3] ? _dcache_strb_T_1 : _dcache_strb_T_2; // @[Dcache.scala 137:29]
+  wire [71:0] _dcache_strb_T_1 = {io_core_data_data_strb,64'h0}; // @[Cat.scala 30:58]
+  wire [71:0] _dcache_strb_T_2 = {64'h0,io_core_data_data_strb}; // @[Cat.scala 30:58]
+  wire [71:0] _dcache_strb_T_3 = req_addr[3] ? _dcache_strb_T_1 : _dcache_strb_T_2; // @[Dcache.scala 137:29]
   wire  _GEN_387 = 6'h0 == req_index ? reg_data_req_w : dirty_0; // @[Dcache.scala 142:28 Dcache.scala 142:28 Dcache.scala 37:24]
   wire  _GEN_388 = 6'h1 == req_index ? reg_data_req_w : dirty_1; // @[Dcache.scala 142:28 Dcache.scala 142:28 Dcache.scala 37:24]
   wire  _GEN_389 = 6'h2 == req_index ? reg_data_req_w : dirty_2; // @[Dcache.scala 142:28 Dcache.scala 142:28 Dcache.scala 37:24]
@@ -6599,7 +6598,7 @@ module Dcache(
   wire [5:0] _GEN_713 = cache_hit ? req_index : _GEN_517; // @[Dcache.scala 125:18 Dcache.scala 134:23]
   wire  _GEN_714 = cache_hit & reg_data_req_w; // @[Dcache.scala 125:18 Dcache.scala 135:23]
   wire [127:0] _GEN_715 = cache_hit ? _dcache_wdata_T_3 : 128'h0; // @[Dcache.scala 125:18 Dcache.scala 136:23]
-  wire [127:0] _GEN_716 = cache_hit ? _dcache_strb_T_3 : 128'h0; // @[Dcache.scala 125:18 Dcache.scala 137:23]
+  wire [127:0] _GEN_716 = cache_hit ? {{56'd0}, _dcache_strb_T_3} : 128'h0; // @[Dcache.scala 125:18 Dcache.scala 137:23]
   wire [3:0] _GEN_783 = 6'h1 == req_index ? offset_1 : offset_0; // @[Cat.scala 30:58 Cat.scala 30:58]
   wire [3:0] _GEN_784 = 6'h2 == req_index ? offset_2 : _GEN_783; // @[Cat.scala 30:58 Cat.scala 30:58]
   wire [3:0] _GEN_785 = 6'h3 == req_index ? offset_3 : _GEN_784; // @[Cat.scala 30:58 Cat.scala 30:58]
@@ -6669,569 +6668,568 @@ module Dcache(
   wire  _T_6 = ~reg_cache_fill; // @[Dcache.scala 177:8]
   wire [2:0] _GEN_847 = ~reg_cache_fill ? 3'h4 : 3'h5; // @[Dcache.scala 177:24 Dcache.scala 179:11 Dcache.scala 189:21]
   wire [31:0] _GEN_850 = ~reg_cache_fill ? reg_data_addr : 32'h0; // @[Dcache.scala 177:24 Dcache.scala 182:21]
-  wire  _GEN_1110 = io_axi_data_data_ready | reg_cache_fill; // @[Dcache.scala 191:23 Dcache.scala 194:19 Dcache.scala 58:31]
-  wire [127:0] _GEN_1112 = io_axi_data_data_ready ? io_axi_data_data_read : 128'h0; // @[Dcache.scala 191:23 Dcache.scala 198:17]
-  wire [127:0] _GEN_1113 = io_axi_data_data_ready ? 128'hffffffffffffffffffffffffffffffff : 128'h0; // @[Dcache.scala 191:23 Dcache.scala 199:17]
-  wire [5:0] _GEN_1114 = io_axi_data_data_ready ? reg_data_addr[9:4] : 6'h0; // @[Dcache.scala 191:23 Dcache.scala 200:17]
-  wire  _GEN_1116 = io_axi_data_data_ready ? _GEN_195 : valid_0; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1117 = io_axi_data_data_ready ? _GEN_196 : valid_1; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1118 = io_axi_data_data_ready ? _GEN_197 : valid_2; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1119 = io_axi_data_data_ready ? _GEN_198 : valid_3; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1120 = io_axi_data_data_ready ? _GEN_199 : valid_4; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1121 = io_axi_data_data_ready ? _GEN_200 : valid_5; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1122 = io_axi_data_data_ready ? _GEN_201 : valid_6; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1123 = io_axi_data_data_ready ? _GEN_202 : valid_7; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1124 = io_axi_data_data_ready ? _GEN_203 : valid_8; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1125 = io_axi_data_data_ready ? _GEN_204 : valid_9; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1126 = io_axi_data_data_ready ? _GEN_205 : valid_10; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1127 = io_axi_data_data_ready ? _GEN_206 : valid_11; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1128 = io_axi_data_data_ready ? _GEN_207 : valid_12; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1129 = io_axi_data_data_ready ? _GEN_208 : valid_13; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1130 = io_axi_data_data_ready ? _GEN_209 : valid_14; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1131 = io_axi_data_data_ready ? _GEN_210 : valid_15; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1132 = io_axi_data_data_ready ? _GEN_211 : valid_16; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1133 = io_axi_data_data_ready ? _GEN_212 : valid_17; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1134 = io_axi_data_data_ready ? _GEN_213 : valid_18; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1135 = io_axi_data_data_ready ? _GEN_214 : valid_19; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1136 = io_axi_data_data_ready ? _GEN_215 : valid_20; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1137 = io_axi_data_data_ready ? _GEN_216 : valid_21; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1138 = io_axi_data_data_ready ? _GEN_217 : valid_22; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1139 = io_axi_data_data_ready ? _GEN_218 : valid_23; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1140 = io_axi_data_data_ready ? _GEN_219 : valid_24; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1141 = io_axi_data_data_ready ? _GEN_220 : valid_25; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1142 = io_axi_data_data_ready ? _GEN_221 : valid_26; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1143 = io_axi_data_data_ready ? _GEN_222 : valid_27; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1144 = io_axi_data_data_ready ? _GEN_223 : valid_28; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1145 = io_axi_data_data_ready ? _GEN_224 : valid_29; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1146 = io_axi_data_data_ready ? _GEN_225 : valid_30; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1147 = io_axi_data_data_ready ? _GEN_226 : valid_31; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1148 = io_axi_data_data_ready ? _GEN_227 : valid_32; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1149 = io_axi_data_data_ready ? _GEN_228 : valid_33; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1150 = io_axi_data_data_ready ? _GEN_229 : valid_34; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1151 = io_axi_data_data_ready ? _GEN_230 : valid_35; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1152 = io_axi_data_data_ready ? _GEN_231 : valid_36; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1153 = io_axi_data_data_ready ? _GEN_232 : valid_37; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1154 = io_axi_data_data_ready ? _GEN_233 : valid_38; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1155 = io_axi_data_data_ready ? _GEN_234 : valid_39; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1156 = io_axi_data_data_ready ? _GEN_235 : valid_40; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1157 = io_axi_data_data_ready ? _GEN_236 : valid_41; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1158 = io_axi_data_data_ready ? _GEN_237 : valid_42; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1159 = io_axi_data_data_ready ? _GEN_238 : valid_43; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1160 = io_axi_data_data_ready ? _GEN_239 : valid_44; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1161 = io_axi_data_data_ready ? _GEN_240 : valid_45; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1162 = io_axi_data_data_ready ? _GEN_241 : valid_46; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1163 = io_axi_data_data_ready ? _GEN_242 : valid_47; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1164 = io_axi_data_data_ready ? _GEN_243 : valid_48; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1165 = io_axi_data_data_ready ? _GEN_244 : valid_49; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1166 = io_axi_data_data_ready ? _GEN_245 : valid_50; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1167 = io_axi_data_data_ready ? _GEN_246 : valid_51; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1168 = io_axi_data_data_ready ? _GEN_247 : valid_52; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1169 = io_axi_data_data_ready ? _GEN_248 : valid_53; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1170 = io_axi_data_data_ready ? _GEN_249 : valid_54; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1171 = io_axi_data_data_ready ? _GEN_250 : valid_55; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1172 = io_axi_data_data_ready ? _GEN_251 : valid_56; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1173 = io_axi_data_data_ready ? _GEN_252 : valid_57; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1174 = io_axi_data_data_ready ? _GEN_253 : valid_58; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1175 = io_axi_data_data_ready ? _GEN_254 : valid_59; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1176 = io_axi_data_data_ready ? _GEN_255 : valid_60; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1177 = io_axi_data_data_ready ? _GEN_256 : valid_61; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1178 = io_axi_data_data_ready ? _GEN_257 : valid_62; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire  _GEN_1179 = io_axi_data_data_ready ? _GEN_258 : valid_63; // @[Dcache.scala 191:23 Dcache.scala 36:24]
-  wire [21:0] _GEN_1180 = io_axi_data_data_ready ? _GEN_259 : tag_0; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1181 = io_axi_data_data_ready ? _GEN_260 : tag_1; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1182 = io_axi_data_data_ready ? _GEN_261 : tag_2; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1183 = io_axi_data_data_ready ? _GEN_262 : tag_3; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1184 = io_axi_data_data_ready ? _GEN_263 : tag_4; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1185 = io_axi_data_data_ready ? _GEN_264 : tag_5; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1186 = io_axi_data_data_ready ? _GEN_265 : tag_6; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1187 = io_axi_data_data_ready ? _GEN_266 : tag_7; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1188 = io_axi_data_data_ready ? _GEN_267 : tag_8; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1189 = io_axi_data_data_ready ? _GEN_268 : tag_9; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1190 = io_axi_data_data_ready ? _GEN_269 : tag_10; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1191 = io_axi_data_data_ready ? _GEN_270 : tag_11; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1192 = io_axi_data_data_ready ? _GEN_271 : tag_12; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1193 = io_axi_data_data_ready ? _GEN_272 : tag_13; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1194 = io_axi_data_data_ready ? _GEN_273 : tag_14; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1195 = io_axi_data_data_ready ? _GEN_274 : tag_15; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1196 = io_axi_data_data_ready ? _GEN_275 : tag_16; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1197 = io_axi_data_data_ready ? _GEN_276 : tag_17; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1198 = io_axi_data_data_ready ? _GEN_277 : tag_18; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1199 = io_axi_data_data_ready ? _GEN_278 : tag_19; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1200 = io_axi_data_data_ready ? _GEN_279 : tag_20; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1201 = io_axi_data_data_ready ? _GEN_280 : tag_21; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1202 = io_axi_data_data_ready ? _GEN_281 : tag_22; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1203 = io_axi_data_data_ready ? _GEN_282 : tag_23; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1204 = io_axi_data_data_ready ? _GEN_283 : tag_24; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1205 = io_axi_data_data_ready ? _GEN_284 : tag_25; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1206 = io_axi_data_data_ready ? _GEN_285 : tag_26; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1207 = io_axi_data_data_ready ? _GEN_286 : tag_27; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1208 = io_axi_data_data_ready ? _GEN_287 : tag_28; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1209 = io_axi_data_data_ready ? _GEN_288 : tag_29; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1210 = io_axi_data_data_ready ? _GEN_289 : tag_30; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1211 = io_axi_data_data_ready ? _GEN_290 : tag_31; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1212 = io_axi_data_data_ready ? _GEN_291 : tag_32; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1213 = io_axi_data_data_ready ? _GEN_292 : tag_33; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1214 = io_axi_data_data_ready ? _GEN_293 : tag_34; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1215 = io_axi_data_data_ready ? _GEN_294 : tag_35; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1216 = io_axi_data_data_ready ? _GEN_295 : tag_36; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1217 = io_axi_data_data_ready ? _GEN_296 : tag_37; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1218 = io_axi_data_data_ready ? _GEN_297 : tag_38; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1219 = io_axi_data_data_ready ? _GEN_298 : tag_39; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1220 = io_axi_data_data_ready ? _GEN_299 : tag_40; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1221 = io_axi_data_data_ready ? _GEN_300 : tag_41; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1222 = io_axi_data_data_ready ? _GEN_301 : tag_42; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1223 = io_axi_data_data_ready ? _GEN_302 : tag_43; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1224 = io_axi_data_data_ready ? _GEN_303 : tag_44; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1225 = io_axi_data_data_ready ? _GEN_304 : tag_45; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1226 = io_axi_data_data_ready ? _GEN_305 : tag_46; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1227 = io_axi_data_data_ready ? _GEN_306 : tag_47; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1228 = io_axi_data_data_ready ? _GEN_307 : tag_48; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1229 = io_axi_data_data_ready ? _GEN_308 : tag_49; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1230 = io_axi_data_data_ready ? _GEN_309 : tag_50; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1231 = io_axi_data_data_ready ? _GEN_310 : tag_51; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1232 = io_axi_data_data_ready ? _GEN_311 : tag_52; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1233 = io_axi_data_data_ready ? _GEN_312 : tag_53; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1234 = io_axi_data_data_ready ? _GEN_313 : tag_54; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1235 = io_axi_data_data_ready ? _GEN_314 : tag_55; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1236 = io_axi_data_data_ready ? _GEN_315 : tag_56; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1237 = io_axi_data_data_ready ? _GEN_316 : tag_57; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1238 = io_axi_data_data_ready ? _GEN_317 : tag_58; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1239 = io_axi_data_data_ready ? _GEN_318 : tag_59; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1240 = io_axi_data_data_ready ? _GEN_319 : tag_60; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1241 = io_axi_data_data_ready ? _GEN_320 : tag_61; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1242 = io_axi_data_data_ready ? _GEN_321 : tag_62; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [21:0] _GEN_1243 = io_axi_data_data_ready ? _GEN_322 : tag_63; // @[Dcache.scala 191:23 Dcache.scala 34:24]
-  wire [3:0] _GEN_1244 = io_axi_data_data_ready ? _GEN_323 : offset_0; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1245 = io_axi_data_data_ready ? _GEN_324 : offset_1; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1246 = io_axi_data_data_ready ? _GEN_325 : offset_2; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1247 = io_axi_data_data_ready ? _GEN_326 : offset_3; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1248 = io_axi_data_data_ready ? _GEN_327 : offset_4; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1249 = io_axi_data_data_ready ? _GEN_328 : offset_5; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1250 = io_axi_data_data_ready ? _GEN_329 : offset_6; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1251 = io_axi_data_data_ready ? _GEN_330 : offset_7; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1252 = io_axi_data_data_ready ? _GEN_331 : offset_8; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1253 = io_axi_data_data_ready ? _GEN_332 : offset_9; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1254 = io_axi_data_data_ready ? _GEN_333 : offset_10; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1255 = io_axi_data_data_ready ? _GEN_334 : offset_11; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1256 = io_axi_data_data_ready ? _GEN_335 : offset_12; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1257 = io_axi_data_data_ready ? _GEN_336 : offset_13; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1258 = io_axi_data_data_ready ? _GEN_337 : offset_14; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1259 = io_axi_data_data_ready ? _GEN_338 : offset_15; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1260 = io_axi_data_data_ready ? _GEN_339 : offset_16; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1261 = io_axi_data_data_ready ? _GEN_340 : offset_17; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1262 = io_axi_data_data_ready ? _GEN_341 : offset_18; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1263 = io_axi_data_data_ready ? _GEN_342 : offset_19; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1264 = io_axi_data_data_ready ? _GEN_343 : offset_20; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1265 = io_axi_data_data_ready ? _GEN_344 : offset_21; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1266 = io_axi_data_data_ready ? _GEN_345 : offset_22; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1267 = io_axi_data_data_ready ? _GEN_346 : offset_23; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1268 = io_axi_data_data_ready ? _GEN_347 : offset_24; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1269 = io_axi_data_data_ready ? _GEN_348 : offset_25; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1270 = io_axi_data_data_ready ? _GEN_349 : offset_26; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1271 = io_axi_data_data_ready ? _GEN_350 : offset_27; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1272 = io_axi_data_data_ready ? _GEN_351 : offset_28; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1273 = io_axi_data_data_ready ? _GEN_352 : offset_29; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1274 = io_axi_data_data_ready ? _GEN_353 : offset_30; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1275 = io_axi_data_data_ready ? _GEN_354 : offset_31; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1276 = io_axi_data_data_ready ? _GEN_355 : offset_32; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1277 = io_axi_data_data_ready ? _GEN_356 : offset_33; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1278 = io_axi_data_data_ready ? _GEN_357 : offset_34; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1279 = io_axi_data_data_ready ? _GEN_358 : offset_35; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1280 = io_axi_data_data_ready ? _GEN_359 : offset_36; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1281 = io_axi_data_data_ready ? _GEN_360 : offset_37; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1282 = io_axi_data_data_ready ? _GEN_361 : offset_38; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1283 = io_axi_data_data_ready ? _GEN_362 : offset_39; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1284 = io_axi_data_data_ready ? _GEN_363 : offset_40; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1285 = io_axi_data_data_ready ? _GEN_364 : offset_41; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1286 = io_axi_data_data_ready ? _GEN_365 : offset_42; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1287 = io_axi_data_data_ready ? _GEN_366 : offset_43; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1288 = io_axi_data_data_ready ? _GEN_367 : offset_44; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1289 = io_axi_data_data_ready ? _GEN_368 : offset_45; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1290 = io_axi_data_data_ready ? _GEN_369 : offset_46; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1291 = io_axi_data_data_ready ? _GEN_370 : offset_47; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1292 = io_axi_data_data_ready ? _GEN_371 : offset_48; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1293 = io_axi_data_data_ready ? _GEN_372 : offset_49; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1294 = io_axi_data_data_ready ? _GEN_373 : offset_50; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1295 = io_axi_data_data_ready ? _GEN_374 : offset_51; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1296 = io_axi_data_data_ready ? _GEN_375 : offset_52; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1297 = io_axi_data_data_ready ? _GEN_376 : offset_53; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1298 = io_axi_data_data_ready ? _GEN_377 : offset_54; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1299 = io_axi_data_data_ready ? _GEN_378 : offset_55; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1300 = io_axi_data_data_ready ? _GEN_379 : offset_56; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1301 = io_axi_data_data_ready ? _GEN_380 : offset_57; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1302 = io_axi_data_data_ready ? _GEN_381 : offset_58; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1303 = io_axi_data_data_ready ? _GEN_382 : offset_59; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1304 = io_axi_data_data_ready ? _GEN_383 : offset_60; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1305 = io_axi_data_data_ready ? _GEN_384 : offset_61; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1306 = io_axi_data_data_ready ? _GEN_385 : offset_62; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire [3:0] _GEN_1307 = io_axi_data_data_ready ? _GEN_386 : offset_63; // @[Dcache.scala 191:23 Dcache.scala 35:24]
-  wire  _GEN_1308 = io_axi_data_data_ready ? _GEN_387 : dirty_0; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1309 = io_axi_data_data_ready ? _GEN_388 : dirty_1; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1310 = io_axi_data_data_ready ? _GEN_389 : dirty_2; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1311 = io_axi_data_data_ready ? _GEN_390 : dirty_3; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1312 = io_axi_data_data_ready ? _GEN_391 : dirty_4; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1313 = io_axi_data_data_ready ? _GEN_392 : dirty_5; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1314 = io_axi_data_data_ready ? _GEN_393 : dirty_6; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1315 = io_axi_data_data_ready ? _GEN_394 : dirty_7; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1316 = io_axi_data_data_ready ? _GEN_395 : dirty_8; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1317 = io_axi_data_data_ready ? _GEN_396 : dirty_9; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1318 = io_axi_data_data_ready ? _GEN_397 : dirty_10; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1319 = io_axi_data_data_ready ? _GEN_398 : dirty_11; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1320 = io_axi_data_data_ready ? _GEN_399 : dirty_12; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1321 = io_axi_data_data_ready ? _GEN_400 : dirty_13; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1322 = io_axi_data_data_ready ? _GEN_401 : dirty_14; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1323 = io_axi_data_data_ready ? _GEN_402 : dirty_15; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1324 = io_axi_data_data_ready ? _GEN_403 : dirty_16; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1325 = io_axi_data_data_ready ? _GEN_404 : dirty_17; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1326 = io_axi_data_data_ready ? _GEN_405 : dirty_18; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1327 = io_axi_data_data_ready ? _GEN_406 : dirty_19; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1328 = io_axi_data_data_ready ? _GEN_407 : dirty_20; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1329 = io_axi_data_data_ready ? _GEN_408 : dirty_21; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1330 = io_axi_data_data_ready ? _GEN_409 : dirty_22; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1331 = io_axi_data_data_ready ? _GEN_410 : dirty_23; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1332 = io_axi_data_data_ready ? _GEN_411 : dirty_24; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1333 = io_axi_data_data_ready ? _GEN_412 : dirty_25; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1334 = io_axi_data_data_ready ? _GEN_413 : dirty_26; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1335 = io_axi_data_data_ready ? _GEN_414 : dirty_27; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1336 = io_axi_data_data_ready ? _GEN_415 : dirty_28; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1337 = io_axi_data_data_ready ? _GEN_416 : dirty_29; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1338 = io_axi_data_data_ready ? _GEN_417 : dirty_30; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1339 = io_axi_data_data_ready ? _GEN_418 : dirty_31; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1340 = io_axi_data_data_ready ? _GEN_419 : dirty_32; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1341 = io_axi_data_data_ready ? _GEN_420 : dirty_33; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1342 = io_axi_data_data_ready ? _GEN_421 : dirty_34; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1343 = io_axi_data_data_ready ? _GEN_422 : dirty_35; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1344 = io_axi_data_data_ready ? _GEN_423 : dirty_36; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1345 = io_axi_data_data_ready ? _GEN_424 : dirty_37; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1346 = io_axi_data_data_ready ? _GEN_425 : dirty_38; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1347 = io_axi_data_data_ready ? _GEN_426 : dirty_39; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1348 = io_axi_data_data_ready ? _GEN_427 : dirty_40; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1349 = io_axi_data_data_ready ? _GEN_428 : dirty_41; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1350 = io_axi_data_data_ready ? _GEN_429 : dirty_42; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1351 = io_axi_data_data_ready ? _GEN_430 : dirty_43; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1352 = io_axi_data_data_ready ? _GEN_431 : dirty_44; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1353 = io_axi_data_data_ready ? _GEN_432 : dirty_45; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1354 = io_axi_data_data_ready ? _GEN_433 : dirty_46; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1355 = io_axi_data_data_ready ? _GEN_434 : dirty_47; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1356 = io_axi_data_data_ready ? _GEN_435 : dirty_48; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1357 = io_axi_data_data_ready ? _GEN_436 : dirty_49; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1358 = io_axi_data_data_ready ? _GEN_437 : dirty_50; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1359 = io_axi_data_data_ready ? _GEN_438 : dirty_51; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1360 = io_axi_data_data_ready ? _GEN_439 : dirty_52; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1361 = io_axi_data_data_ready ? _GEN_440 : dirty_53; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1362 = io_axi_data_data_ready ? _GEN_441 : dirty_54; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1363 = io_axi_data_data_ready ? _GEN_442 : dirty_55; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1364 = io_axi_data_data_ready ? _GEN_443 : dirty_56; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1365 = io_axi_data_data_ready ? _GEN_444 : dirty_57; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1366 = io_axi_data_data_ready ? _GEN_445 : dirty_58; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1367 = io_axi_data_data_ready ? _GEN_446 : dirty_59; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1368 = io_axi_data_data_ready ? _GEN_447 : dirty_60; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1369 = io_axi_data_data_ready ? _GEN_448 : dirty_61; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1370 = io_axi_data_data_ready ? _GEN_449 : dirty_62; // @[Dcache.scala 191:23 Dcache.scala 37:24]
-  wire  _GEN_1371 = io_axi_data_data_ready ? _GEN_450 : dirty_63; // @[Dcache.scala 191:23 Dcache.scala 37:24]
+  wire  _GEN_854 = io_axi_data_data_ready | reg_cache_fill; // @[Dcache.scala 191:23 Dcache.scala 194:19 Dcache.scala 58:31]
+  wire [127:0] _GEN_856 = io_axi_data_data_ready ? io_axi_data_data_read : 128'h0; // @[Dcache.scala 191:23 Dcache.scala 198:17]
+  wire [127:0] _GEN_857 = io_axi_data_data_ready ? 128'hffffffffffffffffffffffffffffffff : 128'h0; // @[Dcache.scala 191:23 Dcache.scala 199:17]
+  wire [5:0] _GEN_858 = io_axi_data_data_ready ? reg_data_addr[9:4] : 6'h0; // @[Dcache.scala 191:23 Dcache.scala 200:17]
   wire [127:0] _dcache_wdata_T_5 = {reg_data_write,64'h0}; // @[Cat.scala 30:58]
   wire [127:0] _dcache_wdata_T_6 = {64'h0,reg_data_write}; // @[Cat.scala 30:58]
-  wire [127:0] _dcache_wdata_T_7 = reg_data_addr[3] ? _dcache_wdata_T_5 : _dcache_wdata_T_6; // @[Dcache.scala 223:27]
+  wire [127:0] _dcache_wdata_T_7 = reg_data_addr[3] ? _dcache_wdata_T_5 : _dcache_wdata_T_6; // @[Dcache.scala 219:27]
   wire [127:0] _dcache_strb_T_5 = {reg_data_strb,64'h0}; // @[Cat.scala 30:58]
   wire [127:0] _dcache_strb_T_6 = {64'h0,reg_data_strb}; // @[Cat.scala 30:58]
-  wire [127:0] _dcache_strb_T_7 = reg_data_addr[3] ? _dcache_strb_T_5 : _dcache_strb_T_6; // @[Dcache.scala 224:27]
-  wire [2:0] _GEN_1372 = _T_7 ? 3'h0 : state; // @[Conditional.scala 39:67 Dcache.scala 216:8 Dcache.scala 31:22]
-  wire  _GEN_1373 = _T_7 ? 1'h0 : reg_cache_fill; // @[Conditional.scala 39:67 Dcache.scala 217:18 Dcache.scala 58:31]
-  wire [5:0] _GEN_1376 = _T_7 ? reg_data_addr[9:4] : 6'h0; // @[Conditional.scala 39:67 Dcache.scala 221:21]
-  wire  _GEN_1377 = _T_7 & reg_data_req_w; // @[Conditional.scala 39:67 Dcache.scala 222:21]
-  wire [127:0] _GEN_1378 = _T_7 ? _dcache_wdata_T_7 : 128'h0; // @[Conditional.scala 39:67 Dcache.scala 223:21]
-  wire [127:0] _GEN_1379 = _T_7 ? _dcache_strb_T_7 : 128'h0; // @[Conditional.scala 39:67 Dcache.scala 224:21]
-  wire [2:0] _GEN_1380 = _T_5 ? _GEN_847 : _GEN_1372; // @[Conditional.scala 39:67]
-  wire [31:0] _GEN_1383 = _T_5 ? _GEN_850 : 32'h0; // @[Conditional.scala 39:67]
-  wire  _GEN_1387 = _T_5 ? _GEN_1110 : _GEN_1373; // @[Conditional.scala 39:67]
-  wire  _GEN_1388 = _T_5 ? io_axi_data_data_ready : _T_7; // @[Conditional.scala 39:67]
-  wire  _GEN_1389 = _T_5 ? io_axi_data_data_ready : _GEN_1377; // @[Conditional.scala 39:67]
-  wire [127:0] _GEN_1390 = _T_5 ? _GEN_1112 : _GEN_1378; // @[Conditional.scala 39:67]
-  wire [127:0] _GEN_1391 = _T_5 ? _GEN_1113 : _GEN_1379; // @[Conditional.scala 39:67]
-  wire [5:0] _GEN_1392 = _T_5 ? _GEN_1114 : _GEN_1376; // @[Conditional.scala 39:67]
-  wire  _GEN_1394 = _T_5 ? _GEN_1116 : valid_0; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1395 = _T_5 ? _GEN_1117 : valid_1; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1396 = _T_5 ? _GEN_1118 : valid_2; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1397 = _T_5 ? _GEN_1119 : valid_3; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1398 = _T_5 ? _GEN_1120 : valid_4; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1399 = _T_5 ? _GEN_1121 : valid_5; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1400 = _T_5 ? _GEN_1122 : valid_6; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1401 = _T_5 ? _GEN_1123 : valid_7; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1402 = _T_5 ? _GEN_1124 : valid_8; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1403 = _T_5 ? _GEN_1125 : valid_9; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1404 = _T_5 ? _GEN_1126 : valid_10; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1405 = _T_5 ? _GEN_1127 : valid_11; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1406 = _T_5 ? _GEN_1128 : valid_12; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1407 = _T_5 ? _GEN_1129 : valid_13; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1408 = _T_5 ? _GEN_1130 : valid_14; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1409 = _T_5 ? _GEN_1131 : valid_15; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1410 = _T_5 ? _GEN_1132 : valid_16; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1411 = _T_5 ? _GEN_1133 : valid_17; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1412 = _T_5 ? _GEN_1134 : valid_18; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1413 = _T_5 ? _GEN_1135 : valid_19; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1414 = _T_5 ? _GEN_1136 : valid_20; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1415 = _T_5 ? _GEN_1137 : valid_21; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1416 = _T_5 ? _GEN_1138 : valid_22; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1417 = _T_5 ? _GEN_1139 : valid_23; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1418 = _T_5 ? _GEN_1140 : valid_24; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1419 = _T_5 ? _GEN_1141 : valid_25; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1420 = _T_5 ? _GEN_1142 : valid_26; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1421 = _T_5 ? _GEN_1143 : valid_27; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1422 = _T_5 ? _GEN_1144 : valid_28; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1423 = _T_5 ? _GEN_1145 : valid_29; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1424 = _T_5 ? _GEN_1146 : valid_30; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1425 = _T_5 ? _GEN_1147 : valid_31; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1426 = _T_5 ? _GEN_1148 : valid_32; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1427 = _T_5 ? _GEN_1149 : valid_33; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1428 = _T_5 ? _GEN_1150 : valid_34; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1429 = _T_5 ? _GEN_1151 : valid_35; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1430 = _T_5 ? _GEN_1152 : valid_36; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1431 = _T_5 ? _GEN_1153 : valid_37; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1432 = _T_5 ? _GEN_1154 : valid_38; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1433 = _T_5 ? _GEN_1155 : valid_39; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1434 = _T_5 ? _GEN_1156 : valid_40; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1435 = _T_5 ? _GEN_1157 : valid_41; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1436 = _T_5 ? _GEN_1158 : valid_42; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1437 = _T_5 ? _GEN_1159 : valid_43; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1438 = _T_5 ? _GEN_1160 : valid_44; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1439 = _T_5 ? _GEN_1161 : valid_45; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1440 = _T_5 ? _GEN_1162 : valid_46; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1441 = _T_5 ? _GEN_1163 : valid_47; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1442 = _T_5 ? _GEN_1164 : valid_48; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1443 = _T_5 ? _GEN_1165 : valid_49; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1444 = _T_5 ? _GEN_1166 : valid_50; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1445 = _T_5 ? _GEN_1167 : valid_51; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1446 = _T_5 ? _GEN_1168 : valid_52; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1447 = _T_5 ? _GEN_1169 : valid_53; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1448 = _T_5 ? _GEN_1170 : valid_54; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1449 = _T_5 ? _GEN_1171 : valid_55; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1450 = _T_5 ? _GEN_1172 : valid_56; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1451 = _T_5 ? _GEN_1173 : valid_57; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1452 = _T_5 ? _GEN_1174 : valid_58; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1453 = _T_5 ? _GEN_1175 : valid_59; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1454 = _T_5 ? _GEN_1176 : valid_60; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1455 = _T_5 ? _GEN_1177 : valid_61; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1456 = _T_5 ? _GEN_1178 : valid_62; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire  _GEN_1457 = _T_5 ? _GEN_1179 : valid_63; // @[Conditional.scala 39:67 Dcache.scala 36:24]
-  wire [21:0] _GEN_1458 = _T_5 ? _GEN_1180 : tag_0; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1459 = _T_5 ? _GEN_1181 : tag_1; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1460 = _T_5 ? _GEN_1182 : tag_2; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1461 = _T_5 ? _GEN_1183 : tag_3; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1462 = _T_5 ? _GEN_1184 : tag_4; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1463 = _T_5 ? _GEN_1185 : tag_5; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1464 = _T_5 ? _GEN_1186 : tag_6; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1465 = _T_5 ? _GEN_1187 : tag_7; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1466 = _T_5 ? _GEN_1188 : tag_8; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1467 = _T_5 ? _GEN_1189 : tag_9; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1468 = _T_5 ? _GEN_1190 : tag_10; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1469 = _T_5 ? _GEN_1191 : tag_11; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1470 = _T_5 ? _GEN_1192 : tag_12; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1471 = _T_5 ? _GEN_1193 : tag_13; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1472 = _T_5 ? _GEN_1194 : tag_14; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1473 = _T_5 ? _GEN_1195 : tag_15; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1474 = _T_5 ? _GEN_1196 : tag_16; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1475 = _T_5 ? _GEN_1197 : tag_17; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1476 = _T_5 ? _GEN_1198 : tag_18; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1477 = _T_5 ? _GEN_1199 : tag_19; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1478 = _T_5 ? _GEN_1200 : tag_20; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1479 = _T_5 ? _GEN_1201 : tag_21; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1480 = _T_5 ? _GEN_1202 : tag_22; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1481 = _T_5 ? _GEN_1203 : tag_23; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1482 = _T_5 ? _GEN_1204 : tag_24; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1483 = _T_5 ? _GEN_1205 : tag_25; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1484 = _T_5 ? _GEN_1206 : tag_26; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1485 = _T_5 ? _GEN_1207 : tag_27; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1486 = _T_5 ? _GEN_1208 : tag_28; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1487 = _T_5 ? _GEN_1209 : tag_29; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1488 = _T_5 ? _GEN_1210 : tag_30; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1489 = _T_5 ? _GEN_1211 : tag_31; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1490 = _T_5 ? _GEN_1212 : tag_32; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1491 = _T_5 ? _GEN_1213 : tag_33; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1492 = _T_5 ? _GEN_1214 : tag_34; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1493 = _T_5 ? _GEN_1215 : tag_35; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1494 = _T_5 ? _GEN_1216 : tag_36; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1495 = _T_5 ? _GEN_1217 : tag_37; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1496 = _T_5 ? _GEN_1218 : tag_38; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1497 = _T_5 ? _GEN_1219 : tag_39; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1498 = _T_5 ? _GEN_1220 : tag_40; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1499 = _T_5 ? _GEN_1221 : tag_41; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1500 = _T_5 ? _GEN_1222 : tag_42; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1501 = _T_5 ? _GEN_1223 : tag_43; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1502 = _T_5 ? _GEN_1224 : tag_44; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1503 = _T_5 ? _GEN_1225 : tag_45; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1504 = _T_5 ? _GEN_1226 : tag_46; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1505 = _T_5 ? _GEN_1227 : tag_47; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1506 = _T_5 ? _GEN_1228 : tag_48; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1507 = _T_5 ? _GEN_1229 : tag_49; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1508 = _T_5 ? _GEN_1230 : tag_50; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1509 = _T_5 ? _GEN_1231 : tag_51; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1510 = _T_5 ? _GEN_1232 : tag_52; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1511 = _T_5 ? _GEN_1233 : tag_53; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1512 = _T_5 ? _GEN_1234 : tag_54; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1513 = _T_5 ? _GEN_1235 : tag_55; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1514 = _T_5 ? _GEN_1236 : tag_56; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1515 = _T_5 ? _GEN_1237 : tag_57; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1516 = _T_5 ? _GEN_1238 : tag_58; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1517 = _T_5 ? _GEN_1239 : tag_59; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1518 = _T_5 ? _GEN_1240 : tag_60; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1519 = _T_5 ? _GEN_1241 : tag_61; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1520 = _T_5 ? _GEN_1242 : tag_62; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [21:0] _GEN_1521 = _T_5 ? _GEN_1243 : tag_63; // @[Conditional.scala 39:67 Dcache.scala 34:24]
-  wire [3:0] _GEN_1522 = _T_5 ? _GEN_1244 : offset_0; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1523 = _T_5 ? _GEN_1245 : offset_1; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1524 = _T_5 ? _GEN_1246 : offset_2; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1525 = _T_5 ? _GEN_1247 : offset_3; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1526 = _T_5 ? _GEN_1248 : offset_4; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1527 = _T_5 ? _GEN_1249 : offset_5; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1528 = _T_5 ? _GEN_1250 : offset_6; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1529 = _T_5 ? _GEN_1251 : offset_7; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1530 = _T_5 ? _GEN_1252 : offset_8; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1531 = _T_5 ? _GEN_1253 : offset_9; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1532 = _T_5 ? _GEN_1254 : offset_10; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1533 = _T_5 ? _GEN_1255 : offset_11; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1534 = _T_5 ? _GEN_1256 : offset_12; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1535 = _T_5 ? _GEN_1257 : offset_13; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1536 = _T_5 ? _GEN_1258 : offset_14; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1537 = _T_5 ? _GEN_1259 : offset_15; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1538 = _T_5 ? _GEN_1260 : offset_16; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1539 = _T_5 ? _GEN_1261 : offset_17; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1540 = _T_5 ? _GEN_1262 : offset_18; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1541 = _T_5 ? _GEN_1263 : offset_19; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1542 = _T_5 ? _GEN_1264 : offset_20; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1543 = _T_5 ? _GEN_1265 : offset_21; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1544 = _T_5 ? _GEN_1266 : offset_22; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1545 = _T_5 ? _GEN_1267 : offset_23; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1546 = _T_5 ? _GEN_1268 : offset_24; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1547 = _T_5 ? _GEN_1269 : offset_25; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1548 = _T_5 ? _GEN_1270 : offset_26; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1549 = _T_5 ? _GEN_1271 : offset_27; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1550 = _T_5 ? _GEN_1272 : offset_28; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1551 = _T_5 ? _GEN_1273 : offset_29; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1552 = _T_5 ? _GEN_1274 : offset_30; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1553 = _T_5 ? _GEN_1275 : offset_31; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1554 = _T_5 ? _GEN_1276 : offset_32; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1555 = _T_5 ? _GEN_1277 : offset_33; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1556 = _T_5 ? _GEN_1278 : offset_34; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1557 = _T_5 ? _GEN_1279 : offset_35; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1558 = _T_5 ? _GEN_1280 : offset_36; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1559 = _T_5 ? _GEN_1281 : offset_37; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1560 = _T_5 ? _GEN_1282 : offset_38; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1561 = _T_5 ? _GEN_1283 : offset_39; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1562 = _T_5 ? _GEN_1284 : offset_40; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1563 = _T_5 ? _GEN_1285 : offset_41; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1564 = _T_5 ? _GEN_1286 : offset_42; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1565 = _T_5 ? _GEN_1287 : offset_43; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1566 = _T_5 ? _GEN_1288 : offset_44; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1567 = _T_5 ? _GEN_1289 : offset_45; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1568 = _T_5 ? _GEN_1290 : offset_46; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1569 = _T_5 ? _GEN_1291 : offset_47; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1570 = _T_5 ? _GEN_1292 : offset_48; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1571 = _T_5 ? _GEN_1293 : offset_49; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1572 = _T_5 ? _GEN_1294 : offset_50; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1573 = _T_5 ? _GEN_1295 : offset_51; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1574 = _T_5 ? _GEN_1296 : offset_52; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1575 = _T_5 ? _GEN_1297 : offset_53; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1576 = _T_5 ? _GEN_1298 : offset_54; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1577 = _T_5 ? _GEN_1299 : offset_55; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1578 = _T_5 ? _GEN_1300 : offset_56; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1579 = _T_5 ? _GEN_1301 : offset_57; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1580 = _T_5 ? _GEN_1302 : offset_58; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1581 = _T_5 ? _GEN_1303 : offset_59; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1582 = _T_5 ? _GEN_1304 : offset_60; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1583 = _T_5 ? _GEN_1305 : offset_61; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1584 = _T_5 ? _GEN_1306 : offset_62; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire [3:0] _GEN_1585 = _T_5 ? _GEN_1307 : offset_63; // @[Conditional.scala 39:67 Dcache.scala 35:24]
-  wire  _GEN_1586 = _T_5 ? _GEN_1308 : dirty_0; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1587 = _T_5 ? _GEN_1309 : dirty_1; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1588 = _T_5 ? _GEN_1310 : dirty_2; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1589 = _T_5 ? _GEN_1311 : dirty_3; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1590 = _T_5 ? _GEN_1312 : dirty_4; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1591 = _T_5 ? _GEN_1313 : dirty_5; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1592 = _T_5 ? _GEN_1314 : dirty_6; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1593 = _T_5 ? _GEN_1315 : dirty_7; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1594 = _T_5 ? _GEN_1316 : dirty_8; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1595 = _T_5 ? _GEN_1317 : dirty_9; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1596 = _T_5 ? _GEN_1318 : dirty_10; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1597 = _T_5 ? _GEN_1319 : dirty_11; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1598 = _T_5 ? _GEN_1320 : dirty_12; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1599 = _T_5 ? _GEN_1321 : dirty_13; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1600 = _T_5 ? _GEN_1322 : dirty_14; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1601 = _T_5 ? _GEN_1323 : dirty_15; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1602 = _T_5 ? _GEN_1324 : dirty_16; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1603 = _T_5 ? _GEN_1325 : dirty_17; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1604 = _T_5 ? _GEN_1326 : dirty_18; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1605 = _T_5 ? _GEN_1327 : dirty_19; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1606 = _T_5 ? _GEN_1328 : dirty_20; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1607 = _T_5 ? _GEN_1329 : dirty_21; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1608 = _T_5 ? _GEN_1330 : dirty_22; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1609 = _T_5 ? _GEN_1331 : dirty_23; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1610 = _T_5 ? _GEN_1332 : dirty_24; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1611 = _T_5 ? _GEN_1333 : dirty_25; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1612 = _T_5 ? _GEN_1334 : dirty_26; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1613 = _T_5 ? _GEN_1335 : dirty_27; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1614 = _T_5 ? _GEN_1336 : dirty_28; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1615 = _T_5 ? _GEN_1337 : dirty_29; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1616 = _T_5 ? _GEN_1338 : dirty_30; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1617 = _T_5 ? _GEN_1339 : dirty_31; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1618 = _T_5 ? _GEN_1340 : dirty_32; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1619 = _T_5 ? _GEN_1341 : dirty_33; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1620 = _T_5 ? _GEN_1342 : dirty_34; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1621 = _T_5 ? _GEN_1343 : dirty_35; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1622 = _T_5 ? _GEN_1344 : dirty_36; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1623 = _T_5 ? _GEN_1345 : dirty_37; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1624 = _T_5 ? _GEN_1346 : dirty_38; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1625 = _T_5 ? _GEN_1347 : dirty_39; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1626 = _T_5 ? _GEN_1348 : dirty_40; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1627 = _T_5 ? _GEN_1349 : dirty_41; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1628 = _T_5 ? _GEN_1350 : dirty_42; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1629 = _T_5 ? _GEN_1351 : dirty_43; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1630 = _T_5 ? _GEN_1352 : dirty_44; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1631 = _T_5 ? _GEN_1353 : dirty_45; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1632 = _T_5 ? _GEN_1354 : dirty_46; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1633 = _T_5 ? _GEN_1355 : dirty_47; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1634 = _T_5 ? _GEN_1356 : dirty_48; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1635 = _T_5 ? _GEN_1357 : dirty_49; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1636 = _T_5 ? _GEN_1358 : dirty_50; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1637 = _T_5 ? _GEN_1359 : dirty_51; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1638 = _T_5 ? _GEN_1360 : dirty_52; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1639 = _T_5 ? _GEN_1361 : dirty_53; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1640 = _T_5 ? _GEN_1362 : dirty_54; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1641 = _T_5 ? _GEN_1363 : dirty_55; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1642 = _T_5 ? _GEN_1364 : dirty_56; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1643 = _T_5 ? _GEN_1365 : dirty_57; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1644 = _T_5 ? _GEN_1366 : dirty_58; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1645 = _T_5 ? _GEN_1367 : dirty_59; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1646 = _T_5 ? _GEN_1368 : dirty_60; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1647 = _T_5 ? _GEN_1369 : dirty_61; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1648 = _T_5 ? _GEN_1370 : dirty_62; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire  _GEN_1649 = _T_5 ? _GEN_1371 : dirty_63; // @[Conditional.scala 39:67 Dcache.scala 37:24]
-  wire [31:0] _GEN_1651 = _T_4 ? _data_addr_w2axi_T : 32'h0; // @[Conditional.scala 39:67 Dcache.scala 163:19]
-  wire [63:0] _GEN_1652 = _T_4 ? _data_write2axi_T_3 : 64'h0; // @[Conditional.scala 39:67 Dcache.scala 164:19]
-  wire [7:0] _GEN_1653 = _T_4 ? 8'hff : 8'h0; // @[Conditional.scala 39:67 Dcache.scala 165:19]
-  wire  _GEN_1656 = _T_4 ? 1'h0 : _T_5 & _T_6; // @[Conditional.scala 39:67]
-  wire [31:0] _GEN_1657 = _T_4 ? 32'h0 : _GEN_1383; // @[Conditional.scala 39:67]
+  wire [127:0] _dcache_strb_T_7 = reg_data_addr[3] ? _dcache_strb_T_5 : _dcache_strb_T_6; // @[Dcache.scala 220:27]
+  wire [2:0] _GEN_1115 = _T_7 ? 3'h0 : state; // @[Conditional.scala 39:67 Dcache.scala 212:8 Dcache.scala 31:22]
+  wire  _GEN_1116 = _T_7 ? 1'h0 : reg_cache_fill; // @[Conditional.scala 39:67 Dcache.scala 213:18 Dcache.scala 58:31]
+  wire [5:0] _GEN_1119 = _T_7 ? reg_data_addr[9:4] : 6'h0; // @[Conditional.scala 39:67 Dcache.scala 217:21]
+  wire  _GEN_1120 = _T_7 & reg_data_req_w; // @[Conditional.scala 39:67 Dcache.scala 218:21]
+  wire [127:0] _GEN_1121 = _T_7 ? _dcache_wdata_T_7 : 128'h0; // @[Conditional.scala 39:67 Dcache.scala 219:21]
+  wire [127:0] _GEN_1122 = _T_7 ? _dcache_strb_T_7 : 128'h0; // @[Conditional.scala 39:67 Dcache.scala 220:21]
+  wire  _GEN_1123 = _T_7 ? _GEN_195 : valid_0; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1124 = _T_7 ? _GEN_196 : valid_1; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1125 = _T_7 ? _GEN_197 : valid_2; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1126 = _T_7 ? _GEN_198 : valid_3; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1127 = _T_7 ? _GEN_199 : valid_4; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1128 = _T_7 ? _GEN_200 : valid_5; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1129 = _T_7 ? _GEN_201 : valid_6; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1130 = _T_7 ? _GEN_202 : valid_7; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1131 = _T_7 ? _GEN_203 : valid_8; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1132 = _T_7 ? _GEN_204 : valid_9; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1133 = _T_7 ? _GEN_205 : valid_10; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1134 = _T_7 ? _GEN_206 : valid_11; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1135 = _T_7 ? _GEN_207 : valid_12; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1136 = _T_7 ? _GEN_208 : valid_13; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1137 = _T_7 ? _GEN_209 : valid_14; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1138 = _T_7 ? _GEN_210 : valid_15; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1139 = _T_7 ? _GEN_211 : valid_16; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1140 = _T_7 ? _GEN_212 : valid_17; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1141 = _T_7 ? _GEN_213 : valid_18; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1142 = _T_7 ? _GEN_214 : valid_19; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1143 = _T_7 ? _GEN_215 : valid_20; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1144 = _T_7 ? _GEN_216 : valid_21; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1145 = _T_7 ? _GEN_217 : valid_22; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1146 = _T_7 ? _GEN_218 : valid_23; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1147 = _T_7 ? _GEN_219 : valid_24; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1148 = _T_7 ? _GEN_220 : valid_25; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1149 = _T_7 ? _GEN_221 : valid_26; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1150 = _T_7 ? _GEN_222 : valid_27; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1151 = _T_7 ? _GEN_223 : valid_28; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1152 = _T_7 ? _GEN_224 : valid_29; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1153 = _T_7 ? _GEN_225 : valid_30; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1154 = _T_7 ? _GEN_226 : valid_31; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1155 = _T_7 ? _GEN_227 : valid_32; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1156 = _T_7 ? _GEN_228 : valid_33; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1157 = _T_7 ? _GEN_229 : valid_34; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1158 = _T_7 ? _GEN_230 : valid_35; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1159 = _T_7 ? _GEN_231 : valid_36; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1160 = _T_7 ? _GEN_232 : valid_37; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1161 = _T_7 ? _GEN_233 : valid_38; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1162 = _T_7 ? _GEN_234 : valid_39; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1163 = _T_7 ? _GEN_235 : valid_40; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1164 = _T_7 ? _GEN_236 : valid_41; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1165 = _T_7 ? _GEN_237 : valid_42; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1166 = _T_7 ? _GEN_238 : valid_43; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1167 = _T_7 ? _GEN_239 : valid_44; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1168 = _T_7 ? _GEN_240 : valid_45; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1169 = _T_7 ? _GEN_241 : valid_46; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1170 = _T_7 ? _GEN_242 : valid_47; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1171 = _T_7 ? _GEN_243 : valid_48; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1172 = _T_7 ? _GEN_244 : valid_49; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1173 = _T_7 ? _GEN_245 : valid_50; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1174 = _T_7 ? _GEN_246 : valid_51; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1175 = _T_7 ? _GEN_247 : valid_52; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1176 = _T_7 ? _GEN_248 : valid_53; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1177 = _T_7 ? _GEN_249 : valid_54; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1178 = _T_7 ? _GEN_250 : valid_55; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1179 = _T_7 ? _GEN_251 : valid_56; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1180 = _T_7 ? _GEN_252 : valid_57; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1181 = _T_7 ? _GEN_253 : valid_58; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1182 = _T_7 ? _GEN_254 : valid_59; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1183 = _T_7 ? _GEN_255 : valid_60; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1184 = _T_7 ? _GEN_256 : valid_61; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1185 = _T_7 ? _GEN_257 : valid_62; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1186 = _T_7 ? _GEN_258 : valid_63; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire [21:0] _GEN_1187 = _T_7 ? _GEN_259 : tag_0; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1188 = _T_7 ? _GEN_260 : tag_1; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1189 = _T_7 ? _GEN_261 : tag_2; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1190 = _T_7 ? _GEN_262 : tag_3; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1191 = _T_7 ? _GEN_263 : tag_4; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1192 = _T_7 ? _GEN_264 : tag_5; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1193 = _T_7 ? _GEN_265 : tag_6; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1194 = _T_7 ? _GEN_266 : tag_7; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1195 = _T_7 ? _GEN_267 : tag_8; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1196 = _T_7 ? _GEN_268 : tag_9; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1197 = _T_7 ? _GEN_269 : tag_10; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1198 = _T_7 ? _GEN_270 : tag_11; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1199 = _T_7 ? _GEN_271 : tag_12; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1200 = _T_7 ? _GEN_272 : tag_13; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1201 = _T_7 ? _GEN_273 : tag_14; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1202 = _T_7 ? _GEN_274 : tag_15; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1203 = _T_7 ? _GEN_275 : tag_16; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1204 = _T_7 ? _GEN_276 : tag_17; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1205 = _T_7 ? _GEN_277 : tag_18; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1206 = _T_7 ? _GEN_278 : tag_19; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1207 = _T_7 ? _GEN_279 : tag_20; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1208 = _T_7 ? _GEN_280 : tag_21; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1209 = _T_7 ? _GEN_281 : tag_22; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1210 = _T_7 ? _GEN_282 : tag_23; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1211 = _T_7 ? _GEN_283 : tag_24; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1212 = _T_7 ? _GEN_284 : tag_25; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1213 = _T_7 ? _GEN_285 : tag_26; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1214 = _T_7 ? _GEN_286 : tag_27; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1215 = _T_7 ? _GEN_287 : tag_28; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1216 = _T_7 ? _GEN_288 : tag_29; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1217 = _T_7 ? _GEN_289 : tag_30; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1218 = _T_7 ? _GEN_290 : tag_31; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1219 = _T_7 ? _GEN_291 : tag_32; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1220 = _T_7 ? _GEN_292 : tag_33; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1221 = _T_7 ? _GEN_293 : tag_34; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1222 = _T_7 ? _GEN_294 : tag_35; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1223 = _T_7 ? _GEN_295 : tag_36; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1224 = _T_7 ? _GEN_296 : tag_37; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1225 = _T_7 ? _GEN_297 : tag_38; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1226 = _T_7 ? _GEN_298 : tag_39; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1227 = _T_7 ? _GEN_299 : tag_40; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1228 = _T_7 ? _GEN_300 : tag_41; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1229 = _T_7 ? _GEN_301 : tag_42; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1230 = _T_7 ? _GEN_302 : tag_43; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1231 = _T_7 ? _GEN_303 : tag_44; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1232 = _T_7 ? _GEN_304 : tag_45; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1233 = _T_7 ? _GEN_305 : tag_46; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1234 = _T_7 ? _GEN_306 : tag_47; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1235 = _T_7 ? _GEN_307 : tag_48; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1236 = _T_7 ? _GEN_308 : tag_49; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1237 = _T_7 ? _GEN_309 : tag_50; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1238 = _T_7 ? _GEN_310 : tag_51; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1239 = _T_7 ? _GEN_311 : tag_52; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1240 = _T_7 ? _GEN_312 : tag_53; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1241 = _T_7 ? _GEN_313 : tag_54; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1242 = _T_7 ? _GEN_314 : tag_55; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1243 = _T_7 ? _GEN_315 : tag_56; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1244 = _T_7 ? _GEN_316 : tag_57; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1245 = _T_7 ? _GEN_317 : tag_58; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1246 = _T_7 ? _GEN_318 : tag_59; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1247 = _T_7 ? _GEN_319 : tag_60; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1248 = _T_7 ? _GEN_320 : tag_61; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1249 = _T_7 ? _GEN_321 : tag_62; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1250 = _T_7 ? _GEN_322 : tag_63; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [3:0] _GEN_1251 = _T_7 ? _GEN_323 : offset_0; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1252 = _T_7 ? _GEN_324 : offset_1; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1253 = _T_7 ? _GEN_325 : offset_2; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1254 = _T_7 ? _GEN_326 : offset_3; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1255 = _T_7 ? _GEN_327 : offset_4; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1256 = _T_7 ? _GEN_328 : offset_5; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1257 = _T_7 ? _GEN_329 : offset_6; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1258 = _T_7 ? _GEN_330 : offset_7; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1259 = _T_7 ? _GEN_331 : offset_8; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1260 = _T_7 ? _GEN_332 : offset_9; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1261 = _T_7 ? _GEN_333 : offset_10; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1262 = _T_7 ? _GEN_334 : offset_11; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1263 = _T_7 ? _GEN_335 : offset_12; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1264 = _T_7 ? _GEN_336 : offset_13; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1265 = _T_7 ? _GEN_337 : offset_14; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1266 = _T_7 ? _GEN_338 : offset_15; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1267 = _T_7 ? _GEN_339 : offset_16; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1268 = _T_7 ? _GEN_340 : offset_17; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1269 = _T_7 ? _GEN_341 : offset_18; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1270 = _T_7 ? _GEN_342 : offset_19; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1271 = _T_7 ? _GEN_343 : offset_20; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1272 = _T_7 ? _GEN_344 : offset_21; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1273 = _T_7 ? _GEN_345 : offset_22; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1274 = _T_7 ? _GEN_346 : offset_23; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1275 = _T_7 ? _GEN_347 : offset_24; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1276 = _T_7 ? _GEN_348 : offset_25; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1277 = _T_7 ? _GEN_349 : offset_26; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1278 = _T_7 ? _GEN_350 : offset_27; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1279 = _T_7 ? _GEN_351 : offset_28; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1280 = _T_7 ? _GEN_352 : offset_29; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1281 = _T_7 ? _GEN_353 : offset_30; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1282 = _T_7 ? _GEN_354 : offset_31; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1283 = _T_7 ? _GEN_355 : offset_32; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1284 = _T_7 ? _GEN_356 : offset_33; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1285 = _T_7 ? _GEN_357 : offset_34; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1286 = _T_7 ? _GEN_358 : offset_35; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1287 = _T_7 ? _GEN_359 : offset_36; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1288 = _T_7 ? _GEN_360 : offset_37; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1289 = _T_7 ? _GEN_361 : offset_38; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1290 = _T_7 ? _GEN_362 : offset_39; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1291 = _T_7 ? _GEN_363 : offset_40; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1292 = _T_7 ? _GEN_364 : offset_41; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1293 = _T_7 ? _GEN_365 : offset_42; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1294 = _T_7 ? _GEN_366 : offset_43; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1295 = _T_7 ? _GEN_367 : offset_44; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1296 = _T_7 ? _GEN_368 : offset_45; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1297 = _T_7 ? _GEN_369 : offset_46; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1298 = _T_7 ? _GEN_370 : offset_47; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1299 = _T_7 ? _GEN_371 : offset_48; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1300 = _T_7 ? _GEN_372 : offset_49; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1301 = _T_7 ? _GEN_373 : offset_50; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1302 = _T_7 ? _GEN_374 : offset_51; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1303 = _T_7 ? _GEN_375 : offset_52; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1304 = _T_7 ? _GEN_376 : offset_53; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1305 = _T_7 ? _GEN_377 : offset_54; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1306 = _T_7 ? _GEN_378 : offset_55; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1307 = _T_7 ? _GEN_379 : offset_56; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1308 = _T_7 ? _GEN_380 : offset_57; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1309 = _T_7 ? _GEN_381 : offset_58; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1310 = _T_7 ? _GEN_382 : offset_59; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1311 = _T_7 ? _GEN_383 : offset_60; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1312 = _T_7 ? _GEN_384 : offset_61; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1313 = _T_7 ? _GEN_385 : offset_62; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1314 = _T_7 ? _GEN_386 : offset_63; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire  _GEN_1315 = _T_7 ? _GEN_387 : dirty_0; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1316 = _T_7 ? _GEN_388 : dirty_1; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1317 = _T_7 ? _GEN_389 : dirty_2; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1318 = _T_7 ? _GEN_390 : dirty_3; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1319 = _T_7 ? _GEN_391 : dirty_4; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1320 = _T_7 ? _GEN_392 : dirty_5; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1321 = _T_7 ? _GEN_393 : dirty_6; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1322 = _T_7 ? _GEN_394 : dirty_7; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1323 = _T_7 ? _GEN_395 : dirty_8; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1324 = _T_7 ? _GEN_396 : dirty_9; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1325 = _T_7 ? _GEN_397 : dirty_10; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1326 = _T_7 ? _GEN_398 : dirty_11; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1327 = _T_7 ? _GEN_399 : dirty_12; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1328 = _T_7 ? _GEN_400 : dirty_13; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1329 = _T_7 ? _GEN_401 : dirty_14; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1330 = _T_7 ? _GEN_402 : dirty_15; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1331 = _T_7 ? _GEN_403 : dirty_16; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1332 = _T_7 ? _GEN_404 : dirty_17; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1333 = _T_7 ? _GEN_405 : dirty_18; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1334 = _T_7 ? _GEN_406 : dirty_19; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1335 = _T_7 ? _GEN_407 : dirty_20; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1336 = _T_7 ? _GEN_408 : dirty_21; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1337 = _T_7 ? _GEN_409 : dirty_22; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1338 = _T_7 ? _GEN_410 : dirty_23; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1339 = _T_7 ? _GEN_411 : dirty_24; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1340 = _T_7 ? _GEN_412 : dirty_25; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1341 = _T_7 ? _GEN_413 : dirty_26; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1342 = _T_7 ? _GEN_414 : dirty_27; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1343 = _T_7 ? _GEN_415 : dirty_28; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1344 = _T_7 ? _GEN_416 : dirty_29; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1345 = _T_7 ? _GEN_417 : dirty_30; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1346 = _T_7 ? _GEN_418 : dirty_31; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1347 = _T_7 ? _GEN_419 : dirty_32; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1348 = _T_7 ? _GEN_420 : dirty_33; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1349 = _T_7 ? _GEN_421 : dirty_34; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1350 = _T_7 ? _GEN_422 : dirty_35; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1351 = _T_7 ? _GEN_423 : dirty_36; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1352 = _T_7 ? _GEN_424 : dirty_37; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1353 = _T_7 ? _GEN_425 : dirty_38; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1354 = _T_7 ? _GEN_426 : dirty_39; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1355 = _T_7 ? _GEN_427 : dirty_40; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1356 = _T_7 ? _GEN_428 : dirty_41; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1357 = _T_7 ? _GEN_429 : dirty_42; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1358 = _T_7 ? _GEN_430 : dirty_43; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1359 = _T_7 ? _GEN_431 : dirty_44; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1360 = _T_7 ? _GEN_432 : dirty_45; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1361 = _T_7 ? _GEN_433 : dirty_46; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1362 = _T_7 ? _GEN_434 : dirty_47; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1363 = _T_7 ? _GEN_435 : dirty_48; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1364 = _T_7 ? _GEN_436 : dirty_49; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1365 = _T_7 ? _GEN_437 : dirty_50; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1366 = _T_7 ? _GEN_438 : dirty_51; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1367 = _T_7 ? _GEN_439 : dirty_52; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1368 = _T_7 ? _GEN_440 : dirty_53; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1369 = _T_7 ? _GEN_441 : dirty_54; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1370 = _T_7 ? _GEN_442 : dirty_55; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1371 = _T_7 ? _GEN_443 : dirty_56; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1372 = _T_7 ? _GEN_444 : dirty_57; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1373 = _T_7 ? _GEN_445 : dirty_58; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1374 = _T_7 ? _GEN_446 : dirty_59; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1375 = _T_7 ? _GEN_447 : dirty_60; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1376 = _T_7 ? _GEN_448 : dirty_61; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1377 = _T_7 ? _GEN_449 : dirty_62; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1378 = _T_7 ? _GEN_450 : dirty_63; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire [2:0] _GEN_1379 = _T_5 ? _GEN_847 : _GEN_1115; // @[Conditional.scala 39:67]
+  wire [31:0] _GEN_1382 = _T_5 ? _GEN_850 : 32'h0; // @[Conditional.scala 39:67]
+  wire  _GEN_1386 = _T_5 ? _GEN_854 : _GEN_1116; // @[Conditional.scala 39:67]
+  wire  _GEN_1387 = _T_5 ? io_axi_data_data_ready : _T_7; // @[Conditional.scala 39:67]
+  wire  _GEN_1388 = _T_5 ? io_axi_data_data_ready : _GEN_1120; // @[Conditional.scala 39:67]
+  wire [127:0] _GEN_1389 = _T_5 ? _GEN_856 : _GEN_1121; // @[Conditional.scala 39:67]
+  wire [127:0] _GEN_1390 = _T_5 ? _GEN_857 : _GEN_1122; // @[Conditional.scala 39:67]
+  wire [5:0] _GEN_1391 = _T_5 ? _GEN_858 : _GEN_1119; // @[Conditional.scala 39:67]
+  wire  _GEN_1393 = _T_5 ? valid_0 : _GEN_1123; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1394 = _T_5 ? valid_1 : _GEN_1124; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1395 = _T_5 ? valid_2 : _GEN_1125; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1396 = _T_5 ? valid_3 : _GEN_1126; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1397 = _T_5 ? valid_4 : _GEN_1127; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1398 = _T_5 ? valid_5 : _GEN_1128; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1399 = _T_5 ? valid_6 : _GEN_1129; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1400 = _T_5 ? valid_7 : _GEN_1130; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1401 = _T_5 ? valid_8 : _GEN_1131; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1402 = _T_5 ? valid_9 : _GEN_1132; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1403 = _T_5 ? valid_10 : _GEN_1133; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1404 = _T_5 ? valid_11 : _GEN_1134; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1405 = _T_5 ? valid_12 : _GEN_1135; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1406 = _T_5 ? valid_13 : _GEN_1136; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1407 = _T_5 ? valid_14 : _GEN_1137; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1408 = _T_5 ? valid_15 : _GEN_1138; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1409 = _T_5 ? valid_16 : _GEN_1139; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1410 = _T_5 ? valid_17 : _GEN_1140; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1411 = _T_5 ? valid_18 : _GEN_1141; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1412 = _T_5 ? valid_19 : _GEN_1142; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1413 = _T_5 ? valid_20 : _GEN_1143; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1414 = _T_5 ? valid_21 : _GEN_1144; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1415 = _T_5 ? valid_22 : _GEN_1145; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1416 = _T_5 ? valid_23 : _GEN_1146; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1417 = _T_5 ? valid_24 : _GEN_1147; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1418 = _T_5 ? valid_25 : _GEN_1148; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1419 = _T_5 ? valid_26 : _GEN_1149; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1420 = _T_5 ? valid_27 : _GEN_1150; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1421 = _T_5 ? valid_28 : _GEN_1151; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1422 = _T_5 ? valid_29 : _GEN_1152; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1423 = _T_5 ? valid_30 : _GEN_1153; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1424 = _T_5 ? valid_31 : _GEN_1154; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1425 = _T_5 ? valid_32 : _GEN_1155; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1426 = _T_5 ? valid_33 : _GEN_1156; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1427 = _T_5 ? valid_34 : _GEN_1157; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1428 = _T_5 ? valid_35 : _GEN_1158; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1429 = _T_5 ? valid_36 : _GEN_1159; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1430 = _T_5 ? valid_37 : _GEN_1160; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1431 = _T_5 ? valid_38 : _GEN_1161; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1432 = _T_5 ? valid_39 : _GEN_1162; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1433 = _T_5 ? valid_40 : _GEN_1163; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1434 = _T_5 ? valid_41 : _GEN_1164; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1435 = _T_5 ? valid_42 : _GEN_1165; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1436 = _T_5 ? valid_43 : _GEN_1166; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1437 = _T_5 ? valid_44 : _GEN_1167; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1438 = _T_5 ? valid_45 : _GEN_1168; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1439 = _T_5 ? valid_46 : _GEN_1169; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1440 = _T_5 ? valid_47 : _GEN_1170; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1441 = _T_5 ? valid_48 : _GEN_1171; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1442 = _T_5 ? valid_49 : _GEN_1172; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1443 = _T_5 ? valid_50 : _GEN_1173; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1444 = _T_5 ? valid_51 : _GEN_1174; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1445 = _T_5 ? valid_52 : _GEN_1175; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1446 = _T_5 ? valid_53 : _GEN_1176; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1447 = _T_5 ? valid_54 : _GEN_1177; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1448 = _T_5 ? valid_55 : _GEN_1178; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1449 = _T_5 ? valid_56 : _GEN_1179; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1450 = _T_5 ? valid_57 : _GEN_1180; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1451 = _T_5 ? valid_58 : _GEN_1181; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1452 = _T_5 ? valid_59 : _GEN_1182; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1453 = _T_5 ? valid_60 : _GEN_1183; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1454 = _T_5 ? valid_61 : _GEN_1184; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1455 = _T_5 ? valid_62 : _GEN_1185; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire  _GEN_1456 = _T_5 ? valid_63 : _GEN_1186; // @[Conditional.scala 39:67 Dcache.scala 36:24]
+  wire [21:0] _GEN_1457 = _T_5 ? tag_0 : _GEN_1187; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1458 = _T_5 ? tag_1 : _GEN_1188; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1459 = _T_5 ? tag_2 : _GEN_1189; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1460 = _T_5 ? tag_3 : _GEN_1190; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1461 = _T_5 ? tag_4 : _GEN_1191; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1462 = _T_5 ? tag_5 : _GEN_1192; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1463 = _T_5 ? tag_6 : _GEN_1193; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1464 = _T_5 ? tag_7 : _GEN_1194; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1465 = _T_5 ? tag_8 : _GEN_1195; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1466 = _T_5 ? tag_9 : _GEN_1196; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1467 = _T_5 ? tag_10 : _GEN_1197; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1468 = _T_5 ? tag_11 : _GEN_1198; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1469 = _T_5 ? tag_12 : _GEN_1199; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1470 = _T_5 ? tag_13 : _GEN_1200; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1471 = _T_5 ? tag_14 : _GEN_1201; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1472 = _T_5 ? tag_15 : _GEN_1202; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1473 = _T_5 ? tag_16 : _GEN_1203; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1474 = _T_5 ? tag_17 : _GEN_1204; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1475 = _T_5 ? tag_18 : _GEN_1205; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1476 = _T_5 ? tag_19 : _GEN_1206; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1477 = _T_5 ? tag_20 : _GEN_1207; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1478 = _T_5 ? tag_21 : _GEN_1208; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1479 = _T_5 ? tag_22 : _GEN_1209; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1480 = _T_5 ? tag_23 : _GEN_1210; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1481 = _T_5 ? tag_24 : _GEN_1211; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1482 = _T_5 ? tag_25 : _GEN_1212; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1483 = _T_5 ? tag_26 : _GEN_1213; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1484 = _T_5 ? tag_27 : _GEN_1214; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1485 = _T_5 ? tag_28 : _GEN_1215; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1486 = _T_5 ? tag_29 : _GEN_1216; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1487 = _T_5 ? tag_30 : _GEN_1217; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1488 = _T_5 ? tag_31 : _GEN_1218; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1489 = _T_5 ? tag_32 : _GEN_1219; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1490 = _T_5 ? tag_33 : _GEN_1220; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1491 = _T_5 ? tag_34 : _GEN_1221; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1492 = _T_5 ? tag_35 : _GEN_1222; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1493 = _T_5 ? tag_36 : _GEN_1223; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1494 = _T_5 ? tag_37 : _GEN_1224; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1495 = _T_5 ? tag_38 : _GEN_1225; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1496 = _T_5 ? tag_39 : _GEN_1226; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1497 = _T_5 ? tag_40 : _GEN_1227; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1498 = _T_5 ? tag_41 : _GEN_1228; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1499 = _T_5 ? tag_42 : _GEN_1229; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1500 = _T_5 ? tag_43 : _GEN_1230; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1501 = _T_5 ? tag_44 : _GEN_1231; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1502 = _T_5 ? tag_45 : _GEN_1232; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1503 = _T_5 ? tag_46 : _GEN_1233; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1504 = _T_5 ? tag_47 : _GEN_1234; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1505 = _T_5 ? tag_48 : _GEN_1235; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1506 = _T_5 ? tag_49 : _GEN_1236; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1507 = _T_5 ? tag_50 : _GEN_1237; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1508 = _T_5 ? tag_51 : _GEN_1238; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1509 = _T_5 ? tag_52 : _GEN_1239; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1510 = _T_5 ? tag_53 : _GEN_1240; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1511 = _T_5 ? tag_54 : _GEN_1241; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1512 = _T_5 ? tag_55 : _GEN_1242; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1513 = _T_5 ? tag_56 : _GEN_1243; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1514 = _T_5 ? tag_57 : _GEN_1244; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1515 = _T_5 ? tag_58 : _GEN_1245; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1516 = _T_5 ? tag_59 : _GEN_1246; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1517 = _T_5 ? tag_60 : _GEN_1247; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1518 = _T_5 ? tag_61 : _GEN_1248; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1519 = _T_5 ? tag_62 : _GEN_1249; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [21:0] _GEN_1520 = _T_5 ? tag_63 : _GEN_1250; // @[Conditional.scala 39:67 Dcache.scala 34:24]
+  wire [3:0] _GEN_1521 = _T_5 ? offset_0 : _GEN_1251; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1522 = _T_5 ? offset_1 : _GEN_1252; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1523 = _T_5 ? offset_2 : _GEN_1253; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1524 = _T_5 ? offset_3 : _GEN_1254; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1525 = _T_5 ? offset_4 : _GEN_1255; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1526 = _T_5 ? offset_5 : _GEN_1256; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1527 = _T_5 ? offset_6 : _GEN_1257; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1528 = _T_5 ? offset_7 : _GEN_1258; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1529 = _T_5 ? offset_8 : _GEN_1259; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1530 = _T_5 ? offset_9 : _GEN_1260; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1531 = _T_5 ? offset_10 : _GEN_1261; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1532 = _T_5 ? offset_11 : _GEN_1262; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1533 = _T_5 ? offset_12 : _GEN_1263; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1534 = _T_5 ? offset_13 : _GEN_1264; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1535 = _T_5 ? offset_14 : _GEN_1265; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1536 = _T_5 ? offset_15 : _GEN_1266; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1537 = _T_5 ? offset_16 : _GEN_1267; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1538 = _T_5 ? offset_17 : _GEN_1268; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1539 = _T_5 ? offset_18 : _GEN_1269; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1540 = _T_5 ? offset_19 : _GEN_1270; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1541 = _T_5 ? offset_20 : _GEN_1271; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1542 = _T_5 ? offset_21 : _GEN_1272; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1543 = _T_5 ? offset_22 : _GEN_1273; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1544 = _T_5 ? offset_23 : _GEN_1274; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1545 = _T_5 ? offset_24 : _GEN_1275; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1546 = _T_5 ? offset_25 : _GEN_1276; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1547 = _T_5 ? offset_26 : _GEN_1277; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1548 = _T_5 ? offset_27 : _GEN_1278; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1549 = _T_5 ? offset_28 : _GEN_1279; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1550 = _T_5 ? offset_29 : _GEN_1280; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1551 = _T_5 ? offset_30 : _GEN_1281; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1552 = _T_5 ? offset_31 : _GEN_1282; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1553 = _T_5 ? offset_32 : _GEN_1283; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1554 = _T_5 ? offset_33 : _GEN_1284; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1555 = _T_5 ? offset_34 : _GEN_1285; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1556 = _T_5 ? offset_35 : _GEN_1286; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1557 = _T_5 ? offset_36 : _GEN_1287; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1558 = _T_5 ? offset_37 : _GEN_1288; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1559 = _T_5 ? offset_38 : _GEN_1289; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1560 = _T_5 ? offset_39 : _GEN_1290; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1561 = _T_5 ? offset_40 : _GEN_1291; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1562 = _T_5 ? offset_41 : _GEN_1292; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1563 = _T_5 ? offset_42 : _GEN_1293; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1564 = _T_5 ? offset_43 : _GEN_1294; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1565 = _T_5 ? offset_44 : _GEN_1295; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1566 = _T_5 ? offset_45 : _GEN_1296; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1567 = _T_5 ? offset_46 : _GEN_1297; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1568 = _T_5 ? offset_47 : _GEN_1298; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1569 = _T_5 ? offset_48 : _GEN_1299; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1570 = _T_5 ? offset_49 : _GEN_1300; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1571 = _T_5 ? offset_50 : _GEN_1301; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1572 = _T_5 ? offset_51 : _GEN_1302; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1573 = _T_5 ? offset_52 : _GEN_1303; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1574 = _T_5 ? offset_53 : _GEN_1304; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1575 = _T_5 ? offset_54 : _GEN_1305; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1576 = _T_5 ? offset_55 : _GEN_1306; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1577 = _T_5 ? offset_56 : _GEN_1307; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1578 = _T_5 ? offset_57 : _GEN_1308; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1579 = _T_5 ? offset_58 : _GEN_1309; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1580 = _T_5 ? offset_59 : _GEN_1310; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1581 = _T_5 ? offset_60 : _GEN_1311; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1582 = _T_5 ? offset_61 : _GEN_1312; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1583 = _T_5 ? offset_62 : _GEN_1313; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire [3:0] _GEN_1584 = _T_5 ? offset_63 : _GEN_1314; // @[Conditional.scala 39:67 Dcache.scala 35:24]
+  wire  _GEN_1585 = _T_5 ? dirty_0 : _GEN_1315; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1586 = _T_5 ? dirty_1 : _GEN_1316; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1587 = _T_5 ? dirty_2 : _GEN_1317; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1588 = _T_5 ? dirty_3 : _GEN_1318; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1589 = _T_5 ? dirty_4 : _GEN_1319; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1590 = _T_5 ? dirty_5 : _GEN_1320; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1591 = _T_5 ? dirty_6 : _GEN_1321; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1592 = _T_5 ? dirty_7 : _GEN_1322; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1593 = _T_5 ? dirty_8 : _GEN_1323; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1594 = _T_5 ? dirty_9 : _GEN_1324; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1595 = _T_5 ? dirty_10 : _GEN_1325; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1596 = _T_5 ? dirty_11 : _GEN_1326; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1597 = _T_5 ? dirty_12 : _GEN_1327; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1598 = _T_5 ? dirty_13 : _GEN_1328; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1599 = _T_5 ? dirty_14 : _GEN_1329; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1600 = _T_5 ? dirty_15 : _GEN_1330; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1601 = _T_5 ? dirty_16 : _GEN_1331; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1602 = _T_5 ? dirty_17 : _GEN_1332; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1603 = _T_5 ? dirty_18 : _GEN_1333; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1604 = _T_5 ? dirty_19 : _GEN_1334; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1605 = _T_5 ? dirty_20 : _GEN_1335; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1606 = _T_5 ? dirty_21 : _GEN_1336; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1607 = _T_5 ? dirty_22 : _GEN_1337; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1608 = _T_5 ? dirty_23 : _GEN_1338; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1609 = _T_5 ? dirty_24 : _GEN_1339; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1610 = _T_5 ? dirty_25 : _GEN_1340; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1611 = _T_5 ? dirty_26 : _GEN_1341; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1612 = _T_5 ? dirty_27 : _GEN_1342; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1613 = _T_5 ? dirty_28 : _GEN_1343; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1614 = _T_5 ? dirty_29 : _GEN_1344; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1615 = _T_5 ? dirty_30 : _GEN_1345; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1616 = _T_5 ? dirty_31 : _GEN_1346; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1617 = _T_5 ? dirty_32 : _GEN_1347; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1618 = _T_5 ? dirty_33 : _GEN_1348; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1619 = _T_5 ? dirty_34 : _GEN_1349; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1620 = _T_5 ? dirty_35 : _GEN_1350; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1621 = _T_5 ? dirty_36 : _GEN_1351; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1622 = _T_5 ? dirty_37 : _GEN_1352; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1623 = _T_5 ? dirty_38 : _GEN_1353; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1624 = _T_5 ? dirty_39 : _GEN_1354; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1625 = _T_5 ? dirty_40 : _GEN_1355; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1626 = _T_5 ? dirty_41 : _GEN_1356; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1627 = _T_5 ? dirty_42 : _GEN_1357; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1628 = _T_5 ? dirty_43 : _GEN_1358; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1629 = _T_5 ? dirty_44 : _GEN_1359; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1630 = _T_5 ? dirty_45 : _GEN_1360; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1631 = _T_5 ? dirty_46 : _GEN_1361; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1632 = _T_5 ? dirty_47 : _GEN_1362; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1633 = _T_5 ? dirty_48 : _GEN_1363; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1634 = _T_5 ? dirty_49 : _GEN_1364; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1635 = _T_5 ? dirty_50 : _GEN_1365; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1636 = _T_5 ? dirty_51 : _GEN_1366; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1637 = _T_5 ? dirty_52 : _GEN_1367; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1638 = _T_5 ? dirty_53 : _GEN_1368; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1639 = _T_5 ? dirty_54 : _GEN_1369; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1640 = _T_5 ? dirty_55 : _GEN_1370; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1641 = _T_5 ? dirty_56 : _GEN_1371; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1642 = _T_5 ? dirty_57 : _GEN_1372; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1643 = _T_5 ? dirty_58 : _GEN_1373; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1644 = _T_5 ? dirty_59 : _GEN_1374; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1645 = _T_5 ? dirty_60 : _GEN_1375; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1646 = _T_5 ? dirty_61 : _GEN_1376; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1647 = _T_5 ? dirty_62 : _GEN_1377; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire  _GEN_1648 = _T_5 ? dirty_63 : _GEN_1378; // @[Conditional.scala 39:67 Dcache.scala 37:24]
+  wire [31:0] _GEN_1650 = _T_4 ? _data_addr_w2axi_T : 32'h0; // @[Conditional.scala 39:67 Dcache.scala 163:19]
+  wire [63:0] _GEN_1651 = _T_4 ? _data_write2axi_T_3 : 64'h0; // @[Conditional.scala 39:67 Dcache.scala 164:19]
+  wire [7:0] _GEN_1652 = _T_4 ? 8'hff : 8'h0; // @[Conditional.scala 39:67 Dcache.scala 165:19]
+  wire  _GEN_1655 = _T_4 ? 1'h0 : _T_5 & _T_6; // @[Conditional.scala 39:67]
+  wire [31:0] _GEN_1656 = _T_4 ? 32'h0 : _GEN_1382; // @[Conditional.scala 39:67]
+  wire  _GEN_1658 = _T_4 ? 1'h0 : _GEN_1387; // @[Conditional.scala 39:67]
   wire  _GEN_1659 = _T_4 ? 1'h0 : _GEN_1388; // @[Conditional.scala 39:67]
-  wire  _GEN_1660 = _T_4 ? 1'h0 : _GEN_1389; // @[Conditional.scala 39:67]
+  wire [127:0] _GEN_1660 = _T_4 ? 128'h0 : _GEN_1389; // @[Conditional.scala 39:67]
   wire [127:0] _GEN_1661 = _T_4 ? 128'h0 : _GEN_1390; // @[Conditional.scala 39:67]
-  wire [127:0] _GEN_1662 = _T_4 ? 128'h0 : _GEN_1391; // @[Conditional.scala 39:67]
-  wire [5:0] _GEN_1663 = _T_4 ? 6'h0 : _GEN_1392; // @[Conditional.scala 39:67]
-  wire  _GEN_2116 = _T_2 ? _GEN_712 : _GEN_1659; // @[Conditional.scala 39:67]
-  wire [5:0] _GEN_2117 = _T_2 ? _GEN_713 : _GEN_1663; // @[Conditional.scala 39:67]
-  wire  _GEN_2118 = _T_2 ? _GEN_714 : _GEN_1660; // @[Conditional.scala 39:67]
-  wire [127:0] _GEN_2119 = _T_2 ? _GEN_715 : _GEN_1661; // @[Conditional.scala 39:67]
-  wire [127:0] _GEN_2120 = _T_2 ? _GEN_716 : _GEN_1662; // @[Conditional.scala 39:67]
-  wire [31:0] _GEN_2186 = _T_2 ? 32'h0 : _GEN_1651; // @[Conditional.scala 39:67]
-  wire [63:0] _GEN_2187 = _T_2 ? 64'h0 : _GEN_1652; // @[Conditional.scala 39:67]
-  wire [7:0] _GEN_2188 = _T_2 ? 8'h0 : _GEN_1653; // @[Conditional.scala 39:67]
-  wire  _GEN_2189 = _T_2 ? 1'h0 : _T_4; // @[Conditional.scala 39:67]
-  wire  _GEN_2190 = _T_2 ? 1'h0 : _GEN_1656; // @[Conditional.scala 39:67]
-  wire [31:0] _GEN_2191 = _T_2 ? 32'h0 : _GEN_1657; // @[Conditional.scala 39:67]
-  wire  dcache_cen = _T ? 1'h0 : _GEN_2116; // @[Conditional.scala 40:58]
-  wire  dcache_wen = _T ? 1'h0 : _GEN_2118; // @[Conditional.scala 40:58]
-  wire [127:0] dcache_strb = _T ? 128'h0 : _GEN_2120; // @[Conditional.scala 40:58]
-  wire [31:0] data_addr_w2axi = _T ? 32'h0 : _GEN_2186; // @[Conditional.scala 40:58]
-  wire [7:0] data_strb2axi = _T ? 8'h0 : _GEN_2188; // @[Conditional.scala 40:58]
-  wire [31:0] data_addr_r2axi = _T ? 32'h0 : _GEN_2191; // @[Conditional.scala 40:58]
+  wire [5:0] _GEN_1662 = _T_4 ? 6'h0 : _GEN_1391; // @[Conditional.scala 39:67]
+  wire  _GEN_2115 = _T_2 ? _GEN_712 : _GEN_1658; // @[Conditional.scala 39:67]
+  wire [5:0] _GEN_2116 = _T_2 ? _GEN_713 : _GEN_1662; // @[Conditional.scala 39:67]
+  wire  _GEN_2117 = _T_2 ? _GEN_714 : _GEN_1659; // @[Conditional.scala 39:67]
+  wire [127:0] _GEN_2118 = _T_2 ? _GEN_715 : _GEN_1660; // @[Conditional.scala 39:67]
+  wire [127:0] _GEN_2119 = _T_2 ? _GEN_716 : _GEN_1661; // @[Conditional.scala 39:67]
+  wire [31:0] _GEN_2185 = _T_2 ? 32'h0 : _GEN_1650; // @[Conditional.scala 39:67]
+  wire [63:0] _GEN_2186 = _T_2 ? 64'h0 : _GEN_1651; // @[Conditional.scala 39:67]
+  wire [7:0] _GEN_2187 = _T_2 ? 8'h0 : _GEN_1652; // @[Conditional.scala 39:67]
+  wire  _GEN_2188 = _T_2 ? 1'h0 : _T_4; // @[Conditional.scala 39:67]
+  wire  _GEN_2189 = _T_2 ? 1'h0 : _GEN_1655; // @[Conditional.scala 39:67]
+  wire [31:0] _GEN_2190 = _T_2 ? 32'h0 : _GEN_1656; // @[Conditional.scala 39:67]
+  wire  dcache_cen = _T ? 1'h0 : _GEN_2115; // @[Conditional.scala 40:58]
+  wire  dcache_wen = _T ? 1'h0 : _GEN_2117; // @[Conditional.scala 40:58]
+  wire [127:0] dcache_strb = _T ? 128'h0 : _GEN_2119; // @[Conditional.scala 40:58]
+  wire [31:0] data_addr_w2axi = _T ? 32'h0 : _GEN_2185; // @[Conditional.scala 40:58]
+  wire [31:0] data_addr_r2axi = _T ? 32'h0 : _GEN_2190; // @[Conditional.scala 40:58]
   wire [27:0] io_axi_data_data_addr_r_hi_hi_hi = data_addr_r2axi[31:4]; // @[Dcache.scala 242:41]
   wire [29:0] io_axi_data_data_addr_r_hi = {io_axi_data_data_addr_r_hi_hi_hi,1'h0,1'h0}; // @[Cat.scala 30:58]
   wire [28:0] io_axi_data_data_addr_w_hi_hi = data_addr_w2axi[31:3]; // @[Dcache.scala 243:41]
@@ -7247,18 +7245,18 @@ module Dcache(
   );
   assign io_core_data_data_ready = data_ready2core; // @[Dcache.scala 238:18]
   assign io_core_data_data_read = reg_data_addr[3] ? cache_data_out[127:64] : cache_data_out[63:0]; // @[Mux.scala 80:57]
-  assign io_axi_data_data_req_r = _T ? 1'h0 : _GEN_2190; // @[Conditional.scala 40:58]
-  assign io_axi_data_data_req_w = _T ? 1'h0 : _GEN_2189; // @[Conditional.scala 40:58]
+  assign io_axi_data_data_req_r = _T ? 1'h0 : _GEN_2189; // @[Conditional.scala 40:58]
+  assign io_axi_data_data_req_w = _T ? 1'h0 : _GEN_2188; // @[Conditional.scala 40:58]
   assign io_axi_data_data_addr_r = {io_axi_data_data_addr_r_hi,2'h0}; // @[Cat.scala 30:58]
   assign io_axi_data_data_addr_w = {io_axi_data_data_addr_w_hi,2'h0}; // @[Cat.scala 30:58]
-  assign io_axi_data_data_strb = {{56'd0}, data_strb2axi}; // @[Conditional.scala 40:58]
-  assign io_axi_data_data_write = _T ? 64'h0 : _GEN_2187; // @[Conditional.scala 40:58]
+  assign io_axi_data_data_strb = _T ? 8'h0 : _GEN_2187; // @[Conditional.scala 40:58]
+  assign io_axi_data_data_write = _T ? 64'h0 : _GEN_2186; // @[Conditional.scala 40:58]
   assign dcache_CLK = clock; // @[Dcache.scala 252:19]
   assign dcache_CEN = ~(dcache_wen | dcache_cen); // @[Dcache.scala 253:22]
   assign dcache_WEN = ~dcache_wen; // @[Dcache.scala 254:22]
   assign dcache_BWEN = ~dcache_strb; // @[Dcache.scala 255:22]
-  assign dcache_A = _T ? 6'h0 : _GEN_2117; // @[Conditional.scala 40:58]
-  assign dcache_D = _T ? 128'h0 : _GEN_2119; // @[Conditional.scala 40:58]
+  assign dcache_A = _T ? 6'h0 : _GEN_2116; // @[Conditional.scala 40:58]
+  assign dcache_D = _T ? 128'h0 : _GEN_2118; // @[Conditional.scala 40:58]
   always @(posedge clock) begin
     if (reset) begin // @[Dcache.scala 31:22]
       state <= 3'h0; // @[Dcache.scala 31:22]
@@ -7275,7 +7273,7 @@ module Dcache(
     end else if (_T_4) begin // @[Conditional.scala 39:67]
       state <= _GEN_846;
     end else begin
-      state <= _GEN_1380;
+      state <= _GEN_1379;
     end
     if (reset) begin // @[Dcache.scala 34:24]
       tag_0 <= 22'h0; // @[Dcache.scala 34:24]
@@ -7285,7 +7283,7 @@ module Dcache(
           tag_0 <= _GEN_259;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_0 <= _GEN_1458;
+        tag_0 <= _GEN_1457;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7296,7 +7294,7 @@ module Dcache(
           tag_1 <= _GEN_260;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_1 <= _GEN_1459;
+        tag_1 <= _GEN_1458;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7307,7 +7305,7 @@ module Dcache(
           tag_2 <= _GEN_261;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_2 <= _GEN_1460;
+        tag_2 <= _GEN_1459;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7318,7 +7316,7 @@ module Dcache(
           tag_3 <= _GEN_262;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_3 <= _GEN_1461;
+        tag_3 <= _GEN_1460;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7329,7 +7327,7 @@ module Dcache(
           tag_4 <= _GEN_263;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_4 <= _GEN_1462;
+        tag_4 <= _GEN_1461;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7340,7 +7338,7 @@ module Dcache(
           tag_5 <= _GEN_264;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_5 <= _GEN_1463;
+        tag_5 <= _GEN_1462;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7351,7 +7349,7 @@ module Dcache(
           tag_6 <= _GEN_265;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_6 <= _GEN_1464;
+        tag_6 <= _GEN_1463;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7362,7 +7360,7 @@ module Dcache(
           tag_7 <= _GEN_266;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_7 <= _GEN_1465;
+        tag_7 <= _GEN_1464;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7373,7 +7371,7 @@ module Dcache(
           tag_8 <= _GEN_267;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_8 <= _GEN_1466;
+        tag_8 <= _GEN_1465;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7384,7 +7382,7 @@ module Dcache(
           tag_9 <= _GEN_268;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_9 <= _GEN_1467;
+        tag_9 <= _GEN_1466;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7395,7 +7393,7 @@ module Dcache(
           tag_10 <= _GEN_269;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_10 <= _GEN_1468;
+        tag_10 <= _GEN_1467;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7406,7 +7404,7 @@ module Dcache(
           tag_11 <= _GEN_270;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_11 <= _GEN_1469;
+        tag_11 <= _GEN_1468;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7417,7 +7415,7 @@ module Dcache(
           tag_12 <= _GEN_271;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_12 <= _GEN_1470;
+        tag_12 <= _GEN_1469;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7428,7 +7426,7 @@ module Dcache(
           tag_13 <= _GEN_272;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_13 <= _GEN_1471;
+        tag_13 <= _GEN_1470;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7439,7 +7437,7 @@ module Dcache(
           tag_14 <= _GEN_273;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_14 <= _GEN_1472;
+        tag_14 <= _GEN_1471;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7450,7 +7448,7 @@ module Dcache(
           tag_15 <= _GEN_274;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_15 <= _GEN_1473;
+        tag_15 <= _GEN_1472;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7461,7 +7459,7 @@ module Dcache(
           tag_16 <= _GEN_275;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_16 <= _GEN_1474;
+        tag_16 <= _GEN_1473;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7472,7 +7470,7 @@ module Dcache(
           tag_17 <= _GEN_276;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_17 <= _GEN_1475;
+        tag_17 <= _GEN_1474;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7483,7 +7481,7 @@ module Dcache(
           tag_18 <= _GEN_277;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_18 <= _GEN_1476;
+        tag_18 <= _GEN_1475;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7494,7 +7492,7 @@ module Dcache(
           tag_19 <= _GEN_278;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_19 <= _GEN_1477;
+        tag_19 <= _GEN_1476;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7505,7 +7503,7 @@ module Dcache(
           tag_20 <= _GEN_279;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_20 <= _GEN_1478;
+        tag_20 <= _GEN_1477;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7516,7 +7514,7 @@ module Dcache(
           tag_21 <= _GEN_280;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_21 <= _GEN_1479;
+        tag_21 <= _GEN_1478;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7527,7 +7525,7 @@ module Dcache(
           tag_22 <= _GEN_281;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_22 <= _GEN_1480;
+        tag_22 <= _GEN_1479;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7538,7 +7536,7 @@ module Dcache(
           tag_23 <= _GEN_282;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_23 <= _GEN_1481;
+        tag_23 <= _GEN_1480;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7549,7 +7547,7 @@ module Dcache(
           tag_24 <= _GEN_283;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_24 <= _GEN_1482;
+        tag_24 <= _GEN_1481;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7560,7 +7558,7 @@ module Dcache(
           tag_25 <= _GEN_284;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_25 <= _GEN_1483;
+        tag_25 <= _GEN_1482;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7571,7 +7569,7 @@ module Dcache(
           tag_26 <= _GEN_285;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_26 <= _GEN_1484;
+        tag_26 <= _GEN_1483;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7582,7 +7580,7 @@ module Dcache(
           tag_27 <= _GEN_286;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_27 <= _GEN_1485;
+        tag_27 <= _GEN_1484;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7593,7 +7591,7 @@ module Dcache(
           tag_28 <= _GEN_287;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_28 <= _GEN_1486;
+        tag_28 <= _GEN_1485;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7604,7 +7602,7 @@ module Dcache(
           tag_29 <= _GEN_288;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_29 <= _GEN_1487;
+        tag_29 <= _GEN_1486;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7615,7 +7613,7 @@ module Dcache(
           tag_30 <= _GEN_289;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_30 <= _GEN_1488;
+        tag_30 <= _GEN_1487;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7626,7 +7624,7 @@ module Dcache(
           tag_31 <= _GEN_290;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_31 <= _GEN_1489;
+        tag_31 <= _GEN_1488;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7637,7 +7635,7 @@ module Dcache(
           tag_32 <= _GEN_291;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_32 <= _GEN_1490;
+        tag_32 <= _GEN_1489;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7648,7 +7646,7 @@ module Dcache(
           tag_33 <= _GEN_292;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_33 <= _GEN_1491;
+        tag_33 <= _GEN_1490;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7659,7 +7657,7 @@ module Dcache(
           tag_34 <= _GEN_293;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_34 <= _GEN_1492;
+        tag_34 <= _GEN_1491;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7670,7 +7668,7 @@ module Dcache(
           tag_35 <= _GEN_294;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_35 <= _GEN_1493;
+        tag_35 <= _GEN_1492;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7681,7 +7679,7 @@ module Dcache(
           tag_36 <= _GEN_295;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_36 <= _GEN_1494;
+        tag_36 <= _GEN_1493;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7692,7 +7690,7 @@ module Dcache(
           tag_37 <= _GEN_296;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_37 <= _GEN_1495;
+        tag_37 <= _GEN_1494;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7703,7 +7701,7 @@ module Dcache(
           tag_38 <= _GEN_297;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_38 <= _GEN_1496;
+        tag_38 <= _GEN_1495;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7714,7 +7712,7 @@ module Dcache(
           tag_39 <= _GEN_298;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_39 <= _GEN_1497;
+        tag_39 <= _GEN_1496;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7725,7 +7723,7 @@ module Dcache(
           tag_40 <= _GEN_299;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_40 <= _GEN_1498;
+        tag_40 <= _GEN_1497;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7736,7 +7734,7 @@ module Dcache(
           tag_41 <= _GEN_300;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_41 <= _GEN_1499;
+        tag_41 <= _GEN_1498;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7747,7 +7745,7 @@ module Dcache(
           tag_42 <= _GEN_301;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_42 <= _GEN_1500;
+        tag_42 <= _GEN_1499;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7758,7 +7756,7 @@ module Dcache(
           tag_43 <= _GEN_302;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_43 <= _GEN_1501;
+        tag_43 <= _GEN_1500;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7769,7 +7767,7 @@ module Dcache(
           tag_44 <= _GEN_303;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_44 <= _GEN_1502;
+        tag_44 <= _GEN_1501;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7780,7 +7778,7 @@ module Dcache(
           tag_45 <= _GEN_304;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_45 <= _GEN_1503;
+        tag_45 <= _GEN_1502;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7791,7 +7789,7 @@ module Dcache(
           tag_46 <= _GEN_305;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_46 <= _GEN_1504;
+        tag_46 <= _GEN_1503;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7802,7 +7800,7 @@ module Dcache(
           tag_47 <= _GEN_306;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_47 <= _GEN_1505;
+        tag_47 <= _GEN_1504;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7813,7 +7811,7 @@ module Dcache(
           tag_48 <= _GEN_307;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_48 <= _GEN_1506;
+        tag_48 <= _GEN_1505;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7824,7 +7822,7 @@ module Dcache(
           tag_49 <= _GEN_308;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_49 <= _GEN_1507;
+        tag_49 <= _GEN_1506;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7835,7 +7833,7 @@ module Dcache(
           tag_50 <= _GEN_309;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_50 <= _GEN_1508;
+        tag_50 <= _GEN_1507;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7846,7 +7844,7 @@ module Dcache(
           tag_51 <= _GEN_310;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_51 <= _GEN_1509;
+        tag_51 <= _GEN_1508;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7857,7 +7855,7 @@ module Dcache(
           tag_52 <= _GEN_311;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_52 <= _GEN_1510;
+        tag_52 <= _GEN_1509;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7868,7 +7866,7 @@ module Dcache(
           tag_53 <= _GEN_312;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_53 <= _GEN_1511;
+        tag_53 <= _GEN_1510;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7879,7 +7877,7 @@ module Dcache(
           tag_54 <= _GEN_313;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_54 <= _GEN_1512;
+        tag_54 <= _GEN_1511;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7890,7 +7888,7 @@ module Dcache(
           tag_55 <= _GEN_314;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_55 <= _GEN_1513;
+        tag_55 <= _GEN_1512;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7901,7 +7899,7 @@ module Dcache(
           tag_56 <= _GEN_315;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_56 <= _GEN_1514;
+        tag_56 <= _GEN_1513;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7912,7 +7910,7 @@ module Dcache(
           tag_57 <= _GEN_316;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_57 <= _GEN_1515;
+        tag_57 <= _GEN_1514;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7923,7 +7921,7 @@ module Dcache(
           tag_58 <= _GEN_317;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_58 <= _GEN_1516;
+        tag_58 <= _GEN_1515;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7934,7 +7932,7 @@ module Dcache(
           tag_59 <= _GEN_318;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_59 <= _GEN_1517;
+        tag_59 <= _GEN_1516;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7945,7 +7943,7 @@ module Dcache(
           tag_60 <= _GEN_319;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_60 <= _GEN_1518;
+        tag_60 <= _GEN_1517;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7956,7 +7954,7 @@ module Dcache(
           tag_61 <= _GEN_320;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_61 <= _GEN_1519;
+        tag_61 <= _GEN_1518;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7967,7 +7965,7 @@ module Dcache(
           tag_62 <= _GEN_321;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_62 <= _GEN_1520;
+        tag_62 <= _GEN_1519;
       end
     end
     if (reset) begin // @[Dcache.scala 34:24]
@@ -7978,7 +7976,7 @@ module Dcache(
           tag_63 <= _GEN_322;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        tag_63 <= _GEN_1521;
+        tag_63 <= _GEN_1520;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -7989,7 +7987,7 @@ module Dcache(
           offset_0 <= _GEN_323;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_0 <= _GEN_1522;
+        offset_0 <= _GEN_1521;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8000,7 +7998,7 @@ module Dcache(
           offset_1 <= _GEN_324;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_1 <= _GEN_1523;
+        offset_1 <= _GEN_1522;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8011,7 +8009,7 @@ module Dcache(
           offset_2 <= _GEN_325;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_2 <= _GEN_1524;
+        offset_2 <= _GEN_1523;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8022,7 +8020,7 @@ module Dcache(
           offset_3 <= _GEN_326;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_3 <= _GEN_1525;
+        offset_3 <= _GEN_1524;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8033,7 +8031,7 @@ module Dcache(
           offset_4 <= _GEN_327;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_4 <= _GEN_1526;
+        offset_4 <= _GEN_1525;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8044,7 +8042,7 @@ module Dcache(
           offset_5 <= _GEN_328;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_5 <= _GEN_1527;
+        offset_5 <= _GEN_1526;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8055,7 +8053,7 @@ module Dcache(
           offset_6 <= _GEN_329;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_6 <= _GEN_1528;
+        offset_6 <= _GEN_1527;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8066,7 +8064,7 @@ module Dcache(
           offset_7 <= _GEN_330;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_7 <= _GEN_1529;
+        offset_7 <= _GEN_1528;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8077,7 +8075,7 @@ module Dcache(
           offset_8 <= _GEN_331;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_8 <= _GEN_1530;
+        offset_8 <= _GEN_1529;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8088,7 +8086,7 @@ module Dcache(
           offset_9 <= _GEN_332;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_9 <= _GEN_1531;
+        offset_9 <= _GEN_1530;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8099,7 +8097,7 @@ module Dcache(
           offset_10 <= _GEN_333;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_10 <= _GEN_1532;
+        offset_10 <= _GEN_1531;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8110,7 +8108,7 @@ module Dcache(
           offset_11 <= _GEN_334;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_11 <= _GEN_1533;
+        offset_11 <= _GEN_1532;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8121,7 +8119,7 @@ module Dcache(
           offset_12 <= _GEN_335;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_12 <= _GEN_1534;
+        offset_12 <= _GEN_1533;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8132,7 +8130,7 @@ module Dcache(
           offset_13 <= _GEN_336;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_13 <= _GEN_1535;
+        offset_13 <= _GEN_1534;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8143,7 +8141,7 @@ module Dcache(
           offset_14 <= _GEN_337;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_14 <= _GEN_1536;
+        offset_14 <= _GEN_1535;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8154,7 +8152,7 @@ module Dcache(
           offset_15 <= _GEN_338;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_15 <= _GEN_1537;
+        offset_15 <= _GEN_1536;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8165,7 +8163,7 @@ module Dcache(
           offset_16 <= _GEN_339;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_16 <= _GEN_1538;
+        offset_16 <= _GEN_1537;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8176,7 +8174,7 @@ module Dcache(
           offset_17 <= _GEN_340;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_17 <= _GEN_1539;
+        offset_17 <= _GEN_1538;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8187,7 +8185,7 @@ module Dcache(
           offset_18 <= _GEN_341;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_18 <= _GEN_1540;
+        offset_18 <= _GEN_1539;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8198,7 +8196,7 @@ module Dcache(
           offset_19 <= _GEN_342;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_19 <= _GEN_1541;
+        offset_19 <= _GEN_1540;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8209,7 +8207,7 @@ module Dcache(
           offset_20 <= _GEN_343;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_20 <= _GEN_1542;
+        offset_20 <= _GEN_1541;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8220,7 +8218,7 @@ module Dcache(
           offset_21 <= _GEN_344;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_21 <= _GEN_1543;
+        offset_21 <= _GEN_1542;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8231,7 +8229,7 @@ module Dcache(
           offset_22 <= _GEN_345;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_22 <= _GEN_1544;
+        offset_22 <= _GEN_1543;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8242,7 +8240,7 @@ module Dcache(
           offset_23 <= _GEN_346;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_23 <= _GEN_1545;
+        offset_23 <= _GEN_1544;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8253,7 +8251,7 @@ module Dcache(
           offset_24 <= _GEN_347;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_24 <= _GEN_1546;
+        offset_24 <= _GEN_1545;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8264,7 +8262,7 @@ module Dcache(
           offset_25 <= _GEN_348;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_25 <= _GEN_1547;
+        offset_25 <= _GEN_1546;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8275,7 +8273,7 @@ module Dcache(
           offset_26 <= _GEN_349;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_26 <= _GEN_1548;
+        offset_26 <= _GEN_1547;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8286,7 +8284,7 @@ module Dcache(
           offset_27 <= _GEN_350;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_27 <= _GEN_1549;
+        offset_27 <= _GEN_1548;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8297,7 +8295,7 @@ module Dcache(
           offset_28 <= _GEN_351;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_28 <= _GEN_1550;
+        offset_28 <= _GEN_1549;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8308,7 +8306,7 @@ module Dcache(
           offset_29 <= _GEN_352;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_29 <= _GEN_1551;
+        offset_29 <= _GEN_1550;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8319,7 +8317,7 @@ module Dcache(
           offset_30 <= _GEN_353;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_30 <= _GEN_1552;
+        offset_30 <= _GEN_1551;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8330,7 +8328,7 @@ module Dcache(
           offset_31 <= _GEN_354;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_31 <= _GEN_1553;
+        offset_31 <= _GEN_1552;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8341,7 +8339,7 @@ module Dcache(
           offset_32 <= _GEN_355;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_32 <= _GEN_1554;
+        offset_32 <= _GEN_1553;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8352,7 +8350,7 @@ module Dcache(
           offset_33 <= _GEN_356;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_33 <= _GEN_1555;
+        offset_33 <= _GEN_1554;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8363,7 +8361,7 @@ module Dcache(
           offset_34 <= _GEN_357;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_34 <= _GEN_1556;
+        offset_34 <= _GEN_1555;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8374,7 +8372,7 @@ module Dcache(
           offset_35 <= _GEN_358;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_35 <= _GEN_1557;
+        offset_35 <= _GEN_1556;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8385,7 +8383,7 @@ module Dcache(
           offset_36 <= _GEN_359;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_36 <= _GEN_1558;
+        offset_36 <= _GEN_1557;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8396,7 +8394,7 @@ module Dcache(
           offset_37 <= _GEN_360;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_37 <= _GEN_1559;
+        offset_37 <= _GEN_1558;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8407,7 +8405,7 @@ module Dcache(
           offset_38 <= _GEN_361;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_38 <= _GEN_1560;
+        offset_38 <= _GEN_1559;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8418,7 +8416,7 @@ module Dcache(
           offset_39 <= _GEN_362;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_39 <= _GEN_1561;
+        offset_39 <= _GEN_1560;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8429,7 +8427,7 @@ module Dcache(
           offset_40 <= _GEN_363;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_40 <= _GEN_1562;
+        offset_40 <= _GEN_1561;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8440,7 +8438,7 @@ module Dcache(
           offset_41 <= _GEN_364;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_41 <= _GEN_1563;
+        offset_41 <= _GEN_1562;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8451,7 +8449,7 @@ module Dcache(
           offset_42 <= _GEN_365;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_42 <= _GEN_1564;
+        offset_42 <= _GEN_1563;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8462,7 +8460,7 @@ module Dcache(
           offset_43 <= _GEN_366;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_43 <= _GEN_1565;
+        offset_43 <= _GEN_1564;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8473,7 +8471,7 @@ module Dcache(
           offset_44 <= _GEN_367;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_44 <= _GEN_1566;
+        offset_44 <= _GEN_1565;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8484,7 +8482,7 @@ module Dcache(
           offset_45 <= _GEN_368;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_45 <= _GEN_1567;
+        offset_45 <= _GEN_1566;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8495,7 +8493,7 @@ module Dcache(
           offset_46 <= _GEN_369;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_46 <= _GEN_1568;
+        offset_46 <= _GEN_1567;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8506,7 +8504,7 @@ module Dcache(
           offset_47 <= _GEN_370;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_47 <= _GEN_1569;
+        offset_47 <= _GEN_1568;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8517,7 +8515,7 @@ module Dcache(
           offset_48 <= _GEN_371;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_48 <= _GEN_1570;
+        offset_48 <= _GEN_1569;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8528,7 +8526,7 @@ module Dcache(
           offset_49 <= _GEN_372;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_49 <= _GEN_1571;
+        offset_49 <= _GEN_1570;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8539,7 +8537,7 @@ module Dcache(
           offset_50 <= _GEN_373;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_50 <= _GEN_1572;
+        offset_50 <= _GEN_1571;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8550,7 +8548,7 @@ module Dcache(
           offset_51 <= _GEN_374;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_51 <= _GEN_1573;
+        offset_51 <= _GEN_1572;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8561,7 +8559,7 @@ module Dcache(
           offset_52 <= _GEN_375;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_52 <= _GEN_1574;
+        offset_52 <= _GEN_1573;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8572,7 +8570,7 @@ module Dcache(
           offset_53 <= _GEN_376;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_53 <= _GEN_1575;
+        offset_53 <= _GEN_1574;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8583,7 +8581,7 @@ module Dcache(
           offset_54 <= _GEN_377;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_54 <= _GEN_1576;
+        offset_54 <= _GEN_1575;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8594,7 +8592,7 @@ module Dcache(
           offset_55 <= _GEN_378;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_55 <= _GEN_1577;
+        offset_55 <= _GEN_1576;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8605,7 +8603,7 @@ module Dcache(
           offset_56 <= _GEN_379;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_56 <= _GEN_1578;
+        offset_56 <= _GEN_1577;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8616,7 +8614,7 @@ module Dcache(
           offset_57 <= _GEN_380;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_57 <= _GEN_1579;
+        offset_57 <= _GEN_1578;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8627,7 +8625,7 @@ module Dcache(
           offset_58 <= _GEN_381;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_58 <= _GEN_1580;
+        offset_58 <= _GEN_1579;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8638,7 +8636,7 @@ module Dcache(
           offset_59 <= _GEN_382;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_59 <= _GEN_1581;
+        offset_59 <= _GEN_1580;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8649,7 +8647,7 @@ module Dcache(
           offset_60 <= _GEN_383;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_60 <= _GEN_1582;
+        offset_60 <= _GEN_1581;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8660,7 +8658,7 @@ module Dcache(
           offset_61 <= _GEN_384;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_61 <= _GEN_1583;
+        offset_61 <= _GEN_1582;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8671,7 +8669,7 @@ module Dcache(
           offset_62 <= _GEN_385;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_62 <= _GEN_1584;
+        offset_62 <= _GEN_1583;
       end
     end
     if (reset) begin // @[Dcache.scala 35:24]
@@ -8682,7 +8680,7 @@ module Dcache(
           offset_63 <= _GEN_386;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        offset_63 <= _GEN_1585;
+        offset_63 <= _GEN_1584;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -8693,7 +8691,7 @@ module Dcache(
           valid_0 <= _GEN_195;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_0 <= _GEN_1394;
+        valid_0 <= _GEN_1393;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -8704,7 +8702,7 @@ module Dcache(
           valid_1 <= _GEN_196;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_1 <= _GEN_1395;
+        valid_1 <= _GEN_1394;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -8715,7 +8713,7 @@ module Dcache(
           valid_2 <= _GEN_197;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_2 <= _GEN_1396;
+        valid_2 <= _GEN_1395;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -8726,7 +8724,7 @@ module Dcache(
           valid_3 <= _GEN_198;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_3 <= _GEN_1397;
+        valid_3 <= _GEN_1396;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -8737,7 +8735,7 @@ module Dcache(
           valid_4 <= _GEN_199;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_4 <= _GEN_1398;
+        valid_4 <= _GEN_1397;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -8748,7 +8746,7 @@ module Dcache(
           valid_5 <= _GEN_200;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_5 <= _GEN_1399;
+        valid_5 <= _GEN_1398;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -8759,7 +8757,7 @@ module Dcache(
           valid_6 <= _GEN_201;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_6 <= _GEN_1400;
+        valid_6 <= _GEN_1399;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -8770,7 +8768,7 @@ module Dcache(
           valid_7 <= _GEN_202;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_7 <= _GEN_1401;
+        valid_7 <= _GEN_1400;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -8781,7 +8779,7 @@ module Dcache(
           valid_8 <= _GEN_203;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_8 <= _GEN_1402;
+        valid_8 <= _GEN_1401;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -8792,7 +8790,7 @@ module Dcache(
           valid_9 <= _GEN_204;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_9 <= _GEN_1403;
+        valid_9 <= _GEN_1402;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -8803,7 +8801,7 @@ module Dcache(
           valid_10 <= _GEN_205;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_10 <= _GEN_1404;
+        valid_10 <= _GEN_1403;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -8814,7 +8812,7 @@ module Dcache(
           valid_11 <= _GEN_206;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_11 <= _GEN_1405;
+        valid_11 <= _GEN_1404;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -8825,7 +8823,7 @@ module Dcache(
           valid_12 <= _GEN_207;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_12 <= _GEN_1406;
+        valid_12 <= _GEN_1405;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -8836,7 +8834,7 @@ module Dcache(
           valid_13 <= _GEN_208;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_13 <= _GEN_1407;
+        valid_13 <= _GEN_1406;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -8847,7 +8845,7 @@ module Dcache(
           valid_14 <= _GEN_209;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_14 <= _GEN_1408;
+        valid_14 <= _GEN_1407;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -8858,7 +8856,7 @@ module Dcache(
           valid_15 <= _GEN_210;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_15 <= _GEN_1409;
+        valid_15 <= _GEN_1408;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -8869,7 +8867,7 @@ module Dcache(
           valid_16 <= _GEN_211;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_16 <= _GEN_1410;
+        valid_16 <= _GEN_1409;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -8880,7 +8878,7 @@ module Dcache(
           valid_17 <= _GEN_212;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_17 <= _GEN_1411;
+        valid_17 <= _GEN_1410;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -8891,7 +8889,7 @@ module Dcache(
           valid_18 <= _GEN_213;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_18 <= _GEN_1412;
+        valid_18 <= _GEN_1411;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -8902,7 +8900,7 @@ module Dcache(
           valid_19 <= _GEN_214;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_19 <= _GEN_1413;
+        valid_19 <= _GEN_1412;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -8913,7 +8911,7 @@ module Dcache(
           valid_20 <= _GEN_215;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_20 <= _GEN_1414;
+        valid_20 <= _GEN_1413;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -8924,7 +8922,7 @@ module Dcache(
           valid_21 <= _GEN_216;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_21 <= _GEN_1415;
+        valid_21 <= _GEN_1414;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -8935,7 +8933,7 @@ module Dcache(
           valid_22 <= _GEN_217;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_22 <= _GEN_1416;
+        valid_22 <= _GEN_1415;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -8946,7 +8944,7 @@ module Dcache(
           valid_23 <= _GEN_218;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_23 <= _GEN_1417;
+        valid_23 <= _GEN_1416;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -8957,7 +8955,7 @@ module Dcache(
           valid_24 <= _GEN_219;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_24 <= _GEN_1418;
+        valid_24 <= _GEN_1417;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -8968,7 +8966,7 @@ module Dcache(
           valid_25 <= _GEN_220;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_25 <= _GEN_1419;
+        valid_25 <= _GEN_1418;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -8979,7 +8977,7 @@ module Dcache(
           valid_26 <= _GEN_221;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_26 <= _GEN_1420;
+        valid_26 <= _GEN_1419;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -8990,7 +8988,7 @@ module Dcache(
           valid_27 <= _GEN_222;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_27 <= _GEN_1421;
+        valid_27 <= _GEN_1420;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -9001,7 +8999,7 @@ module Dcache(
           valid_28 <= _GEN_223;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_28 <= _GEN_1422;
+        valid_28 <= _GEN_1421;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -9012,7 +9010,7 @@ module Dcache(
           valid_29 <= _GEN_224;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_29 <= _GEN_1423;
+        valid_29 <= _GEN_1422;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -9023,7 +9021,7 @@ module Dcache(
           valid_30 <= _GEN_225;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_30 <= _GEN_1424;
+        valid_30 <= _GEN_1423;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -9034,7 +9032,7 @@ module Dcache(
           valid_31 <= _GEN_226;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_31 <= _GEN_1425;
+        valid_31 <= _GEN_1424;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -9045,7 +9043,7 @@ module Dcache(
           valid_32 <= _GEN_227;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_32 <= _GEN_1426;
+        valid_32 <= _GEN_1425;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -9056,7 +9054,7 @@ module Dcache(
           valid_33 <= _GEN_228;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_33 <= _GEN_1427;
+        valid_33 <= _GEN_1426;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -9067,7 +9065,7 @@ module Dcache(
           valid_34 <= _GEN_229;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_34 <= _GEN_1428;
+        valid_34 <= _GEN_1427;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -9078,7 +9076,7 @@ module Dcache(
           valid_35 <= _GEN_230;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_35 <= _GEN_1429;
+        valid_35 <= _GEN_1428;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -9089,7 +9087,7 @@ module Dcache(
           valid_36 <= _GEN_231;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_36 <= _GEN_1430;
+        valid_36 <= _GEN_1429;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -9100,7 +9098,7 @@ module Dcache(
           valid_37 <= _GEN_232;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_37 <= _GEN_1431;
+        valid_37 <= _GEN_1430;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -9111,7 +9109,7 @@ module Dcache(
           valid_38 <= _GEN_233;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_38 <= _GEN_1432;
+        valid_38 <= _GEN_1431;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -9122,7 +9120,7 @@ module Dcache(
           valid_39 <= _GEN_234;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_39 <= _GEN_1433;
+        valid_39 <= _GEN_1432;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -9133,7 +9131,7 @@ module Dcache(
           valid_40 <= _GEN_235;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_40 <= _GEN_1434;
+        valid_40 <= _GEN_1433;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -9144,7 +9142,7 @@ module Dcache(
           valid_41 <= _GEN_236;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_41 <= _GEN_1435;
+        valid_41 <= _GEN_1434;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -9155,7 +9153,7 @@ module Dcache(
           valid_42 <= _GEN_237;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_42 <= _GEN_1436;
+        valid_42 <= _GEN_1435;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -9166,7 +9164,7 @@ module Dcache(
           valid_43 <= _GEN_238;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_43 <= _GEN_1437;
+        valid_43 <= _GEN_1436;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -9177,7 +9175,7 @@ module Dcache(
           valid_44 <= _GEN_239;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_44 <= _GEN_1438;
+        valid_44 <= _GEN_1437;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -9188,7 +9186,7 @@ module Dcache(
           valid_45 <= _GEN_240;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_45 <= _GEN_1439;
+        valid_45 <= _GEN_1438;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -9199,7 +9197,7 @@ module Dcache(
           valid_46 <= _GEN_241;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_46 <= _GEN_1440;
+        valid_46 <= _GEN_1439;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -9210,7 +9208,7 @@ module Dcache(
           valid_47 <= _GEN_242;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_47 <= _GEN_1441;
+        valid_47 <= _GEN_1440;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -9221,7 +9219,7 @@ module Dcache(
           valid_48 <= _GEN_243;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_48 <= _GEN_1442;
+        valid_48 <= _GEN_1441;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -9232,7 +9230,7 @@ module Dcache(
           valid_49 <= _GEN_244;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_49 <= _GEN_1443;
+        valid_49 <= _GEN_1442;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -9243,7 +9241,7 @@ module Dcache(
           valid_50 <= _GEN_245;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_50 <= _GEN_1444;
+        valid_50 <= _GEN_1443;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -9254,7 +9252,7 @@ module Dcache(
           valid_51 <= _GEN_246;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_51 <= _GEN_1445;
+        valid_51 <= _GEN_1444;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -9265,7 +9263,7 @@ module Dcache(
           valid_52 <= _GEN_247;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_52 <= _GEN_1446;
+        valid_52 <= _GEN_1445;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -9276,7 +9274,7 @@ module Dcache(
           valid_53 <= _GEN_248;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_53 <= _GEN_1447;
+        valid_53 <= _GEN_1446;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -9287,7 +9285,7 @@ module Dcache(
           valid_54 <= _GEN_249;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_54 <= _GEN_1448;
+        valid_54 <= _GEN_1447;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -9298,7 +9296,7 @@ module Dcache(
           valid_55 <= _GEN_250;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_55 <= _GEN_1449;
+        valid_55 <= _GEN_1448;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -9309,7 +9307,7 @@ module Dcache(
           valid_56 <= _GEN_251;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_56 <= _GEN_1450;
+        valid_56 <= _GEN_1449;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -9320,7 +9318,7 @@ module Dcache(
           valid_57 <= _GEN_252;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_57 <= _GEN_1451;
+        valid_57 <= _GEN_1450;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -9331,7 +9329,7 @@ module Dcache(
           valid_58 <= _GEN_253;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_58 <= _GEN_1452;
+        valid_58 <= _GEN_1451;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -9342,7 +9340,7 @@ module Dcache(
           valid_59 <= _GEN_254;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_59 <= _GEN_1453;
+        valid_59 <= _GEN_1452;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -9353,7 +9351,7 @@ module Dcache(
           valid_60 <= _GEN_255;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_60 <= _GEN_1454;
+        valid_60 <= _GEN_1453;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -9364,7 +9362,7 @@ module Dcache(
           valid_61 <= _GEN_256;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_61 <= _GEN_1455;
+        valid_61 <= _GEN_1454;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -9375,7 +9373,7 @@ module Dcache(
           valid_62 <= _GEN_257;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_62 <= _GEN_1456;
+        valid_62 <= _GEN_1455;
       end
     end
     if (reset) begin // @[Dcache.scala 36:24]
@@ -9386,7 +9384,7 @@ module Dcache(
           valid_63 <= _GEN_258;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        valid_63 <= _GEN_1457;
+        valid_63 <= _GEN_1456;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9397,7 +9395,7 @@ module Dcache(
           dirty_0 <= _GEN_451;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_0 <= _GEN_1586;
+        dirty_0 <= _GEN_1585;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9408,7 +9406,7 @@ module Dcache(
           dirty_1 <= _GEN_452;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_1 <= _GEN_1587;
+        dirty_1 <= _GEN_1586;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9419,7 +9417,7 @@ module Dcache(
           dirty_2 <= _GEN_453;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_2 <= _GEN_1588;
+        dirty_2 <= _GEN_1587;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9430,7 +9428,7 @@ module Dcache(
           dirty_3 <= _GEN_454;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_3 <= _GEN_1589;
+        dirty_3 <= _GEN_1588;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9441,7 +9439,7 @@ module Dcache(
           dirty_4 <= _GEN_455;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_4 <= _GEN_1590;
+        dirty_4 <= _GEN_1589;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9452,7 +9450,7 @@ module Dcache(
           dirty_5 <= _GEN_456;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_5 <= _GEN_1591;
+        dirty_5 <= _GEN_1590;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9463,7 +9461,7 @@ module Dcache(
           dirty_6 <= _GEN_457;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_6 <= _GEN_1592;
+        dirty_6 <= _GEN_1591;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9474,7 +9472,7 @@ module Dcache(
           dirty_7 <= _GEN_458;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_7 <= _GEN_1593;
+        dirty_7 <= _GEN_1592;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9485,7 +9483,7 @@ module Dcache(
           dirty_8 <= _GEN_459;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_8 <= _GEN_1594;
+        dirty_8 <= _GEN_1593;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9496,7 +9494,7 @@ module Dcache(
           dirty_9 <= _GEN_460;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_9 <= _GEN_1595;
+        dirty_9 <= _GEN_1594;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9507,7 +9505,7 @@ module Dcache(
           dirty_10 <= _GEN_461;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_10 <= _GEN_1596;
+        dirty_10 <= _GEN_1595;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9518,7 +9516,7 @@ module Dcache(
           dirty_11 <= _GEN_462;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_11 <= _GEN_1597;
+        dirty_11 <= _GEN_1596;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9529,7 +9527,7 @@ module Dcache(
           dirty_12 <= _GEN_463;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_12 <= _GEN_1598;
+        dirty_12 <= _GEN_1597;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9540,7 +9538,7 @@ module Dcache(
           dirty_13 <= _GEN_464;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_13 <= _GEN_1599;
+        dirty_13 <= _GEN_1598;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9551,7 +9549,7 @@ module Dcache(
           dirty_14 <= _GEN_465;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_14 <= _GEN_1600;
+        dirty_14 <= _GEN_1599;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9562,7 +9560,7 @@ module Dcache(
           dirty_15 <= _GEN_466;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_15 <= _GEN_1601;
+        dirty_15 <= _GEN_1600;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9573,7 +9571,7 @@ module Dcache(
           dirty_16 <= _GEN_467;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_16 <= _GEN_1602;
+        dirty_16 <= _GEN_1601;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9584,7 +9582,7 @@ module Dcache(
           dirty_17 <= _GEN_468;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_17 <= _GEN_1603;
+        dirty_17 <= _GEN_1602;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9595,7 +9593,7 @@ module Dcache(
           dirty_18 <= _GEN_469;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_18 <= _GEN_1604;
+        dirty_18 <= _GEN_1603;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9606,7 +9604,7 @@ module Dcache(
           dirty_19 <= _GEN_470;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_19 <= _GEN_1605;
+        dirty_19 <= _GEN_1604;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9617,7 +9615,7 @@ module Dcache(
           dirty_20 <= _GEN_471;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_20 <= _GEN_1606;
+        dirty_20 <= _GEN_1605;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9628,7 +9626,7 @@ module Dcache(
           dirty_21 <= _GEN_472;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_21 <= _GEN_1607;
+        dirty_21 <= _GEN_1606;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9639,7 +9637,7 @@ module Dcache(
           dirty_22 <= _GEN_473;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_22 <= _GEN_1608;
+        dirty_22 <= _GEN_1607;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9650,7 +9648,7 @@ module Dcache(
           dirty_23 <= _GEN_474;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_23 <= _GEN_1609;
+        dirty_23 <= _GEN_1608;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9661,7 +9659,7 @@ module Dcache(
           dirty_24 <= _GEN_475;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_24 <= _GEN_1610;
+        dirty_24 <= _GEN_1609;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9672,7 +9670,7 @@ module Dcache(
           dirty_25 <= _GEN_476;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_25 <= _GEN_1611;
+        dirty_25 <= _GEN_1610;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9683,7 +9681,7 @@ module Dcache(
           dirty_26 <= _GEN_477;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_26 <= _GEN_1612;
+        dirty_26 <= _GEN_1611;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9694,7 +9692,7 @@ module Dcache(
           dirty_27 <= _GEN_478;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_27 <= _GEN_1613;
+        dirty_27 <= _GEN_1612;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9705,7 +9703,7 @@ module Dcache(
           dirty_28 <= _GEN_479;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_28 <= _GEN_1614;
+        dirty_28 <= _GEN_1613;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9716,7 +9714,7 @@ module Dcache(
           dirty_29 <= _GEN_480;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_29 <= _GEN_1615;
+        dirty_29 <= _GEN_1614;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9727,7 +9725,7 @@ module Dcache(
           dirty_30 <= _GEN_481;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_30 <= _GEN_1616;
+        dirty_30 <= _GEN_1615;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9738,7 +9736,7 @@ module Dcache(
           dirty_31 <= _GEN_482;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_31 <= _GEN_1617;
+        dirty_31 <= _GEN_1616;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9749,7 +9747,7 @@ module Dcache(
           dirty_32 <= _GEN_483;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_32 <= _GEN_1618;
+        dirty_32 <= _GEN_1617;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9760,7 +9758,7 @@ module Dcache(
           dirty_33 <= _GEN_484;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_33 <= _GEN_1619;
+        dirty_33 <= _GEN_1618;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9771,7 +9769,7 @@ module Dcache(
           dirty_34 <= _GEN_485;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_34 <= _GEN_1620;
+        dirty_34 <= _GEN_1619;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9782,7 +9780,7 @@ module Dcache(
           dirty_35 <= _GEN_486;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_35 <= _GEN_1621;
+        dirty_35 <= _GEN_1620;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9793,7 +9791,7 @@ module Dcache(
           dirty_36 <= _GEN_487;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_36 <= _GEN_1622;
+        dirty_36 <= _GEN_1621;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9804,7 +9802,7 @@ module Dcache(
           dirty_37 <= _GEN_488;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_37 <= _GEN_1623;
+        dirty_37 <= _GEN_1622;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9815,7 +9813,7 @@ module Dcache(
           dirty_38 <= _GEN_489;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_38 <= _GEN_1624;
+        dirty_38 <= _GEN_1623;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9826,7 +9824,7 @@ module Dcache(
           dirty_39 <= _GEN_490;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_39 <= _GEN_1625;
+        dirty_39 <= _GEN_1624;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9837,7 +9835,7 @@ module Dcache(
           dirty_40 <= _GEN_491;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_40 <= _GEN_1626;
+        dirty_40 <= _GEN_1625;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9848,7 +9846,7 @@ module Dcache(
           dirty_41 <= _GEN_492;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_41 <= _GEN_1627;
+        dirty_41 <= _GEN_1626;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9859,7 +9857,7 @@ module Dcache(
           dirty_42 <= _GEN_493;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_42 <= _GEN_1628;
+        dirty_42 <= _GEN_1627;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9870,7 +9868,7 @@ module Dcache(
           dirty_43 <= _GEN_494;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_43 <= _GEN_1629;
+        dirty_43 <= _GEN_1628;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9881,7 +9879,7 @@ module Dcache(
           dirty_44 <= _GEN_495;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_44 <= _GEN_1630;
+        dirty_44 <= _GEN_1629;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9892,7 +9890,7 @@ module Dcache(
           dirty_45 <= _GEN_496;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_45 <= _GEN_1631;
+        dirty_45 <= _GEN_1630;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9903,7 +9901,7 @@ module Dcache(
           dirty_46 <= _GEN_497;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_46 <= _GEN_1632;
+        dirty_46 <= _GEN_1631;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9914,7 +9912,7 @@ module Dcache(
           dirty_47 <= _GEN_498;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_47 <= _GEN_1633;
+        dirty_47 <= _GEN_1632;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9925,7 +9923,7 @@ module Dcache(
           dirty_48 <= _GEN_499;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_48 <= _GEN_1634;
+        dirty_48 <= _GEN_1633;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9936,7 +9934,7 @@ module Dcache(
           dirty_49 <= _GEN_500;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_49 <= _GEN_1635;
+        dirty_49 <= _GEN_1634;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9947,7 +9945,7 @@ module Dcache(
           dirty_50 <= _GEN_501;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_50 <= _GEN_1636;
+        dirty_50 <= _GEN_1635;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9958,7 +9956,7 @@ module Dcache(
           dirty_51 <= _GEN_502;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_51 <= _GEN_1637;
+        dirty_51 <= _GEN_1636;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9969,7 +9967,7 @@ module Dcache(
           dirty_52 <= _GEN_503;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_52 <= _GEN_1638;
+        dirty_52 <= _GEN_1637;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9980,7 +9978,7 @@ module Dcache(
           dirty_53 <= _GEN_504;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_53 <= _GEN_1639;
+        dirty_53 <= _GEN_1638;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -9991,7 +9989,7 @@ module Dcache(
           dirty_54 <= _GEN_505;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_54 <= _GEN_1640;
+        dirty_54 <= _GEN_1639;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -10002,7 +10000,7 @@ module Dcache(
           dirty_55 <= _GEN_506;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_55 <= _GEN_1641;
+        dirty_55 <= _GEN_1640;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -10013,7 +10011,7 @@ module Dcache(
           dirty_56 <= _GEN_507;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_56 <= _GEN_1642;
+        dirty_56 <= _GEN_1641;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -10024,7 +10022,7 @@ module Dcache(
           dirty_57 <= _GEN_508;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_57 <= _GEN_1643;
+        dirty_57 <= _GEN_1642;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -10035,7 +10033,7 @@ module Dcache(
           dirty_58 <= _GEN_509;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_58 <= _GEN_1644;
+        dirty_58 <= _GEN_1643;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -10046,7 +10044,7 @@ module Dcache(
           dirty_59 <= _GEN_510;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_59 <= _GEN_1645;
+        dirty_59 <= _GEN_1644;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -10057,7 +10055,7 @@ module Dcache(
           dirty_60 <= _GEN_511;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_60 <= _GEN_1646;
+        dirty_60 <= _GEN_1645;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -10068,7 +10066,7 @@ module Dcache(
           dirty_61 <= _GEN_512;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_61 <= _GEN_1647;
+        dirty_61 <= _GEN_1646;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -10079,7 +10077,7 @@ module Dcache(
           dirty_62 <= _GEN_513;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_62 <= _GEN_1648;
+        dirty_62 <= _GEN_1647;
       end
     end
     if (reset) begin // @[Dcache.scala 37:24]
@@ -10090,7 +10088,7 @@ module Dcache(
           dirty_63 <= _GEN_514;
         end
       end else if (!(_T_4)) begin // @[Conditional.scala 39:67]
-        dirty_63 <= _GEN_1649;
+        dirty_63 <= _GEN_1648;
       end
     end
     if (reset) begin // @[Dcache.scala 66:32]
@@ -10105,7 +10103,7 @@ module Dcache(
     end else if (!(_T)) begin // @[Conditional.scala 40:58]
       if (!(_T_2)) begin // @[Conditional.scala 39:67]
         if (!(_T_4)) begin // @[Conditional.scala 39:67]
-          reg_cache_fill <= _GEN_1387;
+          reg_cache_fill <= _GEN_1386;
         end
       end
     end
@@ -10120,7 +10118,7 @@ module Dcache(
       reg_data_strb <= 64'h0; // @[Dcache.scala 68:32]
     end else if (!(_T)) begin // @[Conditional.scala 40:58]
       if (_T_2) begin // @[Conditional.scala 39:67]
-        reg_data_strb <= io_core_data_data_strb; // @[Dcache.scala 123:19]
+        reg_data_strb <= {{56'd0}, io_core_data_data_strb}; // @[Dcache.scala 123:19]
       end
     end
     if (reset) begin // @[Dcache.scala 69:32]
@@ -10765,7 +10763,7 @@ module SimTop(
   wire  core_io_dmem_data_req_r; // @[SimTop.scala 16:24]
   wire  core_io_dmem_data_req_w; // @[SimTop.scala 16:24]
   wire [31:0] core_io_dmem_data_addr_r; // @[SimTop.scala 16:24]
-  wire [63:0] core_io_dmem_data_strb; // @[SimTop.scala 16:24]
+  wire [7:0] core_io_dmem_data_strb; // @[SimTop.scala 16:24]
   wire [63:0] core_io_dmem_data_read; // @[SimTop.scala 16:24]
   wire [63:0] core_io_dmem_data_write; // @[SimTop.scala 16:24]
   wire  core2axi_clock; // @[SimTop.scala 17:24]
@@ -10796,7 +10794,7 @@ module SimTop(
   wire  core2axi_io_dmem_data_req_w; // @[SimTop.scala 17:24]
   wire [31:0] core2axi_io_dmem_data_addr_r; // @[SimTop.scala 17:24]
   wire [31:0] core2axi_io_dmem_data_addr_w; // @[SimTop.scala 17:24]
-  wire [63:0] core2axi_io_dmem_data_strb; // @[SimTop.scala 17:24]
+  wire [7:0] core2axi_io_dmem_data_strb; // @[SimTop.scala 17:24]
   wire [127:0] core2axi_io_dmem_data_read; // @[SimTop.scala 17:24]
   wire [63:0] core2axi_io_dmem_data_write; // @[SimTop.scala 17:24]
   wire  icache_clock; // @[SimTop.scala 18:24]
@@ -10815,7 +10813,7 @@ module SimTop(
   wire  dcache_io_core_data_data_req_r; // @[SimTop.scala 19:24]
   wire  dcache_io_core_data_data_req_w; // @[SimTop.scala 19:24]
   wire [31:0] dcache_io_core_data_data_addr_r; // @[SimTop.scala 19:24]
-  wire [63:0] dcache_io_core_data_data_strb; // @[SimTop.scala 19:24]
+  wire [7:0] dcache_io_core_data_data_strb; // @[SimTop.scala 19:24]
   wire [63:0] dcache_io_core_data_data_read; // @[SimTop.scala 19:24]
   wire [63:0] dcache_io_core_data_data_write; // @[SimTop.scala 19:24]
   wire  dcache_io_axi_data_data_ready; // @[SimTop.scala 19:24]
@@ -10823,7 +10821,7 @@ module SimTop(
   wire  dcache_io_axi_data_data_req_w; // @[SimTop.scala 19:24]
   wire [31:0] dcache_io_axi_data_data_addr_r; // @[SimTop.scala 19:24]
   wire [31:0] dcache_io_axi_data_data_addr_w; // @[SimTop.scala 19:24]
-  wire [63:0] dcache_io_axi_data_data_strb; // @[SimTop.scala 19:24]
+  wire [7:0] dcache_io_axi_data_data_strb; // @[SimTop.scala 19:24]
   wire [127:0] dcache_io_axi_data_data_read; // @[SimTop.scala 19:24]
   wire [63:0] dcache_io_axi_data_data_write; // @[SimTop.scala 19:24]
   Core core ( // @[SimTop.scala 16:24]
