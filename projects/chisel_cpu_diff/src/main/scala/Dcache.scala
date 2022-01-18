@@ -118,8 +118,8 @@ switch (state) {
   is(lookup){
   // req_addr,req_index,req_tag 都是wire，只在当前拍有效
   req_addr        := core.data_addr_r 
+
   reg_data_addr   := core.data_addr_r
-  
   reg_data_strb   := core.data_strb
   reg_data_write  := core.data_write 
   when(cache_hit){
@@ -133,8 +133,8 @@ switch (state) {
     dcache_cen        := true.B
     dcache_index      := req_index
     dcache_wen        := reg_data_req_w
-    dcache_wdata      := reg_data_write
-    dcache_strb       := reg_data_strb
+    dcache_wdata      := core.data_write
+    dcache_strb       := core.data_strb
     //core.data_ready    :=  RegNext(state === update && cache_hit )
 
   
