@@ -109,8 +109,6 @@ switch (state) {
     reg_data_req_w  := core.data_req_w
      
 
-    reg_data_strb   := core.data_strb
-    reg_data_write  := core.data_write
     
     state := lookup
   }  
@@ -120,7 +118,10 @@ switch (state) {
   is(lookup){
   // req_addr,req_index,req_tag 都是wire，只在当前拍有效
   req_addr        := core.data_addr_r 
-  reg_data_addr   := core.data_addr_r 
+  reg_data_addr   := core.data_addr_r
+  
+  reg_data_strb   := core.data_strb
+  reg_data_write  := core.data_write 
   when(cache_hit){
    
    //记录写入的数据, 如果是读数据，则这些值为原来的值
