@@ -166,15 +166,11 @@ switch (state) {
   
   dcache_index    := reg_data_addr(9,4)
   dcache_cen      := true.B
-      when(axi.data_ready){ state := wb_wait}
+      when(axi.data_ready){ state := fetch}
      .otherwise           { state:= writeback}
 
 }
 
-
-  is (wb_wait) { //延后一拍，等待valid和req register复位
-        state := fetch
-    }
   is(fetch){
   
   when(~reg_cache_fill){  // 从AXI读数据
