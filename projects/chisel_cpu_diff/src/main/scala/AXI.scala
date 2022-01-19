@@ -144,7 +144,7 @@ when(dmem.data_addr_r =/= 0.U){reg_data_addr_r := dmem.data_addr_r}
 switch(read_state){
   is(r_idle){
       when(inst_ren){ read_state := r_inst_addr }
- .elsewhen(data_ren){ read_state := r_data_addr; reg_data_ren := false.B; }}
+ .elsewhen( dmem.data_req_r){ read_state := r_data_addr; reg_data_ren := false.B; }}
   
   is(r_inst_addr){
       when(ar_hs)   { read_state := r_inst_read }}
