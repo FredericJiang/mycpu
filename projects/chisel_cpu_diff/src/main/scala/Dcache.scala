@@ -166,11 +166,14 @@ switch (state) {
   //data_size2axi   := "b011".U
   data_req_w2axi  := true.B
 
-      when(axi.data_ready){ state := fetch}
+      when(axi.data_ready){ state := wb_wait}
      .otherwise           { state:= writeback}
 
 }
 
+is(wb_wait){
+  state := fetch
+}
 
   is(fetch){
   
