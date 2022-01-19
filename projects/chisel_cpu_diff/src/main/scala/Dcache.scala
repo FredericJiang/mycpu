@@ -122,6 +122,7 @@ switch (state) {
   reg_data_addr   := core.data_addr_r
   reg_data_strb   := core.data_strb
   reg_data_write  := core.data_write 
+
   when(cache_hit){
   
    //记录写入的数据, 如果是读数据，则这些值为原来的值
@@ -139,8 +140,8 @@ switch (state) {
     //core.data_ready    :=  RegNext(state === update && cache_hit )
 
   
-        when (!dirty(req_index) && reg_data_req_w) {
-          dirty(req_index) := true.B
+        when (!dirty(req_index)) {
+          dirty(req_index) := reg_data_req_w
            //当是写操作时，dirty===1
         }
     state := idle
