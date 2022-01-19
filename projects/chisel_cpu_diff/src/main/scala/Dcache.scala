@@ -167,7 +167,7 @@ switch (state) {
   data_req_w2axi  := true.B
   
   dcache_index    := reg_data_addr(9,4)
-  
+  dcache_cen      := true.B
       when(axi.data_ready){ state := fetch}
      .otherwise           { state:= writeback}
 
