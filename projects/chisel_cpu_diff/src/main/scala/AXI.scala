@@ -109,11 +109,11 @@ val data_wen = WireInit(false.B)
  
   val w_idle :: w_data_addr :: w_data_write :: w_data_resp :: w_data_done :: Nil = Enum(5)
 
-val reg_data_ren = RegInit(false.B)
-val data_read_done = WireInit(false.B)
+//val reg_data_ren = RegInit(false.B)
+//val data_read_done = WireInit(false.B)
 val reg_data_addr_r = RegInit(0.U(32.W))
 
-when(dmem.data_req_r){reg_data_ren := dmem.data_req_r}
+//when(dmem.data_req_r){reg_data_ren := dmem.data_req_r}
 
 when(dmem.data_addr_r =/= 0.U){reg_data_addr_r := dmem.data_addr_r}
 
@@ -144,7 +144,7 @@ when(dmem.data_addr_r =/= 0.U){reg_data_addr_r := dmem.data_addr_r}
 switch(read_state){
   is(r_idle){
       when(inst_ren){ read_state := r_inst_addr }
- .elsewhen( data_ren){ read_state := r_data_addr; reg_data_ren := false.B; }}
+ .elsewhen( data_ren){ read_state := r_data_addr;  }}//reg_data_ren := false.B;
   
   is(r_inst_addr){
       when(ar_hs)   { read_state := r_inst_read }}
@@ -153,7 +153,7 @@ switch(read_state){
       when(r_done)  { read_state := r_inst_done }} //stage for send inst to core
 
   is(r_inst_done){ 
-      when(data_ren){ read_state := r_data_addr; reg_data_ren := false.B ; } // avoid always read inst not time to read data
+      when(data_ren){ read_state := r_data_addr;  } //reg_data_ren := false.B ; avoid always read inst not time to read data
  .otherwise         { read_state := r_idle      }}
 
   is(r_data_addr){

@@ -3069,35 +3069,35 @@ module Core2AXI(
   wire  _T_1 = 3'h0 == read_state; // @[Conditional.scala 37:30]
   wire  _T_2 = 3'h1 == read_state; // @[Conditional.scala 37:30]
   wire  _T_3 = 3'h2 == read_state; // @[Conditional.scala 37:30]
-  wire [2:0] _GEN_7 = r_done ? 3'h3 : read_state; // @[AXI.scala 153:21 AXI.scala 153:34 AXI.scala 138:28]
+  wire [2:0] _GEN_4 = r_done ? 3'h3 : read_state; // @[AXI.scala 153:21 AXI.scala 153:34 AXI.scala 138:28]
   wire  _T_4 = 3'h3 == read_state; // @[Conditional.scala 37:30]
-  wire [2:0] _GEN_8 = io_dmem_data_req_r ? 3'h4 : 3'h0; // @[AXI.scala 156:21 AXI.scala 156:34 AXI.scala 157:34]
+  wire [2:0] _GEN_5 = io_dmem_data_req_r ? 3'h4 : 3'h0; // @[AXI.scala 156:21 AXI.scala 156:34 AXI.scala 157:34]
   wire  _T_5 = 3'h4 == read_state; // @[Conditional.scala 37:30]
-  wire [2:0] _GEN_9 = ar_hs ? 3'h5 : read_state; // @[AXI.scala 160:21 AXI.scala 160:34 AXI.scala 138:28]
+  wire [2:0] _GEN_6 = ar_hs ? 3'h5 : read_state; // @[AXI.scala 160:21 AXI.scala 160:34 AXI.scala 138:28]
   wire  _T_6 = 3'h5 == read_state; // @[Conditional.scala 37:30]
-  wire [2:0] _GEN_10 = r_done ? 3'h6 : read_state; // @[AXI.scala 163:21 AXI.scala 163:34 AXI.scala 138:28]
+  wire [2:0] _GEN_7 = r_done ? 3'h6 : read_state; // @[AXI.scala 163:21 AXI.scala 163:34 AXI.scala 138:28]
   wire  _T_7 = 3'h6 == read_state; // @[Conditional.scala 37:30]
-  wire [2:0] _GEN_11 = _T_7 ? 3'h0 : read_state; // @[Conditional.scala 39:67 AXI.scala 165:34 AXI.scala 138:28]
-  wire [2:0] _GEN_12 = _T_6 ? _GEN_10 : _GEN_11; // @[Conditional.scala 39:67]
-  wire [2:0] _GEN_13 = _T_5 ? _GEN_9 : _GEN_12; // @[Conditional.scala 39:67]
-  wire [2:0] _GEN_14 = _T_4 ? _GEN_8 : _GEN_13; // @[Conditional.scala 39:67]
+  wire [2:0] _GEN_8 = _T_7 ? 3'h0 : read_state; // @[Conditional.scala 39:67 AXI.scala 165:34 AXI.scala 138:28]
+  wire [2:0] _GEN_9 = _T_6 ? _GEN_7 : _GEN_8; // @[Conditional.scala 39:67]
+  wire [2:0] _GEN_10 = _T_5 ? _GEN_6 : _GEN_9; // @[Conditional.scala 39:67]
+  wire [2:0] _GEN_11 = _T_4 ? _GEN_5 : _GEN_10; // @[Conditional.scala 39:67]
   wire  _T_8 = 3'h0 == write_state; // @[Conditional.scala 37:30]
   wire  _T_9 = 3'h1 == write_state; // @[Conditional.scala 37:30]
   wire  _T_10 = 3'h2 == write_state; // @[Conditional.scala 37:30]
-  wire [2:0] _GEN_24 = w_done ? 3'h3 : write_state; // @[AXI.scala 179:21 AXI.scala 179:35 AXI.scala 139:28]
+  wire [2:0] _GEN_17 = w_done ? 3'h3 : write_state; // @[AXI.scala 179:21 AXI.scala 179:35 AXI.scala 139:28]
   wire  _T_11 = 3'h3 == write_state; // @[Conditional.scala 37:30]
-  wire [2:0] _GEN_25 = b_hs ? 3'h4 : write_state; // @[AXI.scala 182:21 AXI.scala 182:35 AXI.scala 139:28]
+  wire [2:0] _GEN_18 = b_hs ? 3'h4 : write_state; // @[AXI.scala 182:21 AXI.scala 182:35 AXI.scala 139:28]
   wire  _T_12 = 3'h4 == write_state; // @[Conditional.scala 37:30]
-  wire [2:0] _GEN_26 = _T_12 ? 3'h0 : write_state; // @[Conditional.scala 39:67 AXI.scala 184:35 AXI.scala 139:28]
-  wire [2:0] _GEN_27 = _T_11 ? _GEN_25 : _GEN_26; // @[Conditional.scala 39:67]
+  wire [2:0] _GEN_19 = _T_12 ? 3'h0 : write_state; // @[Conditional.scala 39:67 AXI.scala 184:35 AXI.scala 139:28]
+  wire [2:0] _GEN_20 = _T_11 ? _GEN_18 : _GEN_19; // @[Conditional.scala 39:67]
   reg  write_done; // @[AXI.scala 187:25]
   wire  _T_13 = write_state == 3'h4; // @[AXI.scala 188:38]
-  wire  _GEN_31 = ~io_dmem_data_req_w ? 1'h0 : write_done; // @[AXI.scala 189:56 AXI.scala 189:68 AXI.scala 187:25]
-  wire  _GEN_32 = io_dmem_data_req_w & write_state == 3'h4 | _GEN_31; // @[AXI.scala 188:55 AXI.scala 188:67]
+  wire  _GEN_24 = ~io_dmem_data_req_w ? 1'h0 : write_done; // @[AXI.scala 189:56 AXI.scala 189:68 AXI.scala 187:25]
+  wire  _GEN_25 = io_dmem_data_req_w & write_state == 3'h4 | _GEN_24; // @[AXI.scala 188:55 AXI.scala 188:67]
   wire  _T_16 = read_state == 3'h1; // @[AXI.scala 192:17]
   wire  _T_17 = read_state == 3'h4; // @[AXI.scala 193:22]
-  wire [31:0] _GEN_33 = _T_17 & io_dmem_data_addr_r == 32'h0 ? reg_data_addr_r : 32'h0; // @[AXI.scala 194:68 AXI.scala 194:77]
-  wire [31:0] _GEN_34 = read_state == 3'h4 & _T ? io_dmem_data_addr_r : _GEN_33; // @[AXI.scala 193:68 AXI.scala 193:77]
+  wire [31:0] _GEN_26 = _T_17 & io_dmem_data_addr_r == 32'h0 ? reg_data_addr_r : 32'h0; // @[AXI.scala 194:68 AXI.scala 194:77]
+  wire [31:0] _GEN_27 = read_state == 3'h4 & _T ? io_dmem_data_addr_r : _GEN_26; // @[AXI.scala 193:68 AXI.scala 193:77]
   wire [27:0] axi_addr_w_hi = io_dmem_data_addr_w[31:4]; // @[AXI.scala 198:54]
   wire [31:0] _axi_addr_w_T = {axi_addr_w_hi,4'h8}; // @[Cat.scala 30:58]
   wire [31:0] _axi_addr_w_T_1 = {axi_addr_w_hi,1'h0,1'h0,2'h0}; // @[Cat.scala 30:58]
@@ -3106,7 +3106,7 @@ module Core2AXI(
   reg [63:0] data_read_h; // @[AXI.scala 249:28]
   reg [63:0] data_read_l; // @[AXI.scala 250:28]
   assign io_axi2ram_ar_valid = _T_16 | _T_17; // @[AXI.scala 212:51]
-  assign io_axi2ram_ar_bits_addr = read_state == 3'h1 ? io_imem_inst_addr : _GEN_34; // @[AXI.scala 192:39 AXI.scala 192:48]
+  assign io_axi2ram_ar_bits_addr = read_state == 3'h1 ? io_imem_inst_addr : _GEN_27; // @[AXI.scala 192:39 AXI.scala 192:48]
   assign io_axi2ram_r_ready = 1'h1; // @[AXI.scala 214:18]
   assign io_axi2ram_aw_valid = write_state == 3'h1; // @[AXI.scala 228:34]
   assign io_axi2ram_aw_bits_addr = write_done ? _axi_addr_w_T : _axi_addr_w_T_1; // @[AXI.scala 198:21]
@@ -3137,9 +3137,9 @@ module Core2AXI(
         read_state <= 3'h2; // @[AXI.scala 150:34]
       end
     end else if (_T_3) begin // @[Conditional.scala 39:67]
-      read_state <= _GEN_7;
+      read_state <= _GEN_4;
     end else begin
-      read_state <= _GEN_14;
+      read_state <= _GEN_11;
     end
     if (reset) begin // @[AXI.scala 139:28]
       write_state <= 3'h0; // @[AXI.scala 139:28]
@@ -3152,14 +3152,14 @@ module Core2AXI(
         write_state <= 3'h2; // @[AXI.scala 176:35]
       end
     end else if (_T_10) begin // @[Conditional.scala 39:67]
-      write_state <= _GEN_24;
+      write_state <= _GEN_17;
     end else begin
-      write_state <= _GEN_27;
+      write_state <= _GEN_20;
     end
     if (reset) begin // @[AXI.scala 187:25]
       write_done <= 1'h0; // @[AXI.scala 187:25]
     end else begin
-      write_done <= _GEN_32;
+      write_done <= _GEN_25;
     end
     if (reset) begin // @[AXI.scala 247:28]
       inst_read_h <= 64'h0; // @[AXI.scala 247:28]
