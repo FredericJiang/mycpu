@@ -164,6 +164,7 @@ exe_reg_dmem_en   := (decode.io.mem_rtype =/= MEM_X) || ((decode.io.wb_type =/= 
 exe_reg_pc        := exe_reg_pc
 exe_reg_inst      := exe_reg_inst
 }
+/*
 .elsewhen(kill_stage){
 exe_reg_pc        := "h0000000000000000".U
 exe_reg_inst      := BUBBLE
@@ -184,6 +185,7 @@ exe_reg_pc        := exe_reg_pc
 exe_reg_inst      := exe_reg_inst
 
 }
+*/
 */
 //*******************************************************************
 // Execute Stage
