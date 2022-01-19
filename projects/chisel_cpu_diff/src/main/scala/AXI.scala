@@ -228,7 +228,7 @@ val axi_addr_w = Mux(write_done, Cat(dmem.data_addr_w(31, 4), "b1000".U), Cat(dm
 // write data channel signals
   out.w.bits.id       := 0.U 
   out.w.bits.data     := Mux(write_done,io.dmem.data_write(127,64), io.dmem.data_write(63,0))
-  out.w.bits.strb     := io.dmem.data_strb
+  out.w.bits.strb     := "b11111111".U
   out.w.bits.last     := true.B
 
   out.w.valid    := (write_state === w_data_write)
