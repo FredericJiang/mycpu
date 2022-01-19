@@ -161,7 +161,7 @@ switch (state) {
   is(writeback){
   req_addr := reg_data_addr
   data_addr_w2axi := Cat(tag(req_index), req_index, offset(req_index))  // dirty data address 不是当前读或者写的地址
-  data_write2axi  := Mux(req_offset(3),cache_data_out(127,64) ,cache_data_out(63,0) )// cache dirty时向dcache传入数据，将dcache输出的数据写回AXI
+  data_write2axi  := cache_data_out    //Mux(req_offset(3),cache_data_out(127,64) ,cache_data_out(63,0) )// cache dirty时向dcache传入数据，将dcache输出的数据写回AXI
   data_strb2axi   := "b11111111".U
   //data_size2axi   := "b011".U
   data_req_w2axi  := true.B

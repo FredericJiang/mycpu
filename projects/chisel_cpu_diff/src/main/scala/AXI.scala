@@ -67,17 +67,19 @@ val data_req_r  = Output(Bool())
 val data_req_w  = Output(Bool())
 val data_addr_r   = Output(UInt(AXI_Addr_Width.W))//32 bits
 val data_addr_w   = Output(UInt(AXI_Addr_Width.W))
-val data_strb   = Output(UInt(64.W)) 
+//val data_strb   = Output(UInt(64.W)) 
 }
 
 class Core_Data extends Data_IO{
 val data_read   = Input(UInt(AXI_Data_Width.W)) //64 bits
-val data_write  = Output(UInt(AXI_Data_Width.W)) 
+val data_write  = Output(UInt(AXI_Data_Width.W))
+val data_strb   = Output(UInt(64.W))
 }
 
 class AXI_Data extends Data_IO{
 val data_read   = Input(UInt(128.W))
-val data_write  = Output(UInt(128.W)) 
+val data_write  = Output(UInt(128.W))
+val data_strb   = Output(UInt(8.W))  
 }
 
 
