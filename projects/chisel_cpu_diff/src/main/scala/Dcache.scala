@@ -165,7 +165,9 @@ switch (state) {
   data_strb2axi   := "b11111111".U
   //data_size2axi   := "b011".U
   data_req_w2axi  := true.B
-
+  
+  dcache_index    := reg_data_addr(9,4)
+  
       when(axi.data_ready){ state := fetch}
      .otherwise           { state:= writeback}
 
