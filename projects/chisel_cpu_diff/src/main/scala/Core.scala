@@ -160,7 +160,11 @@ exe_reg_rd_wen    := (decode.io.wb_type === WB_REG)
 exe_reg_dmem_wen  := (decode.io.wb_type =/= WB_REG) && (decode.io.wb_type =/= WB_X)
 exe_reg_dmem_en   := (decode.io.mem_rtype =/= MEM_X) || ((decode.io.wb_type =/= WB_REG) && (decode.io.wb_type =/= WB_X))
 
-}.elsewhen(kill_stage){
+}.elsewhen(stall){
+exe_reg_pc        := exe_reg_pc
+exe_reg_inst      := exe_reg_inst
+}
+.elsewhen(kill_stage){
 exe_reg_pc        := "h0000000000000000".U
 exe_reg_inst      := BUBBLE
 
