@@ -3050,17 +3050,13 @@ module Core2AXI(
   reg [31:0] _RAND_1;
   reg [31:0] _RAND_2;
   reg [31:0] _RAND_3;
-  reg [31:0] _RAND_4;
+  reg [63:0] _RAND_4;
   reg [63:0] _RAND_5;
   reg [63:0] _RAND_6;
   reg [63:0] _RAND_7;
-  reg [63:0] _RAND_8;
 `endif // RANDOMIZE_REG_INIT
-  reg  reg_data_ren; // @[AXI.scala 112:27]
   reg [31:0] reg_data_addr_r; // @[AXI.scala 114:30]
-  wire  _GEN_0 = io_dmem_data_req_r ? io_dmem_data_req_r : reg_data_ren; // @[AXI.scala 116:22 AXI.scala 116:36 AXI.scala 112:27]
   wire  _T = io_dmem_data_addr_r != 32'h0; // @[AXI.scala 118:23]
-  wire  data_ren = io_dmem_data_req_r | reg_data_ren; // @[AXI.scala 124:32]
   wire  ar_hs = io_axi2ram_ar_ready & io_axi2ram_ar_valid; // @[AXI.scala 127:31]
   wire  r_hs = io_axi2ram_r_ready & io_axi2ram_r_valid; // @[AXI.scala 128:31]
   wire  aw_hs = io_axi2ram_aw_ready & io_axi2ram_aw_valid; // @[AXI.scala 129:31]
@@ -3071,12 +3067,11 @@ module Core2AXI(
   reg [2:0] read_state; // @[AXI.scala 138:28]
   reg [2:0] write_state; // @[AXI.scala 139:28]
   wire  _T_1 = 3'h0 == read_state; // @[Conditional.scala 37:30]
-  wire  _GEN_3 = data_ren ? 1'h0 : _GEN_0; // @[AXI.scala 147:22 AXI.scala 147:64]
   wire  _T_2 = 3'h1 == read_state; // @[Conditional.scala 37:30]
   wire  _T_3 = 3'h2 == read_state; // @[Conditional.scala 37:30]
   wire [2:0] _GEN_7 = r_done ? 3'h3 : read_state; // @[AXI.scala 153:21 AXI.scala 153:34 AXI.scala 138:28]
   wire  _T_4 = 3'h3 == read_state; // @[Conditional.scala 37:30]
-  wire [2:0] _GEN_8 = data_ren ? 3'h4 : 3'h0; // @[AXI.scala 156:21 AXI.scala 156:34 AXI.scala 157:34]
+  wire [2:0] _GEN_8 = io_dmem_data_req_r ? 3'h4 : 3'h0; // @[AXI.scala 156:21 AXI.scala 156:34 AXI.scala 157:34]
   wire  _T_5 = 3'h4 == read_state; // @[Conditional.scala 37:30]
   wire [2:0] _GEN_9 = ar_hs ? 3'h5 : read_state; // @[AXI.scala 160:21 AXI.scala 160:34 AXI.scala 138:28]
   wire  _T_6 = 3'h5 == read_state; // @[Conditional.scala 37:30]
@@ -3086,7 +3081,6 @@ module Core2AXI(
   wire [2:0] _GEN_12 = _T_6 ? _GEN_10 : _GEN_11; // @[Conditional.scala 39:67]
   wire [2:0] _GEN_13 = _T_5 ? _GEN_9 : _GEN_12; // @[Conditional.scala 39:67]
   wire [2:0] _GEN_14 = _T_4 ? _GEN_8 : _GEN_13; // @[Conditional.scala 39:67]
-  wire  _GEN_15 = _T_4 ? _GEN_3 : _GEN_0; // @[Conditional.scala 39:67]
   wire  _T_8 = 3'h0 == write_state; // @[Conditional.scala 37:30]
   wire  _T_9 = 3'h1 == write_state; // @[Conditional.scala 37:30]
   wire  _T_10 = 3'h2 == write_state; // @[Conditional.scala 37:30]
@@ -3125,23 +3119,6 @@ module Core2AXI(
   assign io_dmem_data_ready = read_state == 3'h6 | _T_13 & write_done; // @[AXI.scala 268:51]
   assign io_dmem_data_read = {data_read_h,data_read_l}; // @[Cat.scala 30:58]
   always @(posedge clock) begin
-    if (reset) begin // @[AXI.scala 112:27]
-      reg_data_ren <= 1'h0; // @[AXI.scala 112:27]
-    end else if (_T_1) begin // @[Conditional.scala 40:58]
-      if (io_imem_inst_req) begin // @[AXI.scala 146:21]
-        reg_data_ren <= _GEN_0;
-      end else if (data_ren) begin // @[AXI.scala 147:22]
-        reg_data_ren <= 1'h0; // @[AXI.scala 147:64]
-      end else begin
-        reg_data_ren <= _GEN_0;
-      end
-    end else if (_T_2) begin // @[Conditional.scala 39:67]
-      reg_data_ren <= _GEN_0;
-    end else if (_T_3) begin // @[Conditional.scala 39:67]
-      reg_data_ren <= _GEN_0;
-    end else begin
-      reg_data_ren <= _GEN_15;
-    end
     if (reset) begin // @[AXI.scala 114:30]
       reg_data_addr_r <= 32'h0; // @[AXI.scala 114:30]
     end else if (io_dmem_data_addr_r != 32'h0) begin // @[AXI.scala 118:31]
@@ -3152,7 +3129,7 @@ module Core2AXI(
     end else if (_T_1) begin // @[Conditional.scala 40:58]
       if (io_imem_inst_req) begin // @[AXI.scala 146:21]
         read_state <= 3'h1; // @[AXI.scala 146:34]
-      end else if (data_ren) begin // @[AXI.scala 147:22]
+      end else if (io_dmem_data_req_r) begin // @[AXI.scala 147:22]
         read_state <= 3'h4; // @[AXI.scala 147:35]
       end
     end else if (_T_2) begin // @[Conditional.scala 39:67]
@@ -3250,23 +3227,21 @@ initial begin
     `endif
 `ifdef RANDOMIZE_REG_INIT
   _RAND_0 = {1{`RANDOM}};
-  reg_data_ren = _RAND_0[0:0];
+  reg_data_addr_r = _RAND_0[31:0];
   _RAND_1 = {1{`RANDOM}};
-  reg_data_addr_r = _RAND_1[31:0];
+  read_state = _RAND_1[2:0];
   _RAND_2 = {1{`RANDOM}};
-  read_state = _RAND_2[2:0];
+  write_state = _RAND_2[2:0];
   _RAND_3 = {1{`RANDOM}};
-  write_state = _RAND_3[2:0];
-  _RAND_4 = {1{`RANDOM}};
-  write_done = _RAND_4[0:0];
+  write_done = _RAND_3[0:0];
+  _RAND_4 = {2{`RANDOM}};
+  inst_read_h = _RAND_4[63:0];
   _RAND_5 = {2{`RANDOM}};
-  inst_read_h = _RAND_5[63:0];
+  inst_read_l = _RAND_5[63:0];
   _RAND_6 = {2{`RANDOM}};
-  inst_read_l = _RAND_6[63:0];
+  data_read_h = _RAND_6[63:0];
   _RAND_7 = {2{`RANDOM}};
-  data_read_h = _RAND_7[63:0];
-  _RAND_8 = {2{`RANDOM}};
-  data_read_l = _RAND_8[63:0];
+  data_read_l = _RAND_7[63:0];
 `endif // RANDOMIZE_REG_INIT
   `endif // RANDOMIZE
 end // initial

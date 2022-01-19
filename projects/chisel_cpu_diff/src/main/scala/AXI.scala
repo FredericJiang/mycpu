@@ -121,7 +121,7 @@ when(dmem.data_addr_r =/= 0.U){reg_data_addr_r := dmem.data_addr_r}
 // state control change signal
 
   inst_ren :=  imem.inst_req
-  data_ren :=  dmem.data_req_r || (reg_data_ren && !data_read_done )
+  data_ren :=  dmem.data_req_r //|| (reg_data_ren && !data_read_done )
   data_wen :=  dmem.data_req_w
 
   val ar_hs    = out.ar.ready && out.ar.valid   //read address channel
