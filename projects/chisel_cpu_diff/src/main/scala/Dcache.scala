@@ -66,7 +66,7 @@ val data_strb   = Output(UInt(8.W))
   val reg_data_addr   = RegInit(0.U(32.W))
 
   val reg_data_strb   = RegInit(0.U(64.W)) 
-  val reg_data_write  = RegInit(0.U(64.W))
+  val reg_data_write  = RegInit(0.U(128.W))
 
   //val reg_data_read   = RegInit(0.U(64.W))
 
@@ -82,7 +82,7 @@ val data_strb   = Output(UInt(8.W))
   val data_addr_r2axi  = WireInit(0.U(32.W))
   val data_addr_w2axi  = WireInit(0.U(32.W))
   val data_strb2axi    = WireInit(0.U(8.W))
-  val data_write2axi   = WireInit(0.U(64.W))
+  val data_write2axi   = WireInit(0.U(128.W))
 
   data_read2core   := MuxLookup(reg_data_addr(3), 0.U, Array(
                       "b0".U -> cache_data_out( 63, 0),
@@ -163,9 +163,8 @@ switch (state) {
   is(writeback){
   req_addr := reg_data_addr
   data_addr_w2axi := Cat(tag(req_index), req_index, offset(req_index))  // dirty data address 不是当前读或者写的地址
-  data_write2axi  := Mux(req_offset(3),cache_data_out(127,64) ,cache_data_out(63,0) )// cache dirty时向dcache传入数据，将dcache输出的数据写回AXI
+  data_write2axi  := cache_data_out// cache dirty时向dcache传入数据，将dcache输出的数据写回AXI
   data_strb2axi   := "b11111111".U
-  //data_size2axi   := "b011".U
   data_req_w2axi  := true.B
 
       when(axi.data_ready){ state := fetch}
@@ -206,7 +205,7 @@ switch (state) {
   valid(req_index)  := true.B 
   tag(req_index)    := req_tag
   offset(req_index) := req_offset
- 
+   dirty(req_index)  := reg_data_req_w
 
 
   }
@@ -225,7 +224,7 @@ switch (state) {
   dcache_wdata      := Mux(reg_data_addr(3),Cat(reg_data_write, Fill(64, 0.U)), Cat( Fill(64, 0.U),reg_data_write))
   dcache_strb       := Mux(reg_data_addr(3),Cat(reg_data_strb, Fill(64, 0.U)), Cat( Fill(64, 0.U),reg_data_strb))
  
-  dirty(req_index)  := reg_data_req_w
+
   //core.data_ready   := RegNext(state === update ) //读需要延后一拍等cache_data_out
 
 
@@ -243,7 +242,7 @@ core.data_ready  := data_ready2core
 axi.data_req_r   := data_req_r2axi 
 axi.data_req_w   := data_req_w2axi
 axi.data_addr_r  := Cat(data_addr_r2axi (31,4),0.U,0.U,0.U,0.U)
-axi.data_addr_w  := Cat(data_addr_w2axi (31,3),0.U,0.U,0.U)
+axi.data_addr_w  := Cat(data_addr_w2axi (31,4),0.U,0.U,0.U,0.U)
 axi.data_strb    := data_strb2axi
 axi.data_write   := data_write2axi
 

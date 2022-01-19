@@ -77,7 +77,7 @@ val data_write  = Output(UInt(AXI_Data_Width.W))
 
 class AXI_Data extends Data_IO{
 val data_read   = Input(UInt(128.W))
-val data_write  = Output(UInt(64.W)) 
+val data_write  = Output(UInt(128.W)) 
 }
 
 
@@ -97,8 +97,6 @@ val dmem     = io.dmem
 val inst_ren = WireInit(false.B)
 val data_ren = WireInit(false.B)
 val data_wen = WireInit(false.B)
-
-
 
 
 
@@ -136,6 +134,9 @@ when(dmem.data_addr_r =/= 0.U){reg_data_addr_r := dmem.data_addr_r}
   val write_state = RegInit(w_idle)
 
 
+val write_done = RegInit(false.B)
+when(dmem.data_req_w && write_state === w_data_done){ write_done:= true.B }
+.elsewhen(!dmem.data_req_w)                         { write_done:= false.B }
 // FSM of Read Inst & Data
 
 switch(read_state){
@@ -188,6 +189,10 @@ when(read_state === r_inst_addr)      {axi_addr:= imem.inst_addr   }
 val inst_reg_addr = RegInit(0.U(32.W))
 inst_reg_addr:= imem.inst_addr 
 
+
+val axi_addr_w = WireInit(0.U(32.W))
+axi_addr_w := Mux(write_done, Cat(dmem.data_addr_w(31, 4), "b1000".U), Cat(dmem.data_addr_w(31, 4), "b0000".U))
+
 // Read address channel signals
   out.ar.bits.id     := 0.U 
   out.ar.bits.addr   := axi_addr
@@ -206,7 +211,7 @@ inst_reg_addr:= imem.inst_addr
 
 // write address channel signals
   out.aw.bits.id      := 0.U   
-  out.aw.bits.addr    := dmem.data_addr_w
+  out.aw.bits.addr    := axi_addr_w
   out.aw.bits.len     := "b000".U //every burst transfer 1 data
   out.aw.bits.size    := "b011".U //every clock transfer 8 bytes = 64bits
   out.aw.bits.burst   := "b01".U  // incrementing-address burst
@@ -219,7 +224,7 @@ inst_reg_addr:= imem.inst_addr
   out.aw.valid   := (write_state === w_data_addr)
 // write data channel signals
   out.w.bits.id       := 0.U 
-  out.w.bits.data     := io.dmem.data_write
+  out.w.bits.data     := Mux(write_done, dmem.data_write(127,64), dmem.data_write(63, 0))
   out.w.bits.strb     := io.dmem.data_strb
   out.w.bits.last     := true.B
 
@@ -256,7 +261,7 @@ inst_reg_addr:= imem.inst_addr
   //dmem.data_read := data_read_h
 
   imem.inst_ready := (read_state === r_inst_done) 
-  dmem.data_ready := (read_state === r_data_done) || (write_state === w_data_done )
+  dmem.data_ready := (read_state === r_data_done) || (write_state === w_data_done && write_done )
 
 
 
