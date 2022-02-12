@@ -431,6 +431,7 @@ wb_reg_rs1_data    := mem_reg_rs1_data //used for print
 wb_reg_print       := mem_reg_print
 
 wb_reg_rd_addr     := mem_reg_rd_addr
+wb_reg_rs2_addr    := mem_reg_rs2_addr //
 wb_reg_rd_wen      := mem_reg_rd_wen || mem_reg_stall_wen
 wb_reg_rd_data     := mem_rd_data
 wb_reg_csr_rd_data := mem_reg_csr_rd_data
@@ -466,7 +467,10 @@ wb_reg_mcause   :=  mem_reg_mcause
 //WriteBack
 //write back to reg enalbe
 regfile.io.rd_wen   := wb_reg_rd_wen || wb_reg_csr_rd_wen
-regfile.io.rd_addr  := wb_reg_rd_addr
+when(wb_reg_wb_type =/= 0.U){
+regfile.io.rd_addr  := wb_reg_rs2_addr
+}
+.otherwise{regfile.io.rd_addr  := wb_reg_rd_addr}
 
 
 wb_rd_data  := MuxCase(0.U, Array(

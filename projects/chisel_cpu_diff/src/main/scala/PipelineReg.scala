@@ -76,6 +76,8 @@ val mem_reg_rd_addr   =  RegInit(0.U(64.W))
 
 // Writeback State
 
+val wb_reg_rs2_addr  =  RegInit(0.U(64.W)) 
+
 val wb_reg_pc        =  RegInit(0.U(32.W))
 val wb_reg_inst      =  RegInit(0.U(64.W))   
 val wb_reg_wb_type   =  RegInit(WB_X)  
