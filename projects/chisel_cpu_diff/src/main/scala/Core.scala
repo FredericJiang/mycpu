@@ -424,6 +424,7 @@ wb_reg_inst        := mem_reg_inst
 wb_reg_alu_type    := mem_reg_alu_type
 wb_reg_mem_rtype   := mem_reg_mem_rtype 
 wb_reg_csr_type    := mem_reg_csr_type
+wb_reg_wb_type     := mem_reg_wb_type
 
 wb_reg_alu_out     := mem_reg_alu_out
 wb_reg_rs1_data    := mem_reg_rs1_data //used for print
