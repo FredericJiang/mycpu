@@ -2233,7 +2233,7 @@ module Core(
   assign regfile_io_rs2_addr = id_reg_inst[24:20]; // @[Core.scala 63:30]
   assign regfile_io_rd_addr = wb_reg_rd_addr[4:0]; // @[Core.scala 470:21]
   assign regfile_io_rd_data = wb_reg_csr_rd_wen ? wb_reg_csr_rd_data : _wb_rd_data_T_7; // @[Mux.scala 98:16]
-  assign regfile_io_rd_wen = (wb_reg_rd_wen | wb_reg_csr_rd_wen) & wb_reg_wb_type == 3'h1; // @[Core.scala 469:61]
+  assign regfile_io_rd_wen = wb_reg_rd_wen & wb_reg_wb_type == 3'h1 | wb_reg_csr_rd_wen; // @[Core.scala 469:68]
   assign imm_gen_io_imm_type = decode_io_imm_type; // @[Core.scala 78:21]
   assign imm_gen_io_inst = id_reg_inst[31:0]; // @[Core.scala 79:21]
   assign alu_io_alu_type = exe_reg_alu_type; // @[Core.scala 225:17]
