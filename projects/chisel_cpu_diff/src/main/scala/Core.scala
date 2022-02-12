@@ -467,10 +467,7 @@ wb_reg_mcause   :=  mem_reg_mcause
 //WriteBack
 //write back to reg enalbe
 regfile.io.rd_wen   := wb_reg_rd_wen || wb_reg_csr_rd_wen
-when(wb_reg_wb_type =/= 0.U){
-regfile.io.rd_addr  := wb_reg_rs2_addr
-}
-.otherwise{regfile.io.rd_addr  := wb_reg_rd_addr}
+regfile.io.rd_addr  := wb_reg_rd_addr
 
 
 wb_rd_data  := MuxCase(0.U, Array(
