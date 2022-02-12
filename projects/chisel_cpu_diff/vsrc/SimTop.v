@@ -1972,9 +1972,9 @@ module Core(
   reg [63:0] wb_reg_print; // @[PipelineReg.scala 141:27]
   reg [63:0] mem_reg_rd_data; // @[PipelineReg.scala 143:30]
   reg  mem_reg_stall_wen; // @[PipelineReg.scala 144:32]
-  wire  _T_82 = ~io_dmem_data_ready; // @[Core.scala 406:25]
+  wire  _T_86 = ~io_dmem_data_ready; // @[Core.scala 406:25]
   wire  mem_call_stall = mem_reg_dmem_en & ~io_dmem_data_ready; // @[Core.scala 406:22]
-  wire  stall = (mem_reg_stall | mem_call_stall) & _T_82; // @[Core.scala 21:44]
+  wire  stall = (mem_reg_stall | mem_call_stall) & _T_86; // @[Core.scala 21:44]
   wire  _GEN_6 = stall ? 1'h0 : 1'h1; // @[Core.scala 29:26 Core.scala 29:72]
   wire [31:0] _if_reg_pc_T_1 = if_reg_pc + 32'h4; // @[Core.scala 31:50]
   wire  _GEN_4 = reg_kill_flag ? 1'h0 : reg_kill_flag; // @[Core.scala 30:26 Core.scala 30:97 PipelineReg.scala 126:29]
@@ -2026,37 +2026,38 @@ module Core(
   wire  _exe_reg_dmem_wen_T_2 = decode_io_wb_type != 3'h1 & decode_io_wb_type != 3'h0; // @[Core.scala 160:53]
   wire  _T_21 = exe_reg_rs1_addr == wb_reg_rd_addr & exe_reg_rs1_addr != mem_reg_rd_addr; // @[Core.scala 195:43]
   wire  _T_22 = _T_21 & wb_reg_rd_wen; // @[Core.scala 196:1]
-  wire  _T_23 = exe_reg_op1_type == 3'h1; // @[Core.scala 196:38]
-  wire  _T_25 = exe_reg_rs1_addr == mem_reg_rd_addr; // @[Core.scala 197:29]
-  wire  _T_26 = mem_reg_rd_wen | mem_reg_stall_wen; // @[Core.scala 198:20]
-  wire  _T_30 = mem_reg_alu_type != 5'h13; // @[Core.scala 198:93]
+  wire  _T_23 = wb_reg_wb_type == 3'h1; // @[Core.scala 196:36]
+  wire  _T_25 = exe_reg_op1_type == 3'h1; // @[Core.scala 196:67]
+  wire  _T_27 = exe_reg_rs1_addr == mem_reg_rd_addr; // @[Core.scala 197:29]
+  wire  _T_28 = mem_reg_rd_wen | mem_reg_stall_wen; // @[Core.scala 198:20]
+  wire  _T_32 = mem_reg_alu_type != 5'h13; // @[Core.scala 198:93]
   wire [63:0] _GEN_60 = _id_rs1_T_13 ? mem_reg_rd_data : mem_reg_alu_out; // @[Core.scala 199:34 Core.scala 199:43 Core.scala 200:20]
-  wire [63:0] _GEN_61 = _T_25 & (mem_reg_rd_wen | mem_reg_stall_wen) & _T_23 & mem_reg_alu_type != 5'h13 ? _GEN_60 :
+  wire [63:0] _GEN_61 = _T_27 & (mem_reg_rd_wen | mem_reg_stall_wen) & _T_25 & mem_reg_alu_type != 5'h13 ? _GEN_60 :
     exe_reg_op1_data; // @[Core.scala 198:110 Core.scala 202:60]
-  wire  _T_35 = exe_reg_rs2_addr == wb_reg_rd_addr & exe_reg_rs2_addr != mem_reg_rd_addr; // @[Core.scala 205:43]
-  wire  _T_36 = _T_35 & wb_reg_rd_wen; // @[Core.scala 206:1]
-  wire  _T_37 = exe_reg_op2_type == 3'h1; // @[Core.scala 206:38]
-  wire  _T_39 = exe_reg_rs2_addr == mem_reg_rd_addr; // @[Core.scala 207:29]
-  wire [63:0] _GEN_64 = _T_39 & _T_26 & _T_37 & _T_30 ? _GEN_60 : exe_reg_op2_data; // @[Core.scala 208:110 Core.scala 212:60]
-  wire  _T_47 = exe_reg_alu_type == 5'h14; // @[Core.scala 215:23]
-  wire  _T_54 = exe_alu_out == 64'h200bff8 | exe_alu_out == 64'h2004000; // @[Core.scala 233:30]
-  wire  clint_en = exe_reg_dmem_en & _T_54; // @[Core.scala 232:22]
-  wire  _T_59 = _T_25 & _id_rs1_T_13; // @[Core.scala 277:43]
-  wire  _T_66 = exe_reg_op2_type == 3'h4 & exe_reg_imm_type == 3'h1; // @[Core.scala 281:48]
-  wire  _T_67 = _T_22 & (exe_reg_op2_type == 3'h4 & exe_reg_imm_type == 3'h1); // @[Core.scala 281:18]
-  wire [63:0] _GEN_70 = _T_66 ? exe_reg_rs1_data : 64'h0; // @[Core.scala 284:68 Core.scala 284:88 Core.scala 285:31]
-  wire [63:0] _GEN_71 = _T_67 ? wb_rd_data : _GEN_70; // @[Core.scala 282:1 Core.scala 282:21]
+  wire  _T_37 = exe_reg_rs2_addr == wb_reg_rd_addr & exe_reg_rs2_addr != mem_reg_rd_addr; // @[Core.scala 205:43]
+  wire  _T_38 = _T_37 & wb_reg_rd_wen; // @[Core.scala 206:1]
+  wire  _T_41 = exe_reg_op2_type == 3'h1; // @[Core.scala 206:67]
+  wire  _T_43 = exe_reg_rs2_addr == mem_reg_rd_addr; // @[Core.scala 207:29]
+  wire [63:0] _GEN_64 = _T_43 & _T_28 & _T_41 & _T_32 ? _GEN_60 : exe_reg_op2_data; // @[Core.scala 208:110 Core.scala 212:60]
+  wire  _T_51 = exe_reg_alu_type == 5'h14; // @[Core.scala 215:23]
+  wire  _T_58 = exe_alu_out == 64'h200bff8 | exe_alu_out == 64'h2004000; // @[Core.scala 233:30]
+  wire  clint_en = exe_reg_dmem_en & _T_58; // @[Core.scala 232:22]
+  wire  _T_63 = _T_27 & _id_rs1_T_13; // @[Core.scala 277:43]
+  wire  _T_70 = exe_reg_op2_type == 3'h4 & exe_reg_imm_type == 3'h1; // @[Core.scala 281:48]
+  wire  _T_71 = _T_22 & (exe_reg_op2_type == 3'h4 & exe_reg_imm_type == 3'h1); // @[Core.scala 281:18]
+  wire [63:0] _GEN_70 = _T_70 ? exe_reg_rs1_data : 64'h0; // @[Core.scala 284:68 Core.scala 284:88 Core.scala 285:31]
+  wire [63:0] _GEN_71 = _T_71 ? wb_rd_data : _GEN_70; // @[Core.scala 282:1 Core.scala 282:21]
   wire  _mem_reg_dmem_wen_T = ~clint_en; // @[Core.scala 303:44]
   wire  _mem_reg_dmem_en_T_1 = exe_reg_dmem_en & _mem_reg_dmem_wen_T; // @[Core.scala 304:41]
   reg [63:0] mem_reg_dmem_addr; // @[Core.scala 359:29]
   wire [63:0] mem_dmem_addr = mem_reg_dmem_en ? mem_reg_alu_out : 64'h0; // @[Core.scala 362:22 Core.scala 362:38 Core.scala 363:38]
-  wire  _T_79 = mem_reg_rs2_addr == wb_reg_rd_addr; // @[Core.scala 394:24]
+  wire  _T_83 = mem_reg_rs2_addr == wb_reg_rd_addr; // @[Core.scala 394:24]
   wire  _GEN_108 = io_dmem_data_ready ? 1'h0 : mem_reg_stall; // @[Core.scala 411:46 Core.scala 411:62 PipelineReg.scala 133:28]
   wire  _GEN_109 = mem_call_stall | _GEN_108; // @[Core.scala 406:46 Core.scala 406:62]
-  wire  _T_88 = wb_reg_alu_type == 5'h14; // @[Core.scala 489:22]
+  wire  _T_92 = wb_reg_alu_type == 5'h14; // @[Core.scala 489:22]
   reg  dt_valid; // @[Core.scala 516:23]
   reg  skip; // @[Core.scala 518:19]
-  wire  _T_97 = _T_88 | wb_reg_csr_type != 3'h0 & wb_reg_inst[31:20] == 12'hb00 | wb_reg_clint_en; // @[Core.scala 520:113]
+  wire  _T_101 = _T_92 | wb_reg_csr_type != 3'h0 & wb_reg_inst[31:20] == 12'hb00 | wb_reg_clint_en; // @[Core.scala 520:113]
   wire [63:0] _GEN_152 = {{32'd0}, wb_reg_pc}; // @[Core.scala 528:50]
   reg [31:0] dt_ic_io_pc_REG; // @[Core.scala 532:31]
   reg [63:0] dt_ic_io_instr_REG; // @[Core.scala 533:31]
@@ -2233,12 +2234,12 @@ module Core(
   assign regfile_io_rs2_addr = id_reg_inst[24:20]; // @[Core.scala 63:30]
   assign regfile_io_rd_addr = wb_reg_rd_addr[4:0]; // @[Core.scala 470:21]
   assign regfile_io_rd_data = wb_reg_csr_rd_wen ? wb_reg_csr_rd_data : _wb_rd_data_T_7; // @[Mux.scala 98:16]
-  assign regfile_io_rd_wen = wb_reg_rd_wen & wb_reg_wb_type == 3'h1 | wb_reg_csr_rd_wen; // @[Core.scala 469:68]
+  assign regfile_io_rd_wen = wb_reg_rd_wen & _T_23 | wb_reg_csr_rd_wen; // @[Core.scala 469:68]
   assign imm_gen_io_imm_type = decode_io_imm_type; // @[Core.scala 78:21]
   assign imm_gen_io_inst = id_reg_inst[31:0]; // @[Core.scala 79:21]
   assign alu_io_alu_type = exe_reg_alu_type; // @[Core.scala 225:17]
-  assign alu_io_in1 = _T_21 & wb_reg_rd_wen & exe_reg_op1_type == 3'h1 ? wb_rd_data : _GEN_61; // @[Core.scala 196:51 Core.scala 196:60]
-  assign alu_io_in2 = _T_35 & wb_reg_rd_wen & exe_reg_op2_type == 3'h1 ? wb_rd_data : _GEN_64; // @[Core.scala 206:51 Core.scala 206:60]
+  assign alu_io_in1 = _T_21 & wb_reg_rd_wen & wb_reg_wb_type == 3'h1 & exe_reg_op1_type == 3'h1 ? wb_rd_data : _GEN_61; // @[Core.scala 196:80 Core.scala 196:89]
+  assign alu_io_in2 = _T_37 & wb_reg_rd_wen & _T_23 & exe_reg_op2_type == 3'h1 ? wb_rd_data : _GEN_64; // @[Core.scala 206:80 Core.scala 206:89]
   assign clint_clock = clock;
   assign clint_reset = reset;
   assign clint_io_time_valid = exe_reg_pc != 32'h0; // @[Core.scala 239:17]
@@ -2258,7 +2259,7 @@ module Core(
   assign csr_csr_mcycle = cycle_cnt;
   assign nxt_pc_io_pc = exe_reg_pc; // @[Core.scala 261:23]
   assign nxt_pc_io_imm = exe_reg_imm; // @[Core.scala 264:23]
-  assign nxt_pc_io_rs1_data = _T_59 ? mem_rd_data : _GEN_71; // @[Core.scala 278:1 Core.scala 278:21]
+  assign nxt_pc_io_rs1_data = _T_63 ? mem_rd_data : _GEN_71; // @[Core.scala 278:1 Core.scala 278:21]
   assign nxt_pc_io_alu_out = alu_io_alu_out; // @[PipelineReg.scala 120:23 Core.scala 228:17]
   assign nxt_pc_io_csr_jmp = csr_io_jmp; // @[Core.scala 268:23]
   assign nxt_pc_io_intrpt_jmp = csr_io_intrpt; // @[Core.scala 271:26]
@@ -2271,7 +2272,7 @@ module Core(
   assign lsu_io_wb_type = mem_reg_wb_type; // @[Core.scala 386:19]
   assign lsu_io_dmem_addr = mem_reg_dmem_wen ? mem_dmem_addr : mem_reg_dmem_addr; // @[Core.scala 377:1 Core.scala 377:23 Core.scala 378:32]
   assign lsu_io_dmem_rdata = io_dmem_data_ready ? io_dmem_data_read : 64'h0; // @[Core.scala 382:25 Core.scala 382:45 Core.scala 383:45]
-  assign lsu_io_rs2_data = _T_79 & (mem_reg_dmem_wen & wb_reg_rd_wen) ? wb_rd_data : mem_reg_rs2_data; // @[Core.scala 395:40 Core.scala 395:59 Core.scala 396:59]
+  assign lsu_io_rs2_data = _T_83 & (mem_reg_dmem_wen & wb_reg_rd_wen) ? wb_rd_data : mem_reg_rs2_data; // @[Core.scala 395:40 Core.scala 395:59 Core.scala 396:59]
   assign dt_ic_clock = clock; // @[Core.scala 534:21]
   assign dt_ic_coreid = 8'h0; // @[Core.scala 535:21]
   assign dt_ic_index = 8'h0; // @[Core.scala 536:21]
@@ -2554,7 +2555,7 @@ module Core(
     if (reset) begin // @[PipelineReg.scala 70:33]
       mem_reg_rs2_data <= 64'h0; // @[PipelineReg.scala 70:33]
     end else if (_T_7) begin // @[Core.scala 315:1]
-      if (_T_36 & exe_reg_wb_type > 3'h1) begin // @[Core.scala 335:42]
+      if (_T_38 & exe_reg_wb_type > 3'h1) begin // @[Core.scala 335:42]
         if (wb_reg_csr_rd_wen) begin // @[Mux.scala 98:16]
           mem_reg_rs2_data <= wb_reg_csr_rd_data;
         end else begin
@@ -2615,7 +2616,7 @@ module Core(
       wb_reg_rd_data <= mem_rd_data; // @[Core.scala 436:20]
     end
     if (_T_7) begin // @[Core.scala 419:1]
-      wb_reg_rd_wen <= _T_26; // @[Core.scala 435:20]
+      wb_reg_rd_wen <= _T_28; // @[Core.scala 435:20]
     end
     if (reset) begin // @[PipelineReg.scala 90:32]
       wb_reg_rd_addr <= 64'h0; // @[PipelineReg.scala 90:32]
@@ -2740,7 +2741,7 @@ module Core(
       end else begin
         exe_reg_print <= _wb_rd_data_T_6;
       end
-    end else if (_T_47) begin // @[Core.scala 216:45]
+    end else if (_T_51) begin // @[Core.scala 216:45]
       exe_reg_print <= exe_reg_rs1_data; // @[Core.scala 216:60]
     end
     if (reset) begin // @[PipelineReg.scala 140:28]
@@ -2776,7 +2777,7 @@ module Core(
     if (reset) begin // @[Core.scala 518:19]
       skip <= 1'h0; // @[Core.scala 518:19]
     end else begin
-      skip <= _T_97;
+      skip <= _T_101;
     end
     dt_ic_io_pc_REG <= wb_reg_pc; // @[Core.scala 532:31]
     dt_ic_io_instr_REG <= wb_reg_inst; // @[Core.scala 533:31]
@@ -2815,7 +2816,7 @@ module Core(
     `ifdef PRINTF_COND
       if (`PRINTF_COND) begin
     `endif
-        if (_T_88 & ~reset) begin
+        if (_T_92 & ~reset) begin
           $fwrite(32'h80000002,"%c",wb_reg_print); // @[Core.scala 492:7]
         end
     `ifdef PRINTF_COND
