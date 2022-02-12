@@ -466,7 +466,7 @@ wb_reg_mcause   :=  mem_reg_mcause
 //*******************************************************************
 //WriteBack
 //write back to reg enalbe
-regfile.io.rd_wen   := wb_reg_rd_wen || wb_reg_csr_rd_wen
+regfile.io.rd_wen   := (wb_reg_rd_wen || wb_reg_csr_rd_wen) && (wb_reg_wb_type === WB_REG)
 regfile.io.rd_addr  := wb_reg_rd_addr
 
 

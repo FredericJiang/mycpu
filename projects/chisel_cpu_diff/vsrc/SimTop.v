@@ -1726,49 +1726,50 @@ module Core(
   reg [31:0] _RAND_41;
   reg [31:0] _RAND_42;
   reg [31:0] _RAND_43;
-  reg [63:0] _RAND_44;
+  reg [31:0] _RAND_44;
   reg [63:0] _RAND_45;
-  reg [31:0] _RAND_46;
-  reg [63:0] _RAND_47;
-  reg [31:0] _RAND_48;
-  reg [63:0] _RAND_49;
-  reg [31:0] _RAND_50;
-  reg [63:0] _RAND_51;
+  reg [63:0] _RAND_46;
+  reg [31:0] _RAND_47;
+  reg [63:0] _RAND_48;
+  reg [31:0] _RAND_49;
+  reg [63:0] _RAND_50;
+  reg [31:0] _RAND_51;
   reg [63:0] _RAND_52;
   reg [63:0] _RAND_53;
   reg [63:0] _RAND_54;
   reg [63:0] _RAND_55;
   reg [63:0] _RAND_56;
-  reg [31:0] _RAND_57;
-  reg [63:0] _RAND_58;
+  reg [63:0] _RAND_57;
+  reg [31:0] _RAND_58;
   reg [63:0] _RAND_59;
   reg [63:0] _RAND_60;
   reg [63:0] _RAND_61;
   reg [63:0] _RAND_62;
   reg [63:0] _RAND_63;
   reg [63:0] _RAND_64;
-  reg [31:0] _RAND_65;
-  reg [63:0] _RAND_66;
-  reg [31:0] _RAND_67;
+  reg [63:0] _RAND_65;
+  reg [31:0] _RAND_66;
+  reg [63:0] _RAND_67;
   reg [31:0] _RAND_68;
   reg [31:0] _RAND_69;
-  reg [63:0] _RAND_70;
+  reg [31:0] _RAND_70;
   reg [63:0] _RAND_71;
   reg [63:0] _RAND_72;
   reg [63:0] _RAND_73;
-  reg [31:0] _RAND_74;
-  reg [63:0] _RAND_75;
-  reg [31:0] _RAND_76;
+  reg [63:0] _RAND_74;
+  reg [31:0] _RAND_75;
+  reg [63:0] _RAND_76;
   reg [31:0] _RAND_77;
   reg [31:0] _RAND_78;
-  reg [63:0] _RAND_79;
-  reg [31:0] _RAND_80;
-  reg [63:0] _RAND_81;
+  reg [31:0] _RAND_79;
+  reg [63:0] _RAND_80;
+  reg [31:0] _RAND_81;
   reg [63:0] _RAND_82;
   reg [63:0] _RAND_83;
   reg [63:0] _RAND_84;
   reg [63:0] _RAND_85;
-  reg [31:0] _RAND_86;
+  reg [63:0] _RAND_86;
+  reg [31:0] _RAND_87;
 `endif // RANDOMIZE_REG_INIT
   wire [31:0] decode_io_inst; // @[Core.scala 66:20]
   wire [4:0] decode_io_alu_type; // @[Core.scala 66:20]
@@ -1936,6 +1937,7 @@ module Core(
   reg [63:0] mem_reg_rd_addr; // @[PipelineReg.scala 75:33]
   reg [31:0] wb_reg_pc; // @[PipelineReg.scala 81:32]
   reg [63:0] wb_reg_inst; // @[PipelineReg.scala 82:32]
+  reg [2:0] wb_reg_wb_type; // @[PipelineReg.scala 83:32]
   reg [2:0] wb_reg_mem_rtype; // @[PipelineReg.scala 84:32]
   reg [4:0] wb_reg_alu_type; // @[PipelineReg.scala 85:32]
   reg [2:0] wb_reg_csr_type; // @[PipelineReg.scala 86:32]
@@ -2231,7 +2233,7 @@ module Core(
   assign regfile_io_rs2_addr = id_reg_inst[24:20]; // @[Core.scala 63:30]
   assign regfile_io_rd_addr = wb_reg_rd_addr[4:0]; // @[Core.scala 470:21]
   assign regfile_io_rd_data = wb_reg_csr_rd_wen ? wb_reg_csr_rd_data : _wb_rd_data_T_7; // @[Mux.scala 98:16]
-  assign regfile_io_rd_wen = wb_reg_rd_wen | wb_reg_csr_rd_wen; // @[Core.scala 469:38]
+  assign regfile_io_rd_wen = (wb_reg_rd_wen | wb_reg_csr_rd_wen) & wb_reg_wb_type == 3'h1; // @[Core.scala 469:61]
   assign imm_gen_io_imm_type = decode_io_imm_type; // @[Core.scala 78:21]
   assign imm_gen_io_inst = id_reg_inst[31:0]; // @[Core.scala 79:21]
   assign alu_io_alu_type = exe_reg_alu_type; // @[Core.scala 225:17]
@@ -2586,6 +2588,11 @@ module Core(
     end else begin
       wb_reg_inst <= 64'h0; // @[Core.scala 462:15]
     end
+    if (reset) begin // @[PipelineReg.scala 83:32]
+      wb_reg_wb_type <= 3'h0; // @[PipelineReg.scala 83:32]
+    end else if (_T_7) begin // @[Core.scala 419:1]
+      wb_reg_wb_type <= mem_reg_wb_type; // @[Core.scala 427:20]
+    end
     if (reset) begin // @[PipelineReg.scala 84:32]
       wb_reg_mem_rtype <= 3'h0; // @[PipelineReg.scala 84:32]
     end else if (_T_7) begin // @[Core.scala 419:1]
@@ -2935,97 +2942,99 @@ initial begin
   _RAND_40 = {2{`RANDOM}};
   wb_reg_inst = _RAND_40[63:0];
   _RAND_41 = {1{`RANDOM}};
-  wb_reg_mem_rtype = _RAND_41[2:0];
+  wb_reg_wb_type = _RAND_41[2:0];
   _RAND_42 = {1{`RANDOM}};
-  wb_reg_alu_type = _RAND_42[4:0];
+  wb_reg_mem_rtype = _RAND_42[2:0];
   _RAND_43 = {1{`RANDOM}};
-  wb_reg_csr_type = _RAND_43[2:0];
-  _RAND_44 = {2{`RANDOM}};
-  wb_reg_alu_out = _RAND_44[63:0];
+  wb_reg_alu_type = _RAND_43[4:0];
+  _RAND_44 = {1{`RANDOM}};
+  wb_reg_csr_type = _RAND_44[2:0];
   _RAND_45 = {2{`RANDOM}};
-  wb_reg_rd_data = _RAND_45[63:0];
-  _RAND_46 = {1{`RANDOM}};
-  wb_reg_rd_wen = _RAND_46[0:0];
-  _RAND_47 = {2{`RANDOM}};
-  wb_reg_rd_addr = _RAND_47[63:0];
-  _RAND_48 = {1{`RANDOM}};
-  wb_reg_csr_rd_wen = _RAND_48[0:0];
-  _RAND_49 = {2{`RANDOM}};
-  wb_reg_csr_rd_data = _RAND_49[63:0];
-  _RAND_50 = {1{`RANDOM}};
-  wb_reg_clint_en = _RAND_50[0:0];
-  _RAND_51 = {2{`RANDOM}};
-  mem_reg_mie = _RAND_51[63:0];
+  wb_reg_alu_out = _RAND_45[63:0];
+  _RAND_46 = {2{`RANDOM}};
+  wb_reg_rd_data = _RAND_46[63:0];
+  _RAND_47 = {1{`RANDOM}};
+  wb_reg_rd_wen = _RAND_47[0:0];
+  _RAND_48 = {2{`RANDOM}};
+  wb_reg_rd_addr = _RAND_48[63:0];
+  _RAND_49 = {1{`RANDOM}};
+  wb_reg_csr_rd_wen = _RAND_49[0:0];
+  _RAND_50 = {2{`RANDOM}};
+  wb_reg_csr_rd_data = _RAND_50[63:0];
+  _RAND_51 = {1{`RANDOM}};
+  wb_reg_clint_en = _RAND_51[0:0];
   _RAND_52 = {2{`RANDOM}};
-  mem_reg_mstatus = _RAND_52[63:0];
+  mem_reg_mie = _RAND_52[63:0];
   _RAND_53 = {2{`RANDOM}};
-  mem_reg_mepc = _RAND_53[63:0];
+  mem_reg_mstatus = _RAND_53[63:0];
   _RAND_54 = {2{`RANDOM}};
-  mem_reg_mcause = _RAND_54[63:0];
+  mem_reg_mepc = _RAND_54[63:0];
   _RAND_55 = {2{`RANDOM}};
-  mem_reg_mtvec = _RAND_55[63:0];
+  mem_reg_mcause = _RAND_55[63:0];
   _RAND_56 = {2{`RANDOM}};
-  mem_reg_mscratch = _RAND_56[63:0];
-  _RAND_57 = {1{`RANDOM}};
-  mem_reg_intrpt = _RAND_57[0:0];
-  _RAND_58 = {2{`RANDOM}};
-  mem_reg_intrpt_no = _RAND_58[63:0];
+  mem_reg_mtvec = _RAND_56[63:0];
+  _RAND_57 = {2{`RANDOM}};
+  mem_reg_mscratch = _RAND_57[63:0];
+  _RAND_58 = {1{`RANDOM}};
+  mem_reg_intrpt = _RAND_58[0:0];
   _RAND_59 = {2{`RANDOM}};
-  wb_reg_mie = _RAND_59[63:0];
+  mem_reg_intrpt_no = _RAND_59[63:0];
   _RAND_60 = {2{`RANDOM}};
-  wb_reg_mstatus = _RAND_60[63:0];
+  wb_reg_mie = _RAND_60[63:0];
   _RAND_61 = {2{`RANDOM}};
-  wb_reg_mepc = _RAND_61[63:0];
+  wb_reg_mstatus = _RAND_61[63:0];
   _RAND_62 = {2{`RANDOM}};
-  wb_reg_mcause = _RAND_62[63:0];
+  wb_reg_mepc = _RAND_62[63:0];
   _RAND_63 = {2{`RANDOM}};
-  wb_reg_mtvec = _RAND_63[63:0];
+  wb_reg_mcause = _RAND_63[63:0];
   _RAND_64 = {2{`RANDOM}};
-  wb_reg_mscratch = _RAND_64[63:0];
-  _RAND_65 = {1{`RANDOM}};
-  wb_reg_intrpt = _RAND_65[0:0];
-  _RAND_66 = {2{`RANDOM}};
-  wb_reg_intrpt_no = _RAND_66[63:0];
-  _RAND_67 = {1{`RANDOM}};
-  reg_kill_flag = _RAND_67[0:0];
+  wb_reg_mtvec = _RAND_64[63:0];
+  _RAND_65 = {2{`RANDOM}};
+  wb_reg_mscratch = _RAND_65[63:0];
+  _RAND_66 = {1{`RANDOM}};
+  wb_reg_intrpt = _RAND_66[0:0];
+  _RAND_67 = {2{`RANDOM}};
+  wb_reg_intrpt_no = _RAND_67[63:0];
   _RAND_68 = {1{`RANDOM}};
-  reg_exe_pc_nxt = _RAND_68[31:0];
+  reg_kill_flag = _RAND_68[0:0];
   _RAND_69 = {1{`RANDOM}};
-  mem_reg_stall = _RAND_69[0:0];
-  _RAND_70 = {2{`RANDOM}};
-  exe_reg_print = _RAND_70[63:0];
+  reg_exe_pc_nxt = _RAND_69[31:0];
+  _RAND_70 = {1{`RANDOM}};
+  mem_reg_stall = _RAND_70[0:0];
   _RAND_71 = {2{`RANDOM}};
-  mem_reg_print = _RAND_71[63:0];
+  exe_reg_print = _RAND_71[63:0];
   _RAND_72 = {2{`RANDOM}};
-  wb_reg_print = _RAND_72[63:0];
+  mem_reg_print = _RAND_72[63:0];
   _RAND_73 = {2{`RANDOM}};
-  mem_reg_rd_data = _RAND_73[63:0];
-  _RAND_74 = {1{`RANDOM}};
-  mem_reg_stall_wen = _RAND_74[0:0];
-  _RAND_75 = {2{`RANDOM}};
-  mem_reg_dmem_addr = _RAND_75[63:0];
-  _RAND_76 = {1{`RANDOM}};
-  dt_valid = _RAND_76[0:0];
+  wb_reg_print = _RAND_73[63:0];
+  _RAND_74 = {2{`RANDOM}};
+  mem_reg_rd_data = _RAND_74[63:0];
+  _RAND_75 = {1{`RANDOM}};
+  mem_reg_stall_wen = _RAND_75[0:0];
+  _RAND_76 = {2{`RANDOM}};
+  mem_reg_dmem_addr = _RAND_76[63:0];
   _RAND_77 = {1{`RANDOM}};
-  skip = _RAND_77[0:0];
+  dt_valid = _RAND_77[0:0];
   _RAND_78 = {1{`RANDOM}};
-  dt_ic_io_pc_REG = _RAND_78[31:0];
-  _RAND_79 = {2{`RANDOM}};
-  dt_ic_io_instr_REG = _RAND_79[63:0];
-  _RAND_80 = {1{`RANDOM}};
-  dt_ic_io_wen_REG = _RAND_80[0:0];
-  _RAND_81 = {2{`RANDOM}};
-  dt_ic_io_wdata_REG = _RAND_81[63:0];
+  skip = _RAND_78[0:0];
+  _RAND_79 = {1{`RANDOM}};
+  dt_ic_io_pc_REG = _RAND_79[31:0];
+  _RAND_80 = {2{`RANDOM}};
+  dt_ic_io_instr_REG = _RAND_80[63:0];
+  _RAND_81 = {1{`RANDOM}};
+  dt_ic_io_wen_REG = _RAND_81[0:0];
   _RAND_82 = {2{`RANDOM}};
-  dt_ic_io_wdest_REG = _RAND_82[63:0];
+  dt_ic_io_wdata_REG = _RAND_82[63:0];
   _RAND_83 = {2{`RANDOM}};
-  cycle_cnt = _RAND_83[63:0];
+  dt_ic_io_wdest_REG = _RAND_83[63:0];
   _RAND_84 = {2{`RANDOM}};
-  instr_cnt = _RAND_84[63:0];
+  cycle_cnt = _RAND_84[63:0];
   _RAND_85 = {2{`RANDOM}};
-  dt_ae_io_intrNO_REG = _RAND_85[63:0];
-  _RAND_86 = {1{`RANDOM}};
-  dt_ae_io_exceptionPC_REG = _RAND_86[31:0];
+  instr_cnt = _RAND_85[63:0];
+  _RAND_86 = {2{`RANDOM}};
+  dt_ae_io_intrNO_REG = _RAND_86[63:0];
+  _RAND_87 = {1{`RANDOM}};
+  dt_ae_io_exceptionPC_REG = _RAND_87[31:0];
 `endif // RANDOMIZE_REG_INIT
   `endif // RANDOMIZE
 end // initial
