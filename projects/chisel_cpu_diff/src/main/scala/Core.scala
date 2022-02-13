@@ -173,6 +173,8 @@ exe_reg_rs1_addr  := exe_reg_rs1_addr
 exe_reg_rs2_addr  := exe_reg_rs2_addr
 exe_reg_imm       := exe_reg_imm
 
+exe_reg_csr_type  := 0.U
+
 }
 .elsewhen(kill_stage){
 exe_reg_pc        := "h0000000000000000".U
@@ -274,7 +276,6 @@ nxt_pc.io.pc          := exe_reg_pc
 nxt_pc.io.imm_type    := exe_reg_imm_type
 nxt_pc.io.alu_type    := exe_reg_alu_type
 nxt_pc.io.imm         := exe_reg_imm
-nxt_pc.io.alu_out     := exe_alu_out
 nxt_pc.io.alu_out     := exe_alu_out
 nxt_pc.io.op2_type    := exe_reg_op2_type
 nxt_pc.io.csr_jmp     := csr.io.jmp 
