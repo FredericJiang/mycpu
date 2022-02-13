@@ -164,6 +164,15 @@ exe_reg_dmem_en   := (decode.io.mem_rtype =/= MEM_X) || ((decode.io.wb_type =/= 
 }.elsewhen(stall){
 exe_reg_pc        := exe_reg_pc
 exe_reg_inst      := exe_reg_inst
+
+exe_reg_op1_type  := exe_reg_op1_type 
+exe_reg_op2_type  := exe_reg_op2_type 
+exe_reg_rs2_data  := exe_reg_rs2_data
+exe_reg_rs1_data  := exe_reg_rs1_data
+exe_reg_rs1_addr  := exe_reg_rs1_addr
+exe_reg_rs2_addr  := exe_reg_rs2_addr
+exe_reg_imm       := exe_reg_imm
+
 }
 .elsewhen(kill_stage){
 exe_reg_pc        := "h0000000000000000".U
@@ -292,7 +301,8 @@ when(exe_reg_rs1_addr === mem_reg_rd_addr && mem_reg_mem_rtype =/= MEM_X)
 exe_pc_nxt  := nxt_pc.io.pc_nxt
 kill_stage  := nxt_pc.io.pc_jmp  //current instruction jmp_flag
 
-
+//val exe_reg_alu_out
+//when(stall)     {exe_reg_alu_out:= exe_alu_out}
 
 when(kill_stage){ reg_exe_pc_nxt:= nxt_pc.io.pc_nxt; reg_kill_flag := nxt_pc.io.pc_jmp }
 
