@@ -18,7 +18,8 @@ class Core extends Module {
 
 
 
-stall := (mem_reg_stall || mem_call_stall) && !io.dmem.data_ready
+//stall := (mem_reg_stall || mem_call_stall) && !io.dmem.data_ready
+stall := (mem_reg_stall || mem_call_stall) 
 
 when(inst_gen_ready )     { io.imem.inst_req   := true.B  }
 .otherwise                 { io.imem.inst_req   := false.B }
@@ -193,23 +194,25 @@ val exe_op1     = Wire(UInt(64.W))
 val exe_op2     = Wire(UInt(64.W))
 
 when((exe_reg_rs1_addr === wb_reg_rd_addr && exe_reg_rs1_addr =/= mem_reg_rd_addr ) 
-&& wb_reg_rd_wen && wb_reg_wb_type === WB_REG && exe_reg_op1_type === OP_REG)  {exe_op1 := wb_rd_data  }
-.elsewhen((exe_reg_rs1_addr === mem_reg_rd_addr  ) 
-&& (mem_reg_rd_wen || mem_reg_stall_wen) && exe_reg_op1_type === OP_REG && mem_reg_alu_type =/= ALU_COPY2)   {
+&& wb_reg_rd_wen && wb_reg_wb_type === WB_REG && exe_reg_op1_type === OP_REG)  
+                                 {exe_op1 := wb_rd_data  }  
+.elsewhen((exe_reg_rs1_addr === mem_reg_rd_addr) && (mem_reg_rd_wen || mem_reg_stall_wen) && exe_reg_op1_type === OP_REG && mem_reg_alu_type =/= ALU_COPY2)   
+{
 when(mem_reg_mem_rtype =/= MEM_X){exe_op1 := mem_reg_rd_data}
-.otherwise{exe_op1 := mem_reg_alu_out}
+.otherwise                       {exe_op1 := mem_reg_alu_out}
   }
-.otherwise                                        {exe_op1 := exe_reg_op1_data }
+.otherwise                       {exe_op1 := exe_reg_op1_data}
 
 
 when((exe_reg_rs2_addr === wb_reg_rd_addr && exe_reg_rs2_addr =/= mem_reg_rd_addr ) 
-&& wb_reg_rd_wen && wb_reg_wb_type === WB_REG && exe_reg_op2_type === OP_REG)  {exe_op2 := wb_rd_data}
-.elsewhen((exe_reg_rs2_addr === mem_reg_rd_addr  ) 
-&& (mem_reg_rd_wen || mem_reg_stall_wen) && exe_reg_op2_type === OP_REG && mem_reg_alu_type =/= ALU_COPY2)   {
+&& wb_reg_rd_wen && wb_reg_wb_type === WB_REG && exe_reg_op2_type === OP_REG)  
+                                 {exe_op2 := wb_rd_data }
+.elsewhen((exe_reg_rs2_addr === mem_reg_rd_addr )&& (mem_reg_rd_wen || mem_reg_stall_wen) && exe_reg_op2_type === OP_REG && mem_reg_alu_type =/= ALU_COPY2)   
+{
 when(mem_reg_mem_rtype =/= MEM_X){exe_op2 := mem_reg_rd_data}
-.otherwise{exe_op2 := mem_reg_alu_out}
+.otherwise                       {exe_op2 := mem_reg_alu_out}
   }
-.otherwise                                        {exe_op2 := exe_reg_op2_data }
+.otherwise                       {exe_op2 := exe_reg_op2_data }
 
 
 when(exe_reg_alu_type === ALU_MY_INST && wb_reg_rd_addr === 10.U && wb_reg_rd_wen ){exe_reg_print := wb_rd_data}
