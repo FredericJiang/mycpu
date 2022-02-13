@@ -18,8 +18,8 @@ class Core extends Module {
 
 
 
-//stall := (mem_reg_stall || mem_call_stall) && !io.dmem.data_ready
-stall := (mem_reg_stall || mem_call_stall) 
+stall := (mem_reg_stall || mem_call_stall) && !io.dmem.data_ready
+ 
 
 when(inst_gen_ready )     { io.imem.inst_req   := true.B  }
 .otherwise                 { io.imem.inst_req   := false.B }
