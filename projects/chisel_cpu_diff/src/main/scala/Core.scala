@@ -173,7 +173,7 @@ exe_reg_rs1_addr  := exe_reg_rs1_addr
 exe_reg_rs2_addr  := exe_reg_rs2_addr
 exe_reg_imm       := exe_reg_imm
 
-exe_reg_csr_type  := 0.U
+//exe_reg_csr_type  := 0.U
 
 }
 .elsewhen(kill_stage){
@@ -263,6 +263,7 @@ clint.io.cmp_wdata  :=  exe_reg_rs2_data
 clint.io.time_valid :=  exe_stage_valid
 
 val csr  = Module(new CSR)
+csr.io.stall       := stall
 csr.io.pc          := exe_reg_pc
 csr.io.pc_timer    := exe_reg_pc
 csr.io.inst        := exe_reg_inst

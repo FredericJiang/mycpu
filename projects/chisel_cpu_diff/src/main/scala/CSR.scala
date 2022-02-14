@@ -15,6 +15,7 @@ class CSR extends Module {
     val csr_type    = Input(UInt(3.W))
     val in_data     = Input(UInt(64.W))
     val time_intrpt = Input(Bool())
+    val stall       = Input(Bool())
 
 
 
