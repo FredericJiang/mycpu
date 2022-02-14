@@ -475,6 +475,7 @@ wb_reg_mcause   :=  mem_reg_mcause
   
 wb_reg_pc:= 0.U
 wb_reg_inst := 0.U
+wb_reg_wb_type:= 0.U
 
 wb_reg_intrpt      :=  mem_reg_intrpt
 wb_reg_intrpt_no   :=  mem_reg_intrpt_no
