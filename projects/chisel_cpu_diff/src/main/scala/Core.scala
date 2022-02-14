@@ -473,8 +473,20 @@ wb_reg_mepc     :=  mem_reg_mepc
 wb_reg_mcause   :=  mem_reg_mcause
 }.otherwise{
   
-  wb_reg_pc:= 0.U
-  wb_reg_inst := 0.U
+wb_reg_pc:= 0.U
+wb_reg_inst := 0.U
+
+wb_reg_intrpt      :=  mem_reg_intrpt
+wb_reg_intrpt_no   :=  mem_reg_intrpt_no
+wb_reg_csr_rd_wen  :=  mem_reg_csr_rd_wen
+wb_reg_clint_en    :=  mem_reg_clint_en
+wb_reg_mie         :=  mem_reg_mie
+wb_reg_mtvec       :=  mem_reg_mtvec
+wb_reg_mscratch    :=  mem_reg_mscratch
+
+wb_reg_mstatus  :=  mem_reg_mstatus
+wb_reg_mepc     :=  mem_reg_mepc
+wb_reg_mcause   :=  mem_reg_mcause
 }
 
 
