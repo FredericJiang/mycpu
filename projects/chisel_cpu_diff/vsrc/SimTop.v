@@ -1206,6 +1206,7 @@ module CSR(
   input  [2:0]  io_csr_type,
   input  [63:0] io_in_data,
   input         io_time_intrpt,
+  input         io_stall,
   output [63:0] io_out,
   output        io_jmp,
   output [31:0] io_jmp_pc,
@@ -1306,7 +1307,7 @@ module CSR(
   always @(posedge clock) begin
     if (reset) begin // @[CSR.scala 48:26]
       mstatus <= 64'h1800; // @[CSR.scala 48:26]
-    end else if (csr_rw) begin // @[CSR.scala 132:13]
+    end else if (csr_rw & ~io_stall) begin // @[CSR.scala 132:26]
       if (addr == 12'h300) begin // @[CSR.scala 145:37]
         if (io_time_intrpt) begin // @[CSR.scala 146:27]
           mstatus <= _mstatus_T_9; // @[CSR.scala 146:36]
@@ -1321,7 +1322,7 @@ module CSR(
     end
     if (reset) begin // @[CSR.scala 49:26]
       mie <= 64'h0; // @[CSR.scala 49:26]
-    end else if (csr_rw) begin // @[CSR.scala 132:13]
+    end else if (csr_rw & ~io_stall) begin // @[CSR.scala 132:26]
       if (addr == 12'h304) begin // @[CSR.scala 151:33]
         if (3'h5 == io_csr_type) begin // @[Mux.scala 80:57]
           mie <= _wdata_T_2;
@@ -1332,7 +1333,7 @@ module CSR(
     end
     if (reset) begin // @[CSR.scala 50:26]
       mtvec <= 64'h0; // @[CSR.scala 50:26]
-    end else if (csr_rw) begin // @[CSR.scala 132:13]
+    end else if (csr_rw & ~io_stall) begin // @[CSR.scala 132:26]
       if (addr == 12'h305) begin // @[CSR.scala 136:35]
         if (3'h5 == io_csr_type) begin // @[Mux.scala 80:57]
           mtvec <= _wdata_T_2;
@@ -1343,7 +1344,7 @@ module CSR(
     end
     if (reset) begin // @[CSR.scala 51:26]
       mscratch <= 64'h0; // @[CSR.scala 51:26]
-    end else if (csr_rw) begin // @[CSR.scala 132:13]
+    end else if (csr_rw & ~io_stall) begin // @[CSR.scala 132:26]
       if (addr == 12'h340) begin // @[CSR.scala 154:38]
         if (3'h5 == io_csr_type) begin // @[Mux.scala 80:57]
           mscratch <= _wdata_T_2;
@@ -1354,7 +1355,7 @@ module CSR(
     end
     if (reset) begin // @[CSR.scala 52:26]
       mepc <= 64'h0; // @[CSR.scala 52:26]
-    end else if (csr_rw) begin // @[CSR.scala 132:13]
+    end else if (csr_rw & ~io_stall) begin // @[CSR.scala 132:26]
       if (addr == 12'h341) begin // @[CSR.scala 139:34]
         if (3'h5 == io_csr_type) begin // @[Mux.scala 80:57]
           mepc <= _wdata_T_2;
@@ -1369,7 +1370,7 @@ module CSR(
     end
     if (reset) begin // @[CSR.scala 53:26]
       mcause <= 64'h0; // @[CSR.scala 53:26]
-    end else if (csr_rw) begin // @[CSR.scala 132:13]
+    end else if (csr_rw & ~io_stall) begin // @[CSR.scala 132:26]
       if (addr == 12'h342) begin // @[CSR.scala 142:36]
         if (3'h5 == io_csr_type) begin // @[Mux.scala 80:57]
           mcause <= _wdata_T_2;
@@ -1811,6 +1812,7 @@ module Core(
   wire [2:0] csr_io_csr_type; // @[Core.scala 265:18]
   wire [63:0] csr_io_in_data; // @[Core.scala 265:18]
   wire  csr_io_time_intrpt; // @[Core.scala 265:18]
+  wire  csr_io_stall; // @[Core.scala 265:18]
   wire [63:0] csr_io_out; // @[Core.scala 265:18]
   wire  csr_io_jmp; // @[Core.scala 265:18]
   wire [31:0] csr_io_jmp_pc; // @[Core.scala 265:18]
@@ -2125,6 +2127,7 @@ module Core(
     .io_csr_type(csr_io_csr_type),
     .io_in_data(csr_io_in_data),
     .io_time_intrpt(csr_io_time_intrpt),
+    .io_stall(csr_io_stall),
     .io_out(csr_io_out),
     .io_jmp(csr_io_jmp),
     .io_jmp_pc(csr_io_jmp_pc),
@@ -2257,6 +2260,7 @@ module Core(
   assign csr_io_csr_type = exe_reg_csr_type; // @[Core.scala 271:20]
   assign csr_io_in_data = alu_io_alu_out; // @[PipelineReg.scala 120:23 Core.scala 242:17]
   assign csr_io_time_intrpt = clint_io_time_intrpt & exe_reg_inst != 64'h0; // @[Core.scala 272:45]
+  assign csr_io_stall = (mem_reg_stall | mem_call_stall) & _T_94; // @[Core.scala 21:44]
   assign csr_csr_minstret = instr_cnt;
   assign csr_csr_mcycle = cycle_cnt;
   assign nxt_pc_io_pc = exe_reg_pc; // @[Core.scala 276:23]

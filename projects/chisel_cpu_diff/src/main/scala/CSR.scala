@@ -129,7 +129,7 @@ io.intrpt_pc := 0.U
  
   io.out := rdata
 
-  when(wen) {
+  when(wen && !io.stall) {
     when(addr === csr_addr.mcycle) {
       mcycle := wdata 
     }
