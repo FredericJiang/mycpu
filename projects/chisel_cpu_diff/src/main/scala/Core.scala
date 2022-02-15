@@ -152,12 +152,12 @@ exe_reg_rs1_data  := id_rs1
 exe_reg_op1_data  := id_op1
 exe_reg_op2_data  := id_op2
 
-when(decode.io.op1_type === OP_REG){exe_reg_rs1_addr  := id_reg_inst(19, 15)}
-.otherwise                         {exe_reg_rs1_addr  := "hffffffffffffffff".U}
-when(decode.io.op2_type === OP_REG){exe_reg_rs2_addr  := id_reg_inst(24, 20)}
-.otherwise                         {exe_reg_rs2_addr  := "hffffffffffffffff".U}
-//exe_reg_rs1_addr  := id_reg_inst(19, 15)
-//exe_reg_rs2_addr  := id_reg_inst(24, 20)
+//when(decode.io.op1_type === OP_REG){exe_reg_rs1_addr  := id_reg_inst(19, 15)}
+//.otherwise                         {exe_reg_rs1_addr  := "hffffffffffffffff".U}
+//when(decode.io.op2_type === OP_REG){exe_reg_rs2_addr  := id_reg_inst(24, 20)}
+//.otherwise                         {exe_reg_rs2_addr  := "hffffffffffffffff".U}
+exe_reg_rs1_addr  := id_reg_inst(19, 15)
+exe_reg_rs2_addr  := id_reg_inst(24, 20)
 exe_reg_rd_addr   := id_reg_inst(11,  7)
 
 
