@@ -152,9 +152,9 @@ exe_reg_rs1_data  := id_rs1
 exe_reg_op1_data  := id_op1
 exe_reg_op2_data  := id_op2
 when(decode.io.op1_type === OP_REG){exe_reg_rs1_addr  := id_reg_inst(19, 15)}
-.otherwise                         {exe_reg_rs1_addr  := "hfffff".U}
+.otherwise                         {exe_reg_rs1_addr  := "hffffffff".U}
 when(decode.io.op2_type === OP_REG){exe_reg_rs2_addr  := id_reg_inst(24, 20)}
-.otherwise                         {exe_reg_rs2_addr  := "hfffff".U}
+.otherwise                         {exe_reg_rs2_addr  := "hffffffff".U}
 //exe_reg_rs1_addr  := id_reg_inst(19, 15)
 //exe_reg_rs2_addr  := id_reg_inst(24, 20)
 exe_reg_rd_addr   := id_reg_inst(11,  7)
@@ -208,6 +208,7 @@ exe_reg_inst      := exe_reg_inst
 val exe_op1     = Wire(UInt(64.W))
 val exe_op2     = Wire(UInt(64.W))
 
+
 when((exe_reg_rs1_addr === wb_reg_rd_addr && exe_reg_rs1_addr =/= mem_reg_rd_addr ) 
 && wb_reg_rd_wen && wb_reg_wb_type === WB_REG && exe_reg_op1_type === OP_REG)  
                                  {exe_op1 := wb_rd_data  }  
@@ -216,6 +217,7 @@ when((exe_reg_rs1_addr === wb_reg_rd_addr && exe_reg_rs1_addr =/= mem_reg_rd_add
 when(mem_reg_mem_rtype =/= MEM_X){exe_op1 := mem_rd_data}
 .otherwise                       {exe_op1 := mem_reg_alu_out}
   }
+.elsewhen(exe_reg_rs1_addr === 0.U)   {exe_op1 := 0.U}
 .otherwise                       {exe_op1 := exe_reg_op1_data}
 
 
