@@ -151,8 +151,12 @@ exe_reg_rs2_data  := id_rs2   //   only used in store struction, and its op2_typ
 exe_reg_rs1_data  := id_rs1
 exe_reg_op1_data  := id_op1
 exe_reg_op2_data  := id_op2
-exe_reg_rs1_addr  := id_reg_inst(19, 15)
-exe_reg_rs2_addr  := id_reg_inst(24, 20)
+when(decode.io.op1_type === OP_REG){exe_reg_rs1_addr  := id_reg_inst(19, 15)}
+.otherwise                         {exe_reg_rs1_addr  := "hfffff".U}
+when(decode.io.op2_type === OP_REG){exe_reg_rs2_addr  := id_reg_inst(24, 20)}
+.otherwise                         {exe_reg_rs2_addr  := "hfffff".U}
+//exe_reg_rs1_addr  := id_reg_inst(19, 15)
+//exe_reg_rs2_addr  := id_reg_inst(24, 20)
 exe_reg_rd_addr   := id_reg_inst(11,  7)
 
 
