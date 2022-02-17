@@ -191,7 +191,7 @@ switch (state) {
 
 
    reg_cache_fill := true.B  //跳出当前状态的信号
-   // 取后写回dcache
+   // 取后写回dcache111
    dcache_cen   := true.B
    dcache_wen   := true.B
    dcache_wdata := axi.data_read //不管需要多少位，把128位全部传进去
