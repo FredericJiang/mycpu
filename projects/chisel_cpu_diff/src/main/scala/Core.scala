@@ -209,7 +209,7 @@ exe_reg_inst      := exe_reg_inst
 val exe_op1     = Wire(UInt(64.W))
 val exe_op2     = Wire(UInt(64.W))
 
-
+//still have bugs here   in cpu-tests/recursion.bin
 when((exe_reg_rs1_addr === wb_reg_rd_addr && exe_reg_rs1_addr =/= mem_reg_rd_addr && exe_reg_rs1_addr =/= 0.U ) 
 && wb_reg_rd_wen && wb_reg_wb_type === WB_REG && exe_reg_op1_type === OP_REG)  
                                  {exe_op1 := wb_rd_data  }  
