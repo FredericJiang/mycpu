@@ -19,6 +19,7 @@ class Core extends Module {
 
 
 stall := (mem_reg_stall || mem_call_stall) && !io.dmem.data_ready
+ 
 
 when(inst_gen_ready )     { io.imem.inst_req   := true.B  }
 .otherwise                 { io.imem.inst_req   := false.B }
@@ -150,6 +151,11 @@ exe_reg_rs2_data  := id_rs2   //   only used in store struction, and its op2_typ
 exe_reg_rs1_data  := id_rs1
 exe_reg_op1_data  := id_op1
 exe_reg_op2_data  := id_op2
+
+//when(decode.io.op1_type === OP_REG){exe_reg_rs1_addr  := id_reg_inst(19, 15)}
+//.otherwise                         {exe_reg_rs1_addr  := "hffffffffffffffff".U}
+//when(decode.io.op2_type === OP_REG){exe_reg_rs2_addr  := id_reg_inst(24, 20)}
+//.otherwise                         {exe_reg_rs2_addr  := "hffffffffffffffff".U}
 exe_reg_rs1_addr  := id_reg_inst(19, 15)
 exe_reg_rs2_addr  := id_reg_inst(24, 20)
 exe_reg_rd_addr   := id_reg_inst(11,  7)
@@ -160,7 +166,22 @@ exe_reg_rd_wen    := (decode.io.wb_type === WB_REG)
 exe_reg_dmem_wen  := (decode.io.wb_type =/= WB_REG) && (decode.io.wb_type =/= WB_X)
 exe_reg_dmem_en   := (decode.io.mem_rtype =/= MEM_X) || ((decode.io.wb_type =/= WB_REG) && (decode.io.wb_type =/= WB_X))
 
-}.elsewhen(kill_stage){
+}.elsewhen(stall){
+exe_reg_pc        := exe_reg_pc
+exe_reg_inst      := exe_reg_inst
+
+exe_reg_op1_type  := exe_reg_op1_type 
+exe_reg_op2_type  := exe_reg_op2_type 
+exe_reg_rs2_data  := exe_reg_rs2_data
+exe_reg_rs1_data  := exe_reg_rs1_data
+exe_reg_rs1_addr  := exe_reg_rs1_addr
+exe_reg_rs2_addr  := exe_reg_rs2_addr
+exe_reg_imm       := exe_reg_imm
+
+//exe_reg_csr_type  := 0.U
+
+}
+.elsewhen(kill_stage){
 exe_reg_pc        := "h0000000000000000".U
 exe_reg_inst      := BUBBLE
 
@@ -181,30 +202,34 @@ exe_reg_inst      := exe_reg_inst
 
 }
 */
+
 //*******************************************************************
 // Execute Stage
 
 val exe_op1     = Wire(UInt(64.W))
 val exe_op2     = Wire(UInt(64.W))
 
-when((exe_reg_rs1_addr === wb_reg_rd_addr && exe_reg_rs1_addr =/= mem_reg_rd_addr ) 
-&& wb_reg_rd_wen && exe_reg_op1_type === OP_REG)  {exe_op1 := wb_rd_data  }
-.elsewhen((exe_reg_rs1_addr === mem_reg_rd_addr  ) 
-&& (mem_reg_rd_wen || mem_reg_stall_wen) && exe_reg_op1_type === OP_REG && mem_reg_alu_type =/= ALU_COPY2)   {
-when(mem_reg_mem_rtype =/= MEM_X){exe_op1 := mem_reg_rd_data}
-.otherwise{exe_op1 := mem_reg_alu_out}
+
+when((exe_reg_rs1_addr === wb_reg_rd_addr && exe_reg_rs1_addr =/= mem_reg_rd_addr && exe_reg_rs1_addr =/= 0.U ) 
+&& wb_reg_rd_wen && wb_reg_wb_type === WB_REG && exe_reg_op1_type === OP_REG)  
+                                 {exe_op1 := wb_rd_data  }  
+.elsewhen((exe_reg_rs1_addr === mem_reg_rd_addr)&& exe_reg_rs1_addr =/= 0.U && (mem_reg_rd_wen || mem_reg_stall_wen) && exe_reg_op1_type === OP_REG && mem_reg_alu_type =/= ALU_COPY2)   
+{
+when(mem_reg_mem_rtype =/= MEM_X){exe_op1 := mem_rd_data}
+.otherwise                       {exe_op1 := mem_reg_alu_out}
   }
-.otherwise                                        {exe_op1 := exe_reg_op1_data }
+.otherwise                       {exe_op1 := exe_reg_op1_data}
 
 
-when((exe_reg_rs2_addr === wb_reg_rd_addr && exe_reg_rs2_addr =/= mem_reg_rd_addr ) 
-&& wb_reg_rd_wen && exe_reg_op2_type === OP_REG)  {exe_op2 := wb_rd_data}
-.elsewhen((exe_reg_rs2_addr === mem_reg_rd_addr  ) 
-&& (mem_reg_rd_wen || mem_reg_stall_wen) && exe_reg_op2_type === OP_REG && mem_reg_alu_type =/= ALU_COPY2)   {
-when(mem_reg_mem_rtype =/= MEM_X){exe_op2 := mem_reg_rd_data}
-.otherwise{exe_op2 := mem_reg_alu_out}
+when((exe_reg_rs2_addr === wb_reg_rd_addr && exe_reg_rs2_addr =/= mem_reg_rd_addr  && exe_reg_rs2_addr =/= 0.U ) 
+&& wb_reg_rd_wen && wb_reg_wb_type === WB_REG && exe_reg_op2_type === OP_REG)  
+                                 {exe_op2 := wb_rd_data }
+.elsewhen((exe_reg_rs2_addr === mem_reg_rd_addr )&& exe_reg_rs2_addr =/= 0.U  && (mem_reg_rd_wen || mem_reg_stall_wen) && exe_reg_op2_type === OP_REG && mem_reg_alu_type =/= ALU_COPY2)   
+{
+when(mem_reg_mem_rtype =/= MEM_X){exe_op2 := mem_rd_data}
+.otherwise                       {exe_op2 := mem_reg_alu_out}
   }
-.otherwise                                        {exe_op2 := exe_reg_op2_data }
+.otherwise                       {exe_op2 := exe_reg_op2_data }
 
 
 when(exe_reg_alu_type === ALU_MY_INST && wb_reg_rd_addr === 10.U && wb_reg_rd_wen ){exe_reg_print := wb_rd_data}
@@ -244,6 +269,7 @@ clint.io.cmp_wdata  :=  exe_reg_rs2_data
 clint.io.time_valid :=  exe_stage_valid
 
 val csr  = Module(new CSR)
+csr.io.stall       := stall
 csr.io.pc          := exe_reg_pc
 csr.io.pc_timer    := exe_reg_pc
 csr.io.inst        := exe_reg_inst
@@ -257,7 +283,6 @@ nxt_pc.io.pc          := exe_reg_pc
 nxt_pc.io.imm_type    := exe_reg_imm_type
 nxt_pc.io.alu_type    := exe_reg_alu_type
 nxt_pc.io.imm         := exe_reg_imm
-nxt_pc.io.alu_out     := exe_alu_out
 nxt_pc.io.alu_out     := exe_alu_out
 nxt_pc.io.op2_type    := exe_reg_op2_type
 nxt_pc.io.csr_jmp     := csr.io.jmp 
@@ -284,7 +309,8 @@ when(exe_reg_rs1_addr === mem_reg_rd_addr && mem_reg_mem_rtype =/= MEM_X)
 exe_pc_nxt  := nxt_pc.io.pc_nxt
 kill_stage  := nxt_pc.io.pc_jmp  //current instruction jmp_flag
 
-
+//val exe_reg_alu_out
+//when(stall)     {exe_reg_alu_out:= exe_alu_out}
 
 when(kill_stage){ reg_exe_pc_nxt:= nxt_pc.io.pc_nxt; reg_kill_flag := nxt_pc.io.pc_jmp }
 
@@ -419,12 +445,14 @@ wb_reg_inst        := mem_reg_inst
 wb_reg_alu_type    := mem_reg_alu_type
 wb_reg_mem_rtype   := mem_reg_mem_rtype 
 wb_reg_csr_type    := mem_reg_csr_type
+wb_reg_wb_type     := mem_reg_wb_type
 
 wb_reg_alu_out     := mem_reg_alu_out
 wb_reg_rs1_data    := mem_reg_rs1_data //used for print
 wb_reg_print       := mem_reg_print
 
 wb_reg_rd_addr     := mem_reg_rd_addr
+wb_reg_rs2_addr    := mem_reg_rs2_addr //
 wb_reg_rd_wen      := mem_reg_rd_wen || mem_reg_stall_wen
 wb_reg_rd_data     := mem_rd_data
 wb_reg_csr_rd_data := mem_reg_csr_rd_data
@@ -451,15 +479,28 @@ wb_reg_mepc     :=  mem_reg_mepc
 wb_reg_mcause   :=  mem_reg_mcause
 }.otherwise{
   
-  wb_reg_pc:= 0.U
-  wb_reg_inst := 0.U
+wb_reg_pc:= 0.U
+wb_reg_inst := 0.U
+wb_reg_wb_type:=0.U
+
+wb_reg_intrpt      :=  mem_reg_intrpt
+wb_reg_intrpt_no   :=  mem_reg_intrpt_no
+wb_reg_csr_rd_wen  :=  mem_reg_csr_rd_wen
+wb_reg_clint_en    :=  mem_reg_clint_en
+wb_reg_mie         :=  mem_reg_mie
+wb_reg_mtvec       :=  mem_reg_mtvec
+wb_reg_mscratch    :=  mem_reg_mscratch
+
+wb_reg_mstatus  :=  mem_reg_mstatus
+wb_reg_mepc     :=  mem_reg_mepc
+wb_reg_mcause   :=  mem_reg_mcause
 }
 
 
 //*******************************************************************
 //WriteBack
 //write back to reg enalbe
-regfile.io.rd_wen   := wb_reg_rd_wen || wb_reg_csr_rd_wen
+regfile.io.rd_wen   := (wb_reg_rd_wen && wb_reg_wb_type === WB_REG)|| wb_reg_csr_rd_wen
 regfile.io.rd_addr  := wb_reg_rd_addr
 
 

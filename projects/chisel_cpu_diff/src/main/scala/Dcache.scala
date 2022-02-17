@@ -107,8 +107,6 @@ switch (state) {
     
     reg_data_req_r  := core.data_req_r
     reg_data_req_w  := core.data_req_w
-     
-
     
     state := lookup
   }  
@@ -164,15 +162,16 @@ switch (state) {
   is(writeback){
   req_addr := reg_data_addr
   data_addr_w2axi := Cat(tag(req_index), req_index, offset(req_index))  // dirty data address 不是当前读或者写的地址
-  data_write2axi  := cache_data_out// cache dirty时向dcache传入数据，将dcache输出的数据写回AXI
+  data_write2axi  := cache_data_out    //Mux(req_offset(3),cache_data_out(127,64) ,cache_data_out(63,0) )// cache dirty时向dcache传入数据，将dcache输出的数据写回AXI
   data_strb2axi   := "b11111111".U
   data_req_w2axi  := true.B
-
+  
+  dcache_index    := reg_data_addr(9,4)
+  dcache_cen      := true.B
       when(axi.data_ready){ state := fetch}
      .otherwise           { state:= writeback}
 
 }
-
 
   is(fetch){
   
@@ -194,7 +193,7 @@ switch (state) {
 
 
    reg_cache_fill := true.B  //跳出当前状态的信号
-   // 取后写回dcache
+   // 取后写回dcache111
    dcache_cen   := true.B
    dcache_wen   := true.B
    dcache_wdata := axi.data_read //不管需要多少位，把128位全部传进去

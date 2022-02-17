@@ -67,17 +67,19 @@ val data_req_r  = Output(Bool())
 val data_req_w  = Output(Bool())
 val data_addr_r   = Output(UInt(AXI_Addr_Width.W))//32 bits
 val data_addr_w   = Output(UInt(AXI_Addr_Width.W))
-val data_strb   = Output(UInt(8.W)) 
+//val data_strb   = Output(UInt(64.W)) 
 }
 
 class Core_Data extends Data_IO{
 val data_read   = Input(UInt(AXI_Data_Width.W)) //64 bits
-val data_write  = Output(UInt(AXI_Data_Width.W)) 
+val data_write  = Output(UInt(AXI_Data_Width.W))
+val data_strb   = Output(UInt(64.W))
 }
 
 class AXI_Data extends Data_IO{
 val data_read   = Input(UInt(128.W))
-val data_write  = Output(UInt(128.W)) 
+val data_write  = Output(UInt(128.W))
+val data_strb   = Output(UInt(8.W))  
 }
 
 
@@ -105,10 +107,11 @@ val data_wen = WireInit(false.B)
  
   val w_idle :: w_data_addr :: w_data_write :: w_data_resp :: w_data_done :: Nil = Enum(5)
 
-val reg_data_ren = RegInit(false.B)
+//val reg_data_ren = RegInit(false.B)
+//val data_read_done = WireInit(false.B)
 val reg_data_addr_r = RegInit(0.U(32.W))
 
-when(dmem.data_req_r){reg_data_ren := dmem.data_req_r}
+//when(dmem.data_req_r){reg_data_ren := dmem.data_req_r}
 
 when(dmem.data_addr_r =/= 0.U){reg_data_addr_r := dmem.data_addr_r}
 
@@ -116,7 +119,7 @@ when(dmem.data_addr_r =/= 0.U){reg_data_addr_r := dmem.data_addr_r}
 // state control change signal
 
   inst_ren :=  imem.inst_req
-  data_ren :=  dmem.data_req_r || reg_data_ren
+  data_ren :=  dmem.data_req_r //|| (reg_data_ren && !data_read_done )
   data_wen :=  dmem.data_req_w
 
   val ar_hs    = out.ar.ready && out.ar.valid   //read address channel
@@ -142,7 +145,7 @@ when(dmem.data_req_w && write_state === w_data_done){ write_done:= true.B }
 switch(read_state){
   is(r_idle){
       when(inst_ren){ read_state := r_inst_addr }
- .elsewhen(data_ren){ read_state := r_data_addr; reg_data_ren := false.B }}
+ .elsewhen( data_ren){ read_state := r_data_addr;  }}//reg_data_ren := false.B;
   
   is(r_inst_addr){
       when(ar_hs)   { read_state := r_inst_read }}
@@ -151,7 +154,7 @@ switch(read_state){
       when(r_done)  { read_state := r_inst_done }} //stage for send inst to core
 
   is(r_inst_done){ 
-      when(data_ren){ read_state := r_data_addr; reg_data_ren := false.B } // avoid always read inst not time to read data
+      when(data_ren){ read_state := r_data_addr;  } //reg_data_ren := false.B ; avoid always read inst not time to read data
  .otherwise         { read_state := r_idle      }}
 
   is(r_data_addr){
@@ -182,6 +185,7 @@ switch(write_state){
    is(w_data_done)  { write_state := w_idle       }
 }
 
+
 val axi_addr = WireInit(0.U(32.W))
 when(read_state === r_inst_addr)      {axi_addr:= imem.inst_addr   }
 .elsewhen(read_state === r_data_addr && dmem.data_addr_r =/= 0.U ) {axi_addr:= dmem.data_addr_r }
@@ -189,9 +193,7 @@ when(read_state === r_inst_addr)      {axi_addr:= imem.inst_addr   }
 val inst_reg_addr = RegInit(0.U(32.W))
 inst_reg_addr:= imem.inst_addr 
 
-
-val axi_addr_w = WireInit(0.U(32.W))
-axi_addr_w := Mux(write_done, Cat(dmem.data_addr_w(31, 4), "b1000".U), Cat(dmem.data_addr_w(31, 4), "b0000".U))
+val axi_addr_w = Mux(write_done, Cat(dmem.data_addr_w(31, 4), "b1000".U), Cat(dmem.data_addr_w(31, 4),0.U,0.U,0.U,0.U))      
 
 // Read address channel signals
   out.ar.bits.id     := 0.U 
@@ -224,8 +226,8 @@ axi_addr_w := Mux(write_done, Cat(dmem.data_addr_w(31, 4), "b1000".U), Cat(dmem.
   out.aw.valid   := (write_state === w_data_addr)
 // write data channel signals
   out.w.bits.id       := 0.U 
-  out.w.bits.data     := Mux(write_done, dmem.data_write(127,64), dmem.data_write(63, 0))
-  out.w.bits.strb     := io.dmem.data_strb
+  out.w.bits.data     := Mux(write_done,io.dmem.data_write(127,64), io.dmem.data_write(63,0))
+  out.w.bits.strb     := "b11111111".U
   out.w.bits.last     := true.B
 
   out.w.valid    := (write_state === w_data_write)
@@ -261,7 +263,7 @@ axi_addr_w := Mux(write_done, Cat(dmem.data_addr_w(31, 4), "b1000".U), Cat(dmem.
   //dmem.data_read := data_read_h
 
   imem.inst_ready := (read_state === r_inst_done) 
-  dmem.data_ready := (read_state === r_data_done) || (write_state === w_data_done && write_done )
+  dmem.data_ready := (read_state === r_data_done) || ((write_state === w_data_done) && write_done )
 
 
 

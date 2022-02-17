@@ -15,6 +15,7 @@ class CSR extends Module {
     val csr_type    = Input(UInt(3.W))
     val in_data     = Input(UInt(64.W))
     val time_intrpt = Input(Bool())
+    val stall       = Input(Bool())
 
 
 
@@ -128,7 +129,7 @@ io.intrpt_pc := 0.U
  
   io.out := rdata
 
-  when(wen) {
+  when(wen && !io.stall) {
     when(addr === csr_addr.mcycle) {
       mcycle := wdata 
     }
